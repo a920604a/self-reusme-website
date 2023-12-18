@@ -117,9 +117,9 @@ const Header = () => {
               {/* Add links to Projects and Contact me section */}
               <a href="/" className="nav-item" onClick={handleClick('')}>Home</a>
               <a href="#projects" className="nav-item" onClick={handleClick('projects')}>Projects</a>
-              <a href="#work-experience" className="nav-item" onClick={handleClick('work-experience')}>experiences</a>
-              <a href="#skills" className="nav-item" onClick={handleClick('skills')}>skills</a>
-              <a href="#Education" className="nav-item" onClick={handleClick('education')}>education</a>
+              <a href="#work-experience" className="nav-item" onClick={handleClick('work-experience')}>Experiences</a>
+              <a href="#skills" className="nav-item" onClick={handleClick('skills')}>Skills</a>
+              <a href="#Education" className="nav-item" onClick={handleClick('education')}>Education</a>
               <a href="#contact-me" className="nav-item" onClick={handleClick('contactme')}>Contact Me</a>
             </HStack>
           </nav>

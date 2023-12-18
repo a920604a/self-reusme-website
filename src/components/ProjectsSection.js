@@ -25,6 +25,7 @@ const ProjectsSection = () => {
       p={8}
       alignItems="flex-start"
       spacing={8}
+      minHeight="50vh"
     >
       <Heading as="h1" id="projects-section">
         Featured Projects
@@ -39,7 +40,6 @@ const ProjectsSection = () => {
             key={project.title}
             title={project.title}
             description={project.description}
-            // imageSrc={project.getImageSrc()}
           />
         ))}
       </Box>

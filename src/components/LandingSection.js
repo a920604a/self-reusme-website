@@ -19,7 +19,7 @@ const LandingSection = () => (
   >
     <VStack spacing={10}>
       <VStack>
-        <Avatar name="Pete" src="https://i.pravatar.cc/150?img=7" size="xl" />
+        <Avatar name="Pete" src={require("../images/profilepic.jpeg")} size="xl" />
         <Heading size="xs">{greeting}</Heading>
       </VStack>
       <VStack>
