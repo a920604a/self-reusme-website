@@ -19,15 +19,35 @@ function App() {
       <AlertProvider>
         <main>
 
+          <Routes>
 
-          <Header />
-          <LandingSection />
-          <ProjectsSection />
-          <WorkExperienceSection />
-          <SkillSection />
-          <EducationSection />
+            <Route path="/" element={
+              <>
+                <Header />
+                <LandingSection />
+                <ProjectsSection />
+                <WorkExperienceSection />
+                {/* <ContactMeSection /> */}
+                <SkillSection />
+                <EducationSection />
+                {/* <Footer /> */}
+                {/* <Alert /> */}
+              </>
+            } />
 
-
+            <Route path="projects" element={
+              <>
+                <Header />
+                <ProjectDetails />
+              </>
+            } />
+            <Route path="contact-me" element={
+              <>
+                <Header />
+                <ContactMe />
+              </>
+            } />
+          </Routes>
 
 
 
