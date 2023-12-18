@@ -8,14 +8,14 @@ const projects = [
     title: "AMD",
     description:
       "Successfully developed and integrated a comprehensive medical management platform with multiple technologies, including Unity, SQL, C# and Eye Tracking technology.",
-    getImageSrc: () => require("../images/photo1.jpg"),
+    // getImageSrc: () => require("../images/photo1.jpg"),
     url: "projects",
   },
   {
     title: "Remote meeting",
     description:
       "Use Photon and C# to jointly develop a remote video conference prototype",
-    getImageSrc: () => require("../images/photo2.jpg"),
+    // getImageSrc: () => require("../images/photo2.jpg"),
     url: "projects",
   }
 ];
@@ -42,7 +42,7 @@ const ProjectsSection = () => {
             key={project.title}
             title={project.title}
             description={project.description}
-            imageSrc={project.getImageSrc()}
+            // imageSrc={project.getImageSrc()}
             url={project.url}
           />
         ))}

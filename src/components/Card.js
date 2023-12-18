@@ -32,12 +32,12 @@ const Card = ({ title, description, imageSrc , url}) => {
           </Link>
         </Heading>
       </VStack>
-      <Image
+      {/* <Image
         objectFit='cover'
         src={imageSrc}
         alt={title}
         borderRadius="10px"
-      />      
+      />       */}
     </VStack >
 
   );
