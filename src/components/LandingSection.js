@@ -9,6 +9,7 @@ const bio2 = "specialised in Data/System Integration";
 // Implement the UI for the LandingSection component according to the instructions.
 // Use a combination of Avatar, Heading and VStack components.
 const LandingSection = () => (
+
   <FullScreenSection
     justifyContent="center"
     alignItems="center"

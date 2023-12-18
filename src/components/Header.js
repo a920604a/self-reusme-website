@@ -7,8 +7,7 @@ import {
   faMedium,
   faStackOverflow,
 } from "@fortawesome/free-brands-svg-icons";
-import { Box, HStack } from "@chakra-ui/react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Box, HStack, Heading } from "@chakra-ui/react";
 
 const socials = [
   {
@@ -87,6 +86,7 @@ const Header = () => {
 
 
   return (
+    
     <Box
       position="fixed"
       top={0}
@@ -116,8 +116,11 @@ const Header = () => {
             <HStack spacing={8}>
               {/* Add links to Projects and Contact me section */}
               <a href="/" className="nav-item" onClick={handleClick('')}>Home</a>
-              <a href="projects" className="nav-item" onClick={handleClick('projects')}>Projects</a>
-              <a href="contact-me" className="nav-item" onClick={handleClick('contactme')}>Contact Me</a>
+              <a href="#projects" className="nav-item" onClick={handleClick('projects')}>Projects</a>
+              <a href="#work-experience" className="nav-item" onClick={handleClick('work-experience')}>experiences</a>
+              <a href="#skills" className="nav-item" onClick={handleClick('skills')}>skills</a>
+              <a href="#Education" className="nav-item" onClick={handleClick('education')}>education</a>
+              <a href="#contact-me" className="nav-item" onClick={handleClick('contactme')}>Contact Me</a>
             </HStack>
           </nav>
         </HStack>

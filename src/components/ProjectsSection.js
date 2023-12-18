@@ -1,5 +1,4 @@
 import React from "react";
-import { Routes, Route, Link } from "react-router-dom";
 import FullScreenSection from "./FullScreenSection";
 import { Box, Heading } from "@chakra-ui/react";
 import Card from "./Card";
@@ -9,14 +8,12 @@ const projects = [
     description:
       "Successfully developed and integrated a comprehensive medical management platform with multiple technologies, including Unity, SQL, C# and Eye Tracking technology.",
     // getImageSrc: () => require("../images/photo1.jpg"),
-    url: "projects",
   },
   {
     title: "Remote meeting",
     description:
       "Use Photon and C# to jointly develop a remote video conference prototype",
     // getImageSrc: () => require("../images/photo2.jpg"),
-    url: "projects",
   }
 ];
 
@@ -43,7 +40,6 @@ const ProjectsSection = () => {
             title={project.title}
             description={project.description}
             // imageSrc={project.getImageSrc()}
-            url={project.url}
           />
         ))}
       </Box>

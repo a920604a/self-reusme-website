@@ -20,7 +20,7 @@ const EducationSection = () => {
             alignItems="flex-start"
             spacing={8}
         >
-            <Heading as="h1" id="Education-section">
+            <Heading as="h1" id="education-section">
                 Education
             </Heading>
 

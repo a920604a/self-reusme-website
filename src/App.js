@@ -9,9 +9,6 @@ import EducationSection from "./components/EducationSection";
 import Footer from "./components/Footer";
 import { AlertProvider } from "./context/alertContext";
 import Alert from "./components/Alert";
-import ProjectDetails from "./components/ProjectDetails";
-import ContactMe from "./components/ContactMe";
-import { Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
@@ -19,36 +16,17 @@ function App() {
       <AlertProvider>
         <main>
 
-          <Routes>
 
-            <Route path="/" element={
-              <>
-                <Header />
-                <LandingSection />
-                <ProjectsSection />
-                <WorkExperienceSection />
-                {/* <ContactMeSection /> */}
-                <SkillSection />
-                <EducationSection />
-                {/* <Footer /> */}
-                {/* <Alert /> */}
-              </>
-            } />
+          <Header />
+          <LandingSection />
+          <ProjectsSection />
+          <WorkExperienceSection />
 
-            <Route path="projects" element={
-              <>
-                <Header />
-                <ProjectDetails />
-              </>
-            } />
-            <Route path="contact-me" element={
-              <>
-                <Header />
-                <ContactMe />
-              </>
-            } />
-          </Routes>
-
+          <SkillSection />
+          <EducationSection />
+          <ContactMeSection />
+          {/* <Footer /> */}
+          {/* <Alert /> */}
 
 
         </main>
