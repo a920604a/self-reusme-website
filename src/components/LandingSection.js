@@ -14,6 +14,7 @@ const LandingSection = () => (
     alignItems="center"
     isDarkBackground
     backgroundColor="#2A4365"
+    minHeight="50vh"
   >
     <VStack spacing={10}>
       <VStack>
