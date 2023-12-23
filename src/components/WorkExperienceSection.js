@@ -8,10 +8,12 @@ const works = [
     {
         title: "Oomii Inc.",
         description:
-            ['Develop Unity app. and Integrate eye-tracking',
+            ['Develop Unity app. and Integrate eye-tracking, and then deploy by Ansible',
                 'Assist to deployment remote meeting\'s prototype',
                 'Collaborated with a UI/UX designer to ensure that the designs created in Figma are implemented seamlessly on the actual application',
-                'Assisted in evaluating technical skills of candidates during interviews'],
+                'Assisted in evaluating technical skills of candidates during interviews',
+                'Build meeting room system so that connect from remote user.',
+        ],
     },
     {
         title: "安智聯科技有限公司",
