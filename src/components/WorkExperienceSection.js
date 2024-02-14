@@ -14,8 +14,7 @@ const works = [
             "使用Ansible自動化部署至其他環境",
             "使用Figma工具與進行UI/UX設計密切合作",
             "協助部署遠端會議原型",
-            "在面試過程中協助評估候選人的技術能力",
-            "建立會議室系統，以便遠端使用者連接"
+            "建立會議室系統，以便遠端使用者參與會議"
         ]
     },
     {
@@ -31,17 +30,17 @@ const works = [
         "position": "Algorithm Development Engineer",
         "years": "April 2020 - March 2021",
         "description": [
-            "整合物件檢測和影像分類演算法，以滿足需求。",
+            "整合物件檢測和影像分類演算法，以開發智能檢測平台。",
             "積極與團隊合作，負責建立高效且可擴展的 Flask 網站後端。",
             "整合 MySQL 作為數據庫，利用 Docker Compose 實現容器化部署。"
         ]
     },
     {
         "company": "FOXCONN",
-        "position": "Software Engineer intern",
+        "position": "Software Engineer Intern",
         "years": "July 2018 - October 2018",
         "description": [
-            "應用了Python編程語言，使用了TensorFlow和Keras框架，成功開發了深度學習演算法，提高了檢測系統的效能並取得了顯著的成就。"
+            "應用了Python程式語言，使用了TensorFlow和Keras框架，成功開發了深度學習演算法，提高了檢測系統的效能並取得了顯著的成就。"
         ]
     }
 ];
