@@ -8,7 +8,7 @@ const projects = [
     description:
       [
         "為了幫助黃斑部病變病患訓練第二視野中心。",
-        "被分配實做出一個復健平台，並整合同事的eye tracking 演算法。",
+        "實做出一個復健平台，並整合同事的eye tracking 演算法。",
         "使用Unity 實作外觀 layout、SQLite 作為存儲系統、搭配System service以實現特定功能。",
         "復健平台不僅僅是一個工具，更是一個能夠為醫療團隊提供更便捷工作流程的創新解決方案。"
       ],

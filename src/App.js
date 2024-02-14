@@ -24,9 +24,9 @@ function App() {
 
           <SkillSection />
           <EducationSection />
-          <ContactMeSection />
-          {/* <Footer /> */}
-          {/* <Alert /> */}
+          {/* <ContactMeSection />
+          <Footer /> */}
+          <Alert />
 
 
         </main>
