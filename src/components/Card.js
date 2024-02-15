@@ -28,7 +28,7 @@ const Card = ({ title, description, imageSrc }) => {
         {/* <Text style={{ color: "gray" }} >{description}</Text> */}
         {description.map((item, index) => (
           <Text key={index} style={{ color: "gray" }}>
-          <li>{item}</li>
+            <li>{item}</li>
           </Text>
         ))}
       </VStack>

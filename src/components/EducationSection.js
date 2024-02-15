@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import FullScreenSection from "./FullScreenSection";
 
-const EducationSection = () => {
+const EducationSection = ({ educationData }) => {
     return (
         <FullScreenSection
             backgroundColor="#14532d"
@@ -25,7 +25,7 @@ const EducationSection = () => {
             </Heading>
 
             <TableContainer>
-                <Table size = "lg" colorScheme='blue'>
+                <Table size="lg" colorScheme='blue'>
                     <Thead>
                         <Tr>
                             <Th color="white">School</Th>
@@ -34,7 +34,7 @@ const EducationSection = () => {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        <Tr>
+                        {/* <Tr>
                             <Td>Master of National Central University	</Td>
                             <Td>Computer science	</Td>
                             <Td>2016-2018
@@ -44,7 +44,14 @@ const EducationSection = () => {
                             <Td>Bachelor of National Central University	</Td>
                             <Td>Mathematics(minor in computer)	</Td>
                             <Td>2012-2016</Td>
-                        </Tr>
+                        </Tr> */}
+                        {educationData.map((item, index) => (
+                            <Tr key={index}>
+                                <Td>{item.school}</Td>
+                                <Td>{item.major}</Td>
+                                <Td>{item.duration}</Td>
+                            </Tr>
+                        ))}
                     </Tbody>
                 </Table>
             </TableContainer>

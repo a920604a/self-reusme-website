@@ -27,39 +27,17 @@ const getRandomColor = () => {
 };
 
 
-const skills = [
-    {
-        "name": "Python",
-        "level": "70%"
-    },
-    {
-        "name": "C#",
-        "level": "80%"
-    },
-    {
-        "name": "C++",
-        "level": "50%"
-    },
-    {
-        "name": "JavaScript",
-        "level": "15%"
-    },
-];
-
-const tools = ['Git', 'SQL', 'Unity', 'Figma', 'Docker', 'Ansible', 'Airflow', 'Ubuntu']
-const frameworks = ['React', 'Django', 'Pytoch']
-const tryLearn = ['Flask', 'Vue', 'K8s', 'Kafka']
 
 
 
-const SkillSection = () => {
+const SkillSection = ({ skills, tools, frameworks }) => {
 
-    const skillBars = skills.map((skill) => {
+    const skillBars = skills.map((skill, index) => {
         const backgroundColor = "#4FD1C5"; // You can set the color based on your design
         const width = skill.level;
 
         return (
-            <>
+            <Box key={index}> {/* Add key attribute here */}
                 <Text fontSize="md" fontWeight="bold" color="white">
                     {skill.name}
                 </Text>
@@ -67,7 +45,6 @@ const SkillSection = () => {
                     {skill.level}
                 </Text>
                 <GridItem
-                    key={skill.name}
                     w='100%'
                     colSpan={2}
                     h="10"
@@ -75,10 +52,10 @@ const SkillSection = () => {
                     style={{ width }}
                 >
                 </GridItem>
-
-            </>
+            </Box>
         );
     });
+
 
 
     const skill = skills.map((skill) => {
