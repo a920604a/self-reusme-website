@@ -1,63 +1,60 @@
 import React from "react";
 import {
-    Table,
-    Thead,
-    Tbody,
-    Tr,
-    Th,
-    Td,
-    TableContainer,
-    Heading
-} from '@chakra-ui/react';
+    Box,
+    VStack,
+    Heading,
+    Text,
+    SimpleGrid,
+    Icon,
+    useColorModeValue,
+} from "@chakra-ui/react";
+import { FaGraduationCap } from "react-icons/fa";
 import FullScreenSection from "./FullScreenSection";
 
 const EducationSection = ({ educationData }) => {
+    const cardBg = useColorModeValue("white", "gray.700");
+    const cardBorder = useColorModeValue("gray.200", "gray.600");
+
     return (
         <FullScreenSection
             backgroundColor="#14532d"
-            isDarkBackground
+            isdarkbackground="true"
             p={8}
             alignItems="flex-start"
             spacing={8}
         >
-            <Heading as="h1" id="education-section">
+            <Heading as="h1" id="education-section" color="white" mb={6}>
                 Education
             </Heading>
 
-            <TableContainer>
-                <Table size="lg" colorScheme='blue'>
-                    <Thead>
-                        <Tr>
-                            <Th color="white">School</Th>
-                            <Th color="white">Major</Th>
-                            <Th color="white">Begin-End</Th>
-                        </Tr>
-                    </Thead>
-                    <Tbody>
-                        {/* <Tr>
-                            <Td>Master of National Central University	</Td>
-                            <Td>Computer science	</Td>
-                            <Td>2016-2018
-                            </Td>
-                        </Tr>
-                        <Tr>
-                            <Td>Bachelor of National Central University	</Td>
-                            <Td>Mathematics(minor in computer)	</Td>
-                            <Td>2012-2016</Td>
-                        </Tr> */}
-                        {educationData.map((item, index) => (
-                            <Tr key={index}>
-                                <Td>{item.school}</Td>
-                                <Td>{item.major}</Td>
-                                <Td>{item.duration}</Td>
-                            </Tr>
-                        ))}
-                    </Tbody>
-                </Table>
-            </TableContainer>
+            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} w="100%">
+                {educationData.map((item, index) => (
+                    <Box
+                        key={index}
+                        bg={cardBg}
+                        border="1px solid"
+                        borderColor={cardBorder}
+                        borderRadius="lg"
+                        p={6}
+                        shadow="md"
+                    >
+                        <VStack align="flex-start" spacing={4}>
+                            <Icon as={FaGraduationCap} color="teal.400" boxSize={6} />
+                            <Heading as="h3" size="md" color="teal.600">
+                                {item.school}
+                            </Heading>
+                            <Text fontWeight="bold" fontSize="sm" color="gray.500">
+                                {item.major}
+                            </Text>
+                            <Text fontSize="sm" color="gray.400">
+                                {item.duration}
+                            </Text>
+                        </VStack>
+                    </Box>
+                ))}
+            </SimpleGrid>
         </FullScreenSection>
     );
 };
 
 export default EducationSection;
-

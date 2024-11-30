@@ -8,6 +8,7 @@ import {
   faStackOverflow,
 } from "@fortawesome/free-brands-svg-icons";
 import { Box, HStack, Heading } from "@chakra-ui/react";
+import { Link } from "react-router-dom"; // 使用 React Router 的 Link
 
 const socials = [
   {
@@ -45,7 +46,7 @@ const Header = () => {
   };
 
   const listItem = socials.map((social) => (
-    <a key={social.url} href={social.url}>
+    <a key={social.url} href={social.url} target="_blank" rel="noopener noreferrer">
       <FontAwesomeIcon icon={social.icon} size="2x" />
     </a>
   ));
@@ -65,7 +66,6 @@ const Header = () => {
         return;
       }
 
-
       if (prevScrollPos > currScrollPos) {
         currHeaderElement.style.transform = "translateY(0)";
       } else {
@@ -84,9 +84,7 @@ const Header = () => {
     };
   }, []);
 
-
   return (
-
     <Box
       position="fixed"
       top={0}
@@ -114,23 +112,28 @@ const Header = () => {
           </nav>
           <nav>
             <HStack spacing={8}>
-              {/* Add links to Projects and Contact me section */}
-              <a href="/" className="nav-item" onClick={handleClick('')}>Home</a>
-              <a href="#projects" className="nav-item" onClick={handleClick('projects')}>Projects</a>
-              <a href="#work-experience" className="nav-item" onClick={handleClick('work-experience')}>Experiences</a>
-              <a href="#skills" className="nav-item" onClick={handleClick('skills')}>Skills</a>
-              <a href="#Education" className="nav-item" onClick={handleClick('education')}>Education</a>
-              {/* <a href="#contact-me" className="nav-item" onClick={handleClick('contactme')}>Contact Me</a> */}
+              {/* Replace <a> with Link to handle routing within React */}
+              <Link to="/" onClick={handleClick('')} className="nav-item">
+                Home
+              </Link>
+              <Link to="/#projects" onClick={handleClick('projects')} className="nav-item">
+                Projects
+              </Link>
+              <Link to="/#work-experience" onClick={handleClick('work-experience')} className="nav-item">
+                Experiences
+              </Link>
+              <Link to="/#skills" onClick={handleClick('skills')} className="nav-item">
+                Skills
+              </Link>
+              <Link to="/#Education" onClick={handleClick('education')} className="nav-item">
+                Education
+              </Link>
             </HStack>
           </nav>
         </HStack>
       </Box>
-
-      <header>
-
-      </header>
-
     </Box>
   );
 };
+
 export default Header;

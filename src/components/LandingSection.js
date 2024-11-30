@@ -10,7 +10,7 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
   <FullScreenSection
     justifyContent="center"
     alignItems="center"
-    isDarkBackground
+    isdarkbackground="true"
     backgroundColor="#2A4365"
     minHeight="50vh"
   >
