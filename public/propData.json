@@ -104,7 +104,7 @@
         {
             "title": "顏色穿搭推薦",
             "date": "2024/06-2024/07",
-            "category": "Side Projects",
+            "category": "Side Project",
             "tags": [
                 "Python",
                 "FastAPI",
@@ -145,8 +145,17 @@
     "works": [
         {
             "company": "Oomii Inc.",
+            "position": "Senior Software Engineer",
+            "years": "2024/05-Now",
+            "description": [
+                "協助SE 開發專案",
+                "開發VR 應用程式已模擬藥物分子"
+            ]
+        },
+        {
+            "company": "Oomii Inc.",
             "position": "Software Engineer",
-            "years": "March 2022 - Present",
+            "years": "2022/05-2024/05",
             "description": [
                 "使用Unity框架、C#進行後端開發",
                 "使用Ansible自動化部署至其他環境",
@@ -158,7 +167,7 @@
         {
             "company": "Asus Inc. AICS department",
             "position": "System Engineer",
-            "years": "November 2021 - Feburary 2022",
+            "years": "2021/11-2022/02",
             "description": [
                 "負責維護ETL流程，使用Airflow進行每日數百萬條記錄的同步，涉及不同類型的數據集。這項經驗不僅強化了我的Airflow技能，還培養了我在大規模數據同步和ETL管理方面的專業能力。"
             ]
@@ -166,7 +175,7 @@
         {
             "company": "安智聯科技有限公司",
             "position": "Algorithm Development Engineer",
-            "years": "April 2020 - March 2021",
+            "years": "2020/04-2021/03",
             "description": [
                 "整合物件檢測和影像分類演算法，以開發智能檢測平台。",
                 "積極與團隊合作，負責建立高效且可擴展的 Flask 網站後端。",
@@ -176,7 +185,7 @@
         {
             "company": "FOXCONN",
             "position": "Software Engineer Intern",
-            "years": "July 2018 - October 2018",
+            "years": "2018/07-2018/10",
             "description": [
                 "應用了Python程式語言，使用了TensorFlow和Keras框架，成功開發了深度學習演算法，提高了檢測系統的效能並取得了顯著的成就。"
             ]
@@ -202,7 +211,11 @@
     ],
     "tools": [
         "Git",
-        "SQL",
+        "PostgreSQL",
+        "MySQL",
+        "SQLite",
+        "MongoDB",
+        "Redies",
         "Unity",
         "Figma",
         "Docker",
@@ -212,7 +225,7 @@
     ],
     "frameworks": [
         "React",
-        "Django",
+        "FastAPI",
         "Pytoch"
     ],
     "tryLearn": [

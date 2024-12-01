@@ -21,6 +21,7 @@ const ProjectDetails = ({ projects }) => {
             repo={project.repo}
             index={index}
             backLink="/projects" // 這裡可以設置回到專案列表的鏈接
+            backLabel="Projects"
         />
     );
 };

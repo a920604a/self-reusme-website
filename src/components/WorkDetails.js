@@ -17,7 +17,8 @@ const WorkDetails = ({ works }) => {
             description={Array.isArray(work.description) ? work.description : [work.description]}
             tags={[]}
             index={index}
-            backLink="/work-experience" // 這裡可以設置回到工作經歷列表的鏈接
+            backLink="/" // 這裡可以設置回到工作經歷列表的鏈接
+            backLabel="Works"
         />
     );
 };

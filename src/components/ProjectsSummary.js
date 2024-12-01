@@ -78,7 +78,7 @@ const ProjectsSummary = ({ projects }) => {
                   color="blue.500"
                   _hover={{ textDecoration: "underline" }}
                 >
-                  View Details
+                  View Details →
                 </ChakraLink>
               </Box>
             </Flex>

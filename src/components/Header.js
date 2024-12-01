@@ -7,7 +7,7 @@ import {
   faMedium,
   faStackOverflow,
 } from "@fortawesome/free-brands-svg-icons";
-import { Box, HStack, Heading } from "@chakra-ui/react";
+import { Box, HStack } from "@chakra-ui/react";
 import { Link } from "react-router-dom"; // 使用 React Router 的 Link
 
 const socials = [
@@ -34,6 +34,7 @@ const socials = [
 ];
 
 const Header = () => {
+  // 處理滾動到特定區域的功能
   const handleClick = (anchor) => () => {
     const id = `${anchor}-section`;
     const element = document.getElementById(id);
@@ -51,13 +52,12 @@ const Header = () => {
     </a>
   ));
 
-  // Handle header show/hide animation depending on the scroll direction
+  // 處理 Header 顯示/隱藏的動畫
   const headerRef = useRef(null);
 
   useEffect(() => {
     let prevScrollPos = window.scrollY;
 
-    // Handle scroll events
     const handleScroll = () => {
       const currScrollPos = window.scrollY;
       const currHeaderElement = headerRef.current;
@@ -75,10 +75,8 @@ const Header = () => {
       prevScrollPos = currScrollPos;
     };
 
-    // Set up listeners for the scroll event
     window.addEventListener("scroll", handleScroll);
 
-    // Remove listeners for the scroll event
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
@@ -125,7 +123,7 @@ const Header = () => {
               <Link to="/#skills" onClick={handleClick('skills')} className="nav-item">
                 Skills
               </Link>
-              <Link to="/#Education" onClick={handleClick('education')} className="nav-item">
+              <Link to="/#education" onClick={handleClick('education')} className="nav-item">
                 Education
               </Link>
             </HStack>
