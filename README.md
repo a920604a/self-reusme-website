@@ -9,6 +9,5 @@ npm start
 
 ### 3. Build
 ```shell
-npm run build
-npm run deploy
+npm run build && npm run deploy
 ```

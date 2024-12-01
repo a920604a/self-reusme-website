@@ -1,45 +1,84 @@
 import React from "react";
-import { Box, Heading, Text, VStack, Flex, Link as ChakraLink, Badge } from "@chakra-ui/react";
+import {
+    Box,
+    Heading,
+    Text,
+    VStack,
+    Flex,
+    Link as ChakraLink,
+    Badge,
+    useColorModeValue,
+    Stack,
+    Avatar,
+} from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 const WorksSummary = ({ works }) => {
+    const boxBg = useColorModeValue("white", "gray.800");
+    const boxHoverBg = useColorModeValue("blue.50", "gray.700");
+    const textColor = useColorModeValue("gray.600", "gray.300");
+    const headingColor = useColorModeValue("blue.700", "blue.300");
+
     return (
         <section>
-            <Heading as="h2" size="lg" mb={6} id="work-experience-section" textAlign="center">
+            <Heading
+                as="h2"
+                size="lg"
+                mb={8}
+                id="work-experience-section"
+                textAlign="center"
+                color={headingColor}
+                fontWeight="bold"
+            >
                 Work Experience
             </Heading>
-            <VStack spacing={6}>
+            <VStack spacing={8} align="stretch">
                 {works.map((work, index) => (
                     <Box
                         key={index}
                         borderWidth="1px"
                         borderRadius="lg"
-                        p={5}
-                        boxShadow="lg"
-                        transition="all 0.2s"
-                        _hover={{ boxShadow: "2xl", bg: "blue.50" }}
+                        p={8}
+                        bg={boxBg}
+                        boxShadow="xl"
+                        transition="all 0.3s"
+                        _hover={{
+                            boxShadow: "2xl",
+                            bg: boxHoverBg,
+                            transform: "translateY(-8px)",
+                        }}
                         w="100%"
+                        mt={6}
                     >
-                        <Flex justifyContent="space-between" alignItems="center" mb={2}>
-                            <Heading size="md" mb={2} color="blue.700">
-                                {work.company}
-                            </Heading>
-                            <Badge colorScheme="green" fontSize="0.9em">
+                        <Flex justifyContent="space-between" alignItems="center" mb={4}>
+                            <Flex alignItems="center">
+                                {/* 公司名稱和公司Logo */}
+                                <Avatar size="sm" name={work.company} src={work.logo} mr={4} />
+                                <Heading size="md" color={headingColor} fontWeight="semibold">
+                                    {work.company}
+                                </Heading>
+                            </Flex>
+                            <Badge colorScheme="green" fontSize="0.9em" fontWeight="bold">
                                 {work.years}
                             </Badge>
                         </Flex>
-                        <Text fontSize="lg" mb={4} fontStyle="italic" color="gray.600">
+                        <Text fontSize="lg" fontStyle="italic" color={textColor} mb={4}>
                             {work.position}
                         </Text>
-                        <ChakraLink
-                            as={Link}
-                            to={`/works/${index}`}
-                            color="blue.500"
-                            fontWeight="bold"
-                            _hover={{ textDecoration: "underline" }}
-                        >
-                            View Details →
-                        </ChakraLink>
+                        <Text fontSize="sm" color={textColor} mb={4}>
+                            {work.description}
+                        </Text>
+                        <Stack direction="row" spacing={4}>
+                            <ChakraLink
+                                as={Link}
+                                to={`/works/${index}`}
+                                color="blue.500"
+                                fontWeight="bold"
+                                _hover={{ textDecoration: "underline", color: "blue.700" }}
+                            >
+                                View Details →
+                            </ChakraLink>
+                        </Stack>
                     </Box>
                 ))}
             </VStack>

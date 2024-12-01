@@ -1,4 +1,4 @@
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Box } from "@chakra-ui/react";
 import Header from "./components/Header";
 import LandingSection from "./components/LandingSection";
 import ProjectsSummary from "./components/ProjectsSummary";
@@ -16,6 +16,7 @@ import Alert from "./components/Alert";
 import axios from 'axios';
 import React, { Component } from 'react';
 import { HashRouter as Router, Route, Routes, Link } from "react-router-dom";
+
 
 
 class App extends Component {
@@ -96,6 +97,7 @@ class App extends Component {
                       />
                       {/* <ProjectsSummary projects={recommendedProjects} /> */}
                       <ProjectsCarousel projects={recommendedProjects} />
+                      {/* <Box height="50px" /> 這行代碼可以調整空白的高度 */}
                       <WorksSummary works={data.works} />
                       <SkillSection
                         skills={data.skills}
