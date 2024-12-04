@@ -95,7 +95,7 @@ const ProjectsCarousel = ({ projects }) => {
                                     {/* 連結區塊 */}
                                     <ChakraLink
                                         as={Link}
-                                        to={`/projects/${index}`}
+                                        to={`/projects/${project.id}`}
                                         color="blue.500"
                                         fontWeight="bold"
                                         _hover={{
