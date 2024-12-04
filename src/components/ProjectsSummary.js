@@ -18,19 +18,20 @@ import { Link, useNavigate } from "react-router-dom";
 const ProjectsSummary = ({ projects }) => {
   const navigate = useNavigate(); // 使用 useNavigate 來導航
 
-  const handleBoxClick = (index) => {
-    navigate(`/projects/${index}`); // 當點擊時導航到對應的專案詳情頁
+
+  const handleBoxClick = (id) => {
+    navigate(`/projects/${id}`); // 導航到專案詳情頁，基於唯一的 id
   };
 
   return (
     <section>
-      <Heading as="h2" size="lg" mb={6} id="project-section">
+      <Heading as="h2" size="lg" mb={6} id="projects-section">
         Projects
       </Heading>
       <Stack spacing={6}>
-        {projects.map((project, index) => (
+        {projects.map((project) => (
           <Box
-            key={index}
+            key={project.id}
             borderWidth="1px"
             borderRadius="lg"
             p={6}
@@ -39,7 +40,7 @@ const ProjectsSummary = ({ projects }) => {
             color="black"
             _hover={{ boxShadow: "md", bg: "gray.100" }}
             cursor="pointer" // 改變游標樣式，提示用戶這是可點擊的
-            onClick={() => handleBoxClick(index)} // 點擊時觸發導航
+            onClick={() => handleBoxClick(project.id)} // 點擊時觸發導航
 
           >
             <Flex direction={{ base: "column", md: "row" }} spacing={6}>
@@ -74,7 +75,7 @@ const ProjectsSummary = ({ projects }) => {
 
                 <ChakraLink
                   as={Link}
-                  to={`/projects/${index}`}
+                  to={`/projects/${project.id}`}
                   color="blue.500"
                   _hover={{ textDecoration: "underline" }}
                 >

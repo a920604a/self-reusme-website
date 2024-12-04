@@ -11,14 +11,18 @@ import {
     Stack,
     Avatar,
 } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const WorksSummary = ({ works }) => {
     const boxBg = useColorModeValue("white", "gray.800");
     const boxHoverBg = useColorModeValue("blue.50", "gray.700");
     const textColor = useColorModeValue("gray.600", "gray.300");
     const headingColor = useColorModeValue("blue.700", "blue.300");
+    const navigate = useNavigate(); // 使用 useNavigate 來導航
 
+    const handleBoxClick = (id) => {
+        navigate(`/works/${id}`); // 導航到專案詳情頁，基於唯一的 id
+    };
     return (
         <section>
             <Heading
@@ -47,6 +51,9 @@ const WorksSummary = ({ works }) => {
                             bg: boxHoverBg,
                             transform: "translateY(-8px)",
                         }}
+                        cursor="pointer" // 改變游標樣式，提示用戶這是可點擊的
+                        onClick={() => handleBoxClick(work.id)} // 點擊時觸發導航
+
                         w="100%"
                         mt={6}
                     >

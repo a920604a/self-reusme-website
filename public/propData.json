@@ -5,6 +5,7 @@
     "resumeDownload": "https://www.cakeresume.com/s--u3LSKmee4rN_6b6EolDWyQ--/a920604a",
     "projects": [
         {
+            "id": "amd",
             "title": "Age-related Macular Degeneration Rehabilitation Platform",
             "date": "2022/11-2024/05",
             "category": "Work",
@@ -23,6 +24,7 @@
             "reference": ""
         },
         {
+            "id": "rm2",
             "title": "Remote meeting prototype",
             "date": "2022/9-2023/11",
             "category": "Work",
@@ -39,6 +41,7 @@
             "reference": ""
         },
         {
+            "id": "molrx",
             "title": "協助開發藥物開發使用者互動",
             "date": "2024/05-Now",
             "category": "Work",
@@ -50,6 +53,7 @@
             "reference": ""
         },
         {
+            "id": "backup-start-up",
             "title": "自動化備份每月stand-up 紀錄",
             "date": "2024/10-Now",
             "category": "Misc",
@@ -62,10 +66,12 @@
             "description": [
                 "使用airflow 與 write python code as dag"
             ],
+            "image": "backup-startup.png",
             "reference": "",
             "repo": "https://github.com/a920604a/monthly-report"
         },
         {
+            "id": "remote_meeting_system",
             "title": "遠端會議系統",
             "date": "2022/12-2023/01",
             "category": "Misc",
@@ -83,6 +89,7 @@
             "reference": ""
         },
         {
+            "id": "aie",
             "title": "智能缺陷檢測平台",
             "date": "2020/08-2021/01",
             "category": "Work",
@@ -99,9 +106,10 @@
                 "這些優化措施使我們成功實現客戶需求，提供高品質解決方案。"
             ],
             "image": "aie_adc_train.png",
-            "reference": ""
+            "reference": "http://www.aie-tec.com/?products_26/"
         },
         {
+            "id": "clothes",
             "title": "顏色穿搭推薦",
             "date": "2024/06-2024/07",
             "category": "Side Project",
@@ -118,6 +126,7 @@
             "repo": "https://github.com/a920604a/clothes-outfit"
         },
         {
+            "id": "stock",
             "title": "股票個人看板",
             "date": "2024/06-Now",
             "category": "Side Project",
@@ -130,6 +139,7 @@
             "reference": ""
         },
         {
+            "id": "daodao",
             "title": "協助教育網站資料重構",
             "date": "2024/10-Now",
             "category": "Side Project",
@@ -139,11 +149,12 @@
                 "PostgreSQL",
                 "Docker"
             ],
-            "reference": ""
+            "reference": "https://www.daoedu.tw/"
         }
     ],
     "works": [
         {
+            "id": "oomii",
             "company": "Oomii Inc.",
             "position": "Senior Software Engineer",
             "years": "2024/05-Now",
@@ -153,6 +164,7 @@
             ]
         },
         {
+            "id": "oomii",
             "company": "Oomii Inc.",
             "position": "Software Engineer",
             "years": "2022/05-2024/05",
@@ -165,6 +177,7 @@
             ]
         },
         {
+            "id": "aics",
             "company": "Asus Inc. AICS department",
             "position": "System Engineer",
             "years": "2021/11-2022/02",
@@ -173,6 +186,7 @@
             ]
         },
         {
+            "id": "aie",
             "company": "安智聯科技有限公司",
             "position": "Algorithm Development Engineer",
             "years": "2020/04-2021/03",
@@ -183,6 +197,7 @@
             ]
         },
         {
+            "id": "foxconn",
             "company": "FOXCONN",
             "position": "Software Engineer Intern",
             "years": "2018/07-2018/10",

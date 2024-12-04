@@ -21,9 +21,10 @@ import { Link, useNavigate } from "react-router-dom";
 const ProjectsCarousel = ({ projects }) => {
     const navigate = useNavigate(); // 使用 useNavigate 來導航
 
-    const handleBoxClick = (index) => {
-        navigate(`/projects/${index}`); // 當點擊時導航到對應的專案詳情頁
+    const handleBoxClick = (id) => {
+        navigate(`/projects/${id}`); // 導航到專案詳情頁，基於唯一的 id
     };
+
 
 
     // 斷點控制背景和陰影
@@ -32,7 +33,7 @@ const ProjectsCarousel = ({ projects }) => {
 
     return (
         <section>
-            <Heading as="h2" size="lg" mb={6} id="project-section" textAlign="center" color="blue.700">
+            <Heading as="h2" size="lg" mb={6} id="projects-section" textAlign="center" color="blue.700">
                 Projects
             </Heading>
             {/* 添加 Box 來增加底部留白 */}
@@ -53,7 +54,8 @@ const ProjectsCarousel = ({ projects }) => {
                             }}
                             transition="all 0.3s ease"
                             cursor="pointer" // 改變游標樣式，提示用戶這是可點擊的
-                            onClick={() => handleBoxClick(index)} // 點擊時觸發導航
+                            onClick={() => handleBoxClick(project.id)}
+                        // 點擊時觸發導航
                         >
                             {/* 使用 Flex 布局讓圖片在左邊 */}
                             <Flex direction={{ base: "column", md: "row" }} align="center" justify="space-between">

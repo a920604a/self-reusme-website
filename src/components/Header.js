@@ -7,8 +7,8 @@ import {
   faMedium,
   faStackOverflow,
 } from "@fortawesome/free-brands-svg-icons";
-import { Box, HStack } from "@chakra-ui/react";
-import { Link } from "react-router-dom"; // 使用 React Router 的 Link
+import { Box, HStack, Button } from "@chakra-ui/react";
+import { Link, useNavigate } from "react-router-dom";
 
 const socials = [
   {
@@ -34,7 +34,6 @@ const socials = [
 ];
 
 const Header = () => {
-  // 處理滾動到特定區域的功能
   const handleClick = (anchor) => () => {
     const id = `${anchor}-section`;
     const element = document.getElementById(id);
@@ -96,21 +95,14 @@ const Header = () => {
       ref={headerRef}
     >
       <Box color="white" maxWidth="1280px" margin="0 auto">
-        <HStack
-          px={16}
-          py={4}
-          justifyContent="space-between"
-          alignItems="center"
-        >
+        <HStack px={16} py={4} justifyContent="space-between" alignItems="center">
           <nav>
             <HStack spacing={8}>
-              {/* Add social media links based on the `socials` data */}
               {listItem}
             </HStack>
           </nav>
           <nav>
             <HStack spacing={8}>
-              {/* Replace <a> with Link to handle routing within React */}
               <Link to="/" onClick={handleClick('')} className="nav-item">
                 Home
               </Link>

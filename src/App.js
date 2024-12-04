@@ -1,3 +1,4 @@
+import React, { Component } from "react";
 import { ChakraProvider, Box } from "@chakra-ui/react";
 import Header from "./components/Header";
 import LandingSection from "./components/LandingSection";
@@ -11,35 +12,43 @@ import WorksSummary from "./components/WorksSummary";
 import WorkDetails from "./components/WorkDetails";
 import EducationSection from "./components/EducationSection";
 import Footer from "./components/Footer";
+import axios from "axios";
 import { AlertProvider } from "./context/alertContext";
-import Alert from "./components/Alert";
-import axios from 'axios';
-import React, { Component } from 'react';
-import { HashRouter as Router, Route, Routes, Link } from "react-router-dom";
-
-
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 
 class App extends Component {
+
   state = {
     data: null,
   };
-
   componentDidMount() {
+    this.loadData();
+  }
+
+
+  loadData = () => {
     axios
       .get("./propData.json")
       .then((response) => {
-        console.log("Received data:", response.data); // 檢查獲取的資料
+        console.log("Received data:", response.data);
 
-        const projects = response.data.projects;
 
-        // 計算 recommendedProjects
+        const works = response.data.works.map((work, index) => ({
+          ...work,
+          id: work.id || `${work.title.toLowerCase().replace(/\s+/g, "-")}-${index}`,
+        }));
+
+        const projects = response.data.projects.map((project, index) => ({
+          ...project,
+          id: project.id || `${project.title.toLowerCase().replace(/\s+/g, "-")}-${index}`,
+        }));
         const recommendedProjects = projects
           .filter(
-            (project) => project.category === "Work" || project.category === "Misc"
+            (project) => project.category === "Work" || project.category === "Misc",
           )
           .sort((a, b) => {
             const parseDate = (dateStr) => {
-              if (!dateStr) return new Date(0); // 如果日期不存在，返回最小值
+              if (!dateStr) return new Date(0);
               if (dateStr.includes("Now")) {
                 const [startDate] = dateStr.split("-");
                 return new Date(startDate.trim());
@@ -50,84 +59,82 @@ class App extends Component {
 
             const dateA = parseDate(a.date);
             const dateB = parseDate(b.date);
-            return dateB - dateA; // 最近日期排在前面
+            return dateB - dateA;
           })
-          .slice(0, 5); // 僅取前 5 個
+          .slice(0, 5);
 
-        // 更新 state
         this.setState({
           data: {
             ...response.data,
-            recommendedProjects, // 新增推薦項目
+            recommendedProjects,
+            works,
           },
         });
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }
+  };
+
+
 
   render() {
+
     const { data } = this.state;
-
     if (!data) {
-      return <div>Loading...</div>; // 或者其他載入中的內容
+      return <div>Loading...</div>; // 或者返回一個更友好的等待界面
     }
-    // 從 state 中讀取 recommendedProjects
-    const { recommendedProjects } = data;
-
-    console.log("Recommended Projects:", recommendedProjects);
-
     return (
       <ChakraProvider>
-        <AlertProvider>
-          <main>
-            <Router>
-              <Header />
-              <Routes>
-                <Route
-                  path="/"
-                  element={
-                    <main>
-                      <LandingSection
-                        greeting={data.greeting}
-                        bio1={data.bio1}
-                        bio2={data.bio2}
-                        resumeDownload={data.resumeDownload}
-                      />
-                      {/* <ProjectsSummary projects={recommendedProjects} /> */}
-                      <ProjectsCarousel projects={recommendedProjects} />
-                      {/* <Box height="50px" /> 這行代碼可以調整空白的高度 */}
-                      <WorksSummary works={data.works} />
-                      <SkillSection
-                        skills={data.skills}
-                        tools={data.tools}
-                        frameworks={data.frameworks}
-                      />
-                      <EducationSection educationData={data.educationData} />
-                      <Footer />
-                    </main>
-                  }
-                />
-                <Route
-                  path="/projects"
-                  element={<ProjectsPage projects={data.projects} />}
-                />
-                <Route
-                  path="/projects/:index"
-                  element={<ProjectDetails projects={data.projects} />}
-                />
-                <Route
-                  path="/works/:index"
-                  element={<WorkDetails works={data.works} />}
-                />
-              </Routes>
-            </Router>
-          </main>
-        </AlertProvider>
+        <main>
+          <Router>
+            <Header />
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <main>
+                    <LandingSection
+                      greeting={data.greeting}
+                      bio1={data.bio1}
+                      bio2={data.bio2}
+                      resumeDownload={data.resumeDownload}
+                    />
+                    <ProjectsCarousel projects={data.recommendedProjects} />
+                    {/* <ProjectsSummary projects={data.recommendedProjects} /> */}
+                    <WorksSummary works={data.works} />
+                    <SkillSection
+                      skills={data.skills}
+                      tools={data.tools}
+                      frameworks={data.frameworks}
+                    />
+                    <EducationSection educationData={data.educationData} />
+                    <Footer data={data} fileName="CV.json" />
+                  </main>
+
+                }
+              />
+              <Route
+                path="/projects"
+                element={
+                  <ProjectsPage projects={data.projects} />
+                }
+              />
+              <Route
+                path="/projects/:id"
+                element={<ProjectDetails projects={data.projects} />}
+              />
+              <Route
+                path="/works/:id"
+                element={<WorkDetails works={data.works} />}
+              />
+            </Routes>
+          </Router>
+        </main>
       </ChakraProvider>
     );
   }
+
 }
 
 export default App;
