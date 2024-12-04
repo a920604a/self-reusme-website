@@ -19,11 +19,11 @@ import { Link, useNavigate } from "react-router-dom";
 
 
 const ProjectsCarousel = ({ projects }) => {
-    const navigate = useNavigate(); // 使用 useNavigate 來導航
+    // const navigate = useNavigate(); // 使用 useNavigate 來導航
 
-    const handleBoxClick = (id) => {
-        navigate(`/projects/${id}`); // 導航到專案詳情頁，基於唯一的 id
-    };
+    // const handleBoxClick = (id) => {
+    //     navigate(`/projects/${id}`); // 導航到專案詳情頁，基於唯一的 id
+    // };
 
 
 
@@ -53,8 +53,8 @@ const ProjectsCarousel = ({ projects }) => {
                                 transition: "all 0.3s ease",
                             }}
                             transition="all 0.3s ease"
-                            cursor="pointer" // 改變游標樣式，提示用戶這是可點擊的
-                            onClick={() => handleBoxClick(project.id)}
+                        // cursor="pointer" // 改變游標樣式，提示用戶這是可點擊的
+                        // onClick={() => handleBoxClick(project.id)}
                         // 點擊時觸發導航
                         >
                             {/* 使用 Flex 布局讓圖片在左邊 */}
