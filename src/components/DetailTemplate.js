@@ -98,19 +98,43 @@ const DetailTemplate = ({ title, subtitle, category, description, tags, image, r
 
 
             {/* 描述 */}
-            {description?.length ? (
-                <UnorderedList spacing={3} color="gray.800" fontSize="md" mb={6}>
-                    {description.map((item, index) => (
-                        <ListItem key={index} lineHeight="1.8">
-                            {item}
-                        </ListItem>
-                    ))}
-                </UnorderedList>
+            {description ? (
+                Array.isArray(description) ? (
+                    // 如果 description 是陣列，直接顯示為 bullet list
+                    <UnorderedList spacing={3} color="gray.800" fontSize="md" mb={6}>
+                        {description.map((item, index) => (
+                            <ListItem key={index} lineHeight="1.8">
+                                {item}
+                            </ListItem>
+                        ))}
+                    </UnorderedList>
+                ) : (
+                    // 如果 description 是物件，將 key 當作標題，value 當作內容並分割為多個項目
+                    Object.entries(description).map(([key, value], index) => (
+                        <div key={index}>
+                            <Text as="h2" fontSize="xl" fontWeight="bold" mt={6} mb={3} textAlign="center" color="blue.500">
+                                {key.toUpperCase()}
+                            </Text>
+
+                            <UnorderedList spacing={3} color="gray.800" fontSize="md" mb={6}>
+                                {value.split('。').map((item, idx) => (
+                                    item.trim() && (
+                                        <ListItem key={idx} lineHeight="1.8">
+                                            {item.trim()}
+                                        </ListItem>
+                                    )
+                                ))}
+                            </UnorderedList>
+                        </div>
+                    ))
+                )
             ) : (
                 <Text fontSize="md" color="gray.600" textAlign="center">
                     No description available.
                 </Text>
             )}
+
+
 
             <Divider my={6} />
 

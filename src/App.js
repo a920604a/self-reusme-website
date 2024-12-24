@@ -35,7 +35,7 @@ class App extends Component {
 
         const works = response.data.works.map((work, index) => ({
           ...work,
-          id: work.id || `${work.title.toLowerCase().replace(/\s+/g, "-")}-${index}`,
+          id: work.id || `${(work.position || "unknown").toLowerCase().replace(/\s+/g, "-")}-${index}`,
         }));
 
         const projects = response.data.projects.map((project, index) => ({
@@ -71,9 +71,11 @@ class App extends Component {
           },
         });
       })
+
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
+
   };
 
 
