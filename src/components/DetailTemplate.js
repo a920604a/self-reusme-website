@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Heading,
@@ -12,11 +12,18 @@ import {
     UnorderedList,
     ListItem,
     Icon,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalBody,
+    ModalCloseButton,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { FaExternalLinkAlt, FaArrowLeft } from "react-icons/fa";
 
 const DetailTemplate = ({ title, subtitle, category, description, tags, image, reference, repo, index, backLink, backLabel }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false); // 管理模態框狀態
+
     return (
         <Box
             p={8}
@@ -52,18 +59,43 @@ const DetailTemplate = ({ title, subtitle, category, description, tags, image, r
 
             {/* 圖片 */}
             {image && (
-                <Image
-                    src={`images/portfolio/${image}`}
-                    alt={title}
-                    objectFit="cover"
-                    borderRadius="md"
-                    height="300px"
-                    width="100%"
-                    mb={6}
-                    boxShadow="sm"
-                    _hover={{ transform: "scale(1.02)", transition: "0.2s" }}
-                />
+                <>
+                    <Image
+                        src={`images/portfolio/${image}`}
+                        alt={title}
+                        objectFit="cover"
+                        borderRadius="md"
+                        height="300px"
+                        width="100%"
+                        mb={6}
+                        boxShadow="sm"
+                        _hover={{ transform: "scale(1.02)", transition: "0.2s", cursor: "pointer" }}
+                        onClick={() => setIsModalOpen(true)} // 點擊開啟模態框
+                    />
+
+                    {/* 放大圖片的模態框 */}
+                    <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="full">
+                        <ModalOverlay />
+                        <ModalContent bg="blackAlpha.900"> {/* 背景色設定為黑色 */}
+                            <ModalCloseButton color="white" /> {/* 按鈕改為白色 */}
+                            <ModalBody p={0}> {/* 移除 padding */}
+                                <Image
+                                    src={`images/portfolio/${image}`}
+                                    alt={title}
+                                    objectFit="contain"
+                                    width="100vw" /* 全螢幕寬度 */
+                                    height="100vh" /* 全螢幕高度 */
+                                    borderRadius="none"
+                                    boxShadow="none"
+                                    m="auto"
+                                />
+                            </ModalBody>
+                        </ModalContent>
+                    </Modal>
+
+                </>
             )}
+
 
             {/* 描述 */}
             {description?.length ? (
