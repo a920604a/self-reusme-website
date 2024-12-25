@@ -20,7 +20,10 @@ const ProjectsPage = ({ projects }) => {
             ? project.tags.some((tag) => tag.toLowerCase().includes(tagsFilter.toLowerCase()))
             : true;
 
-        return matchesCategory && matchesTags;
+        const hasDescription = project.description && Object.keys(project.description).length > 0; // 檢查描述是否為空物件
+
+
+        return matchesCategory && matchesTags && hasDescription;
     });
 
     // 排序项目
