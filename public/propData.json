@@ -94,7 +94,7 @@
             "description": {
                 "background": "協助公司主管在國外進行遠端會議時，提升會議系統的穩定性與可用性。",
                 "challenge": "升級會議室設備，支持遠端視訊會議，並確保跨設備的兼容性與無縫連接。",
-                "solution": "編寫 Shell Script 與 Udev 規則，定義自動化服務，提升顯示效果和解析度調整，使用 Uptime Kuma 監控與告警功能，確保穩定運行。",
+                "solution": "編寫 Shell Script 與 Udev 規則，定義自動化服務，提升顯示效果和解析度調整，使用 Uptime Kuma 黑箱監控與告警，確保穩定運行。",
                 "outcome": "成功升級會議系統，使主管能輕鬆參與遠端會議，提升了整體會議效率和工作流的穩定性。"
             },
             "image": "meeting_room.png",
@@ -180,7 +180,7 @@
             "description": [
                 "協助團隊開發 VR 應用程式及藥物分子模擬，使用 Unity 框架和 C# 開發蛋白質視覺應用程式，實現分子結構的三維視覺化。",
                 "與 Python 工程師合作，解決跨領域技術挑戰，並與設計部門和 PM 密切協作，確保專案順利推進。",
-                "架設並管理各項伺服器服務，確保系統穩定運行，並使用 Prometheus、Grafana 和 AlertManager 建立伺服器監控系統，主動偵測並處理問題。"
+                "使用 Prometheus、Grafana 和 AlertManager 建立白箱監控系統，收集指標數據、可視化性能趨勢，並配置告警通知以實現問題的即時響應與處理。"
             ]
         },
         {
