@@ -145,6 +145,28 @@
             "note": "設計了基於顏色搭配的穿搭推薦演算法，將不同風格（如簡約、工業、復古等）對應到一組顏色，根據用戶需求精準提供個性化建議，提升穿搭決策的效率"
         },
         {
+            "id": "monitoring_system",
+            "title": "監控系統建設",
+            "date": "2024/09 - Now",
+            "category": "Misc",
+            "tags": [
+                "Prometheus",
+                "Grafana",
+                "AlertManager",
+                "Docker"
+            ],
+            "description": {
+                "background": "為了提升系統的可觀察性，開發了一套基於 Prometheus、Grafana 和 AlertManager 的白箱監控系統，用於收集應用和基礎設施的指標數據，並進行實時性能監控。",
+                "challenge": "如何有效地收集並可視化大量來自不同服務和系統的監控數據，並在發現異常時及時觸發告警，減少故障處理的延遲。",
+                "solution": "使用 Prometheus 作為數據收集工具，將各服務的指標數據進行采集，並將其推送到 Grafana 進行可視化。Grafana 提供了實時性能數據的儀表板，幫助團隊快速定位性能問題。使用 AlertManager 配置多種告警規則，當指標超過預設閾值時，自動發送通知至相關人員，實現問題的即時響應。",
+                "outcome": "成功搭建了可擴展且高效的監控系統，提升了團隊的問題響應速度，減少了故障時間，並大大提升了系統運行的穩定性。"
+            },
+            "image": "monitoring_system.png",
+            "reference": "",
+            "repo": "https://github.com/a920604a/monitoring_system",
+            "note": "透過 Prometheus 與 Grafana 的集成，實現了指標數據的全面監控，並結合 AlertManager 配置高效的告警系統，有效提升了運維的管理效率。"
+        },
+        {
             "id": "stock",
             "title": "股票個人看板",
             "date": "2024/06-Now",
