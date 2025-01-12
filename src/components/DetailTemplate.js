@@ -23,6 +23,45 @@ import { FaExternalLinkAlt, FaArrowLeft } from "react-icons/fa";
 
 const DetailTemplate = ({ title, subtitle, category, description, tags, image, reference, repo, index, backLink, backLabel }) => {
     const [isModalOpen, setIsModalOpen] = useState(false); // 管理模態框狀態
+    const renderRepoLinks = (repo) => {
+        if (Array.isArray(repo)) {
+            return repo.map((item, index) => {
+                // 确保 item 是一个对象，并遍历其键值对
+                return Object.entries(item).map(([key, value], idx) => (
+                    <ChakraLink
+                        key={`${index}-${idx}`}
+                        href={value} // 使用 value 作为链接的 URL
+                        isExternal
+                        color="blue.500"
+                        fontWeight="bold"
+                        display="flex"
+                        alignItems="center"
+                        gap={2}
+                        _hover={{ textDecoration: "underline", color: "blue.700" }}
+                    >
+                        <Icon as={FaExternalLinkAlt} /> {key}
+                    </ChakraLink>
+                ));
+            });
+        } else if (typeof repo === 'string') {
+            return (
+                <ChakraLink
+                    href={repo}
+                    isExternal
+                    color="blue.500"
+                    fontWeight="bold"
+                    display="flex"
+                    alignItems="center"
+                    gap={2}
+                    _hover={{ textDecoration: "underline", color: "blue.700" }}
+                >
+                    <Icon as={FaExternalLinkAlt} /> View Repository
+                </ChakraLink>
+            );
+        }
+        return null;
+    };
+
 
     return (
         <Box
@@ -155,20 +194,42 @@ const DetailTemplate = ({ title, subtitle, category, description, tags, image, r
                     </ChakraLink>
                 )}
 
-                {repo && (
-                    <ChakraLink
-                        href={repo}
-                        isExternal
-                        color="blue.500"
-                        fontWeight="bold"
-                        display="flex"
-                        alignItems="center"
-                        gap={2}
-                        _hover={{ textDecoration: "underline", color: "blue.700" }}
-                    >
-                        <Icon as={FaExternalLinkAlt} /> View Repository
-                    </ChakraLink>
-                )}
+                {/* {repo && (
+                    Array.isArray(repo) ? (
+                        // 如果是陣列，遍歷生成多個連結
+                        repo.map((repoItem, index) => (
+                            <ChakraLink
+                                key={index}
+                                href={repoItem}
+                                isExternal
+                                color="blue.500"
+                                fontWeight="bold"
+                                display="flex"
+                                alignItems="center"
+                                gap={2}
+                                _hover={{ textDecoration: "underline", color: "blue.700" }}
+                            >
+                                <Icon as={FaExternalLinkAlt} /> View Repository {repo.length > 1 ? `#${index + 1}` : ""}
+                            </ChakraLink>
+                        ))
+                    ) : (
+                        // 如果是單個字串，直接顯示一個連結
+                        <ChakraLink
+                            href={repo}
+                            isExternal
+                            color="blue.500"
+                            fontWeight="bold"
+                            display="flex"
+                            alignItems="center"
+                            gap={2}
+                            _hover={{ textDecoration: "underline", color: "blue.700" }}
+                        >
+                            <Icon as={FaExternalLinkAlt} /> View Repository
+                        </ChakraLink>
+                    )
+                )} */}
+
+                {renderRepoLinks(repo)}
             </Stack>
 
             <Divider my={6} />

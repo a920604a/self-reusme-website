@@ -16,13 +16,20 @@
             ],
             "description": {
                 "background": "為了幫助黃斑部病變患者訓練第二視野中心，進而重新看清世界。",
-                "challenge": "開發了一個復健平台，並整合同事的瞳孔追蹤演算法，同時需要確保系統能高效處理和儲存訓練數據。",
+                "challenge": "開發了一個復健平台，並整合同事的瞳孔追蹤演算法，同時需要確保系統能高效處理和儲存訓練資料。",
                 "solution": "使用 Unity 開發前端介面，實現了視覺訓練平台的直觀操作界面。整合瞳孔追蹤算法於後端邏輯中。搭配 SQLite 實現資料存儲，保證了患者訓練資料的高效存取與管理。利用 System Service 實現特定功能，確保平台的穩定運行。使用 Ansible 作為自動化部署工具，實現了平台的快速、可重複性部署，大幅提高了部署過程的效率和穩定性。",
                 "outcome": "成功開發出一個不僅僅是工具的復健平台，更為醫療團隊提供創新解決方案，大幅提升了患者的復健效率。"
             },
             "image": "amd_flow_chart.png",
             "reference": "",
-            "repo": "https://github.com/a920604a/amd-deploy"
+            "repo": [
+                {
+                    "amd-QA": "https://github.com/a920604a/amd-deploy"
+                },
+                {
+                    "amd-deploy": "https://github.com/a920604a/amd-integration"
+                }
+            ]
         },
         {
             "id": "rm2",
