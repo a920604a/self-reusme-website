@@ -202,7 +202,7 @@
     ],
     "works": [
         {
-            "id": "oomii",
+            "id": "oomii-02",
             "company": "Oomii Inc.",
             "position": "Senior Software Engineer",
             "years": "2024/05-Now",
@@ -213,7 +213,7 @@
             ]
         },
         {
-            "id": "oomii",
+            "id": "oomii-01",
             "company": "Oomii Inc.",
             "position": "Software Engineer",
             "years": "2022/05-2024/05",
