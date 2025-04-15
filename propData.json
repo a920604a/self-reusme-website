@@ -188,16 +188,58 @@
         },
         {
             "id": "daodao",
-            "title": "協助教育網站資料重構",
+            "title": "協助教育網站資料重構與後端功能開發",
             "date": "2024/10-Now",
             "category": "Side Project",
-            "description": {},
+            "description": {
+                "background":"為了提升教育平台的資料架構與後端功能，專案致力於重構現有系統，並引入現代化的技術堆疊，以提高系統的可維護性與擴展性。​",
+                "challenge":"需要整合多種資料來源，並確保資料的一致性與準確性，同時建立一個高效且可擴展的後端系統，以支援未來的功能擴展。​",
+                "solution":"​採用 Python、PostgreSQL、MongoDB、Docker、FastAPI、Airflow 及 Ansible 等技術，建立一個模組化的後端架構。使用 Airflow 進行資料處理流程的自動化，確保資料的一致性與準確性。​",
+                "outcome":"成功建立了一個高效且可擴展的後端系統，提升了系統的穩定性與可維護性，並為未來的功能擴展打下堅實的基礎。"
+            },
             "tags": [
                 "Python",
                 "PostgreSQL",
+                "MongoDB",
+                "Docker",
+                "FastAPI",
+                "Airflow",
+                "Ansible"
+            ],
+            "reference": "https://www.daoedu.tw/",
+            "repo": [
+                {
+                    "daodao-storage：​負責處理平台的資料儲存與管理，確保資料的安全性與可用性。": "https://github.com/daodaoedu/daodao-storage"
+                },
+                {
+                    "daodao-ai-backend：​提供 AI 功能的後端支援，包括模型的部署與 API 的開發。": "https://github.com/daodaoedu/daodao-ai-backend"
+                },
+                {
+                    "daodao-ai-etl：​實現資料的提取、轉換與載入（ETL）流程，使用 Airflow 進行排程與監控。": "https://github.com/a920604a/daodao-etl"
+                }
+            ]
+        },
+        {
+            "id": "de",
+            "title": "GitHub 資料分析管線",
+            "date": "2025/03-Now",
+            "category": "Side Project",
+            "description": {
+                "background":"​為了分析 GitHub 上的開源開發趨勢，專案建立了一個資料分析管線，從 GitHub 擷取資料，經過處理後，儲存至 Google BigQuery，並使用 Streamlit 建立可視化的分析介面。​",
+                "challenge":"需要處理大量的 GitHub 資料，並確保資料的準確性與一致性，同時建立一個可擴展的資料處理流程，以支援未來的分析需求。​",
+                "solution":"​使用 Terraform 進行基礎設施的自動化部署，並結合 PySpark 與 Airflow 進行大規模資料的處理與排程，確保資料分析的效率與準確性。​",
+                "outcome":"​成功建立了一個完整的資料分析管線，提供了對 GitHub 上開源開發趨勢的深入洞察，並為未來的資料分析需求提供了堅實的基礎。"
+            },
+            "tags": [
+                "Terraform",
+                "Google Cloud Storage",
+                "Google Big Query",
+                "Streamlit",
+                "PySpark",
+                "Airflow",
                 "Docker"
             ],
-            "reference": "https://www.daoedu.tw/"
+            "reference": "https://github.com/a920604a/data-engineering-zoomcamp-2025/blob/main/project/Readme_zh.md"
         }
     ],
     "works": [
