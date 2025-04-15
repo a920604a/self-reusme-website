@@ -19,7 +19,7 @@ jobs:
           node-version: '18'  # 依你的專案需求調整
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build and Deploy
         env:
