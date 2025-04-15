@@ -212,10 +212,10 @@
                     "daodao-storage：​負責處理平台的資料儲存與管理，確保資料的安全性與可用性。": "https://github.com/daodaoedu/daodao-storage"
                 },
                 {
-                    "daodao-ai-backend：​提供 AI 功能的後端支援，包括模型的部署與 API 的開發。": "https://github.com/daodaoedu/daodao-ai-backend"
+                    "daodao-ai-backend：​提供 AI 功能的後端支援，以及 API 的開發。": "https://github.com/daodaoedu/daodao-ai-backend"
                 },
                 {
-                    "daodao-ai-etl：​實現資料的提取、轉換與載入（ETL）流程，使用 Airflow 進行排程與監控。": "https://github.com/a920604a/daodao-etl"
+                    "daodao-ai-etl：​實現資料的提取、轉換與載入（ETL）流程，使用 Airflow 進行排程。": "https://github.com/a920604a/daodao-etl"
                 }
             ]
         },
@@ -239,6 +239,7 @@
                 "Airflow",
                 "Docker"
             ],
+            "image": "de-streamlit.png",
             "reference": "https://github.com/a920604a/data-engineering-zoomcamp-2025/blob/main/project/Readme_zh.md"
         }
     ],
