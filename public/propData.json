@@ -239,6 +239,7 @@
                 "Airflow",
                 "Docker"
             ],
+            "image": "de-streamlit.png",
             "reference": "https://github.com/a920604a/data-engineering-zoomcamp-2025/blob/main/project/Readme_zh.md"
         }
     ],
