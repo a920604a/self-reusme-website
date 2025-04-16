@@ -37,7 +37,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "deploy": "gh-pages -d build -u 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>' -r https://$GH_TOKEN@github.com/a920604a/self-reusme-website.git"
+    "deploy": "gh-pages -d build"  
   },
   "browserslist": {
     "production": [
