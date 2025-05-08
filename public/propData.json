@@ -255,7 +255,7 @@
                 "background": "為了提供一個簡單且現代化的電子書閱讀體驗，開發了一個基於 React 的電子書閱讀器。",
                 "challenge": "在無後端伺服器的情況下，實現電子書的上傳、儲存與管理功能。",
                 "solution": "利用 Supabase 提供的後端即服務（BaaS）功能，實現使用者認證與資料儲存，並結合 React 建立前端介面。",
-                "outcome": "成功開發出一個支援電子書上傳與閱讀的應用程式，並部署至 GitHub Pages，供使用者體驗。"
+                "outcome": "成功開發出一個支援電子書上傳與閱讀的應用程式，並部署至 GitHub Pages，供使用者閱讀。"
                 },
             "image": "",
             "reference": "https://a920604a.github.io/ebook-reader/",
