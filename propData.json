@@ -174,17 +174,61 @@
             "note": "透過 Prometheus 與 Grafana 的集成，實現了指標數據的全面監控，並結合 AlertManager 配置高效的告警系統，有效提升了運維的管理效率。"
         },
         {
-            "id": "stock",
-            "title": "股票個人看板",
-            "date": "2024/06-Now",
+            "id": "stock-mlops",
+            "title": "Stock Price Prediction with MLOps",
+            "date": "2025/06-2025/08",
             "category": "Side Project",
-            "description": {},
             "tags": [
                 "Python",
+                "FastAPI",
+                "Prefect",
+                "MLflow",
+                "Docker",
                 "PostgreSQL",
-                "Docker"
+                "ClickHouse",
+                "Prometheus",
+                "Grafana",
+                "GitHub Actions",
+                "Celery"
             ],
-            "reference": ""
+            "description": {
+                "background": "建立一個可持續維運的股票價格預測系統，實作完整 MLOps 流程，涵蓋資料收集、特徵工程、模型訓練、部署與監控。",
+                "challenge": "如何將模型訓練與預測流程自動化，同時解決模型漂移偵測、效能監控與版本管理問題。",
+                "solution": "設計端到端 MLOps 架構：使用 Prefect 自動化 ETL 與訓練流程，Celery 處理異步任務（如模型訓練與批次預測），MLflow 管理實驗與模型版本，FastAPI 提供預測與訓練 API，Evidently + Prometheus + Grafana 進行資料與模型效能監控。系統以 Docker Compose 部署，結合 GitHub Actions 實現 CI/CD，確保可重現性與可維運性。",
+                "outcome": "成功建立可持續維運的股票預測平台，使用者可查詢即時預測與歷史趨勢，開發者可透過監控與自動 retraining 提升模型準確度與系統穩定性。"
+            },
+            "image": "https://github.com/a920604a/stock-mlops/blob/main/demo/dataset.png",
+            "reference": "",
+            "repo": "https://github.com/a920604a/stock-mlops"
+        },
+        {
+            "id": "llm-assistance",
+            "title": "AI Research Curator with RAG",
+            "date": "2025/07-Now",
+            "category": "Side Project",
+            "tags": [
+                "Python",
+                "FastAPI",
+                "Prefect",
+                "PostgreSQL",
+                "Qdrant",
+                "minIO",
+                "LangChain",
+                "React",
+                "RAG",
+                "LLM",
+                "Ollama",
+                "Celery"
+            ],
+            "description": {
+                "background": "每日有數百篇 AI 論文發表，研究人員難以及時追蹤。本專案打造生產級 RAG 系統，作為 AI 論文策展與研究助理。",
+                "challenge": "需要自動化處理大量 PDF、結構化解析、支援高效檢索與語意查詢，並整合 LLM 提供即時問答，同時兼顧隱私與可觀察性。",
+                "solution": "構建完整 RAG 系統：Prefect 排程自動下載 arXiv PDF，Celery 處理非同步任務（PDF 解析、向量索引更新等），解析內容並儲存至 PostgreSQL、Qdrant、MinIO；利用 Qdrant（BM25 + 向量檢索）支援混合搜尋；RAG 管線整合查詢擴展、檢索與 Prompt 模板；LLM 可切換 Ollama 或 OpenAI；FastAPI 提供後端 API，React 負責前端互動。",
+                "outcome": "成功建立研究人員可用的 AI 論文策展平台，自動化蒐集每日 arXiv 新論文，支援關鍵字與語意搜尋及 LLM 問答，系統具備生產等級的可維運性與可觀察性。"
+            },
+            "image": "",
+            "reference": "",
+            "repo": "https://github.com/a920604a/llm-assistant"
         },
         {
             "id": "daodao",
@@ -192,10 +236,10 @@
             "date": "2024/10-Now",
             "category": "Side Project",
             "description": {
-                "background":"為了提升教育平台的資料架構與後端功能，專案致力於重構現有系統，並引入現代化的技術堆疊，以提高系統的可維護性與擴展性。​",
-                "challenge":"需要整合多種資料來源，並確保資料的一致性與準確性，同時建立一個高效且可擴展的後端系統，以支援未來的功能擴展。​",
-                "solution":"​採用 Python、PostgreSQL、MongoDB、Docker、FastAPI、Airflow 及 Ansible 等技術，建立一個模組化的後端架構。使用 Airflow 進行資料處理流程的自動化，確保資料的一致性與準確性。​",
-                "outcome":"成功建立了一個高效且可擴展的後端系統，提升了系統的穩定性與可維護性，並為未來的功能擴展打下堅實的基礎。"
+                "background": "為了提升教育平台的資料架構與後端功能，專案致力於重構現有系統，並引入現代化的技術堆疊，以提高系統的可維護性與擴展性。​",
+                "challenge": "需要整合多種資料來源，並確保資料的一致性與準確性，同時建立一個高效且可擴展的後端系統，以支援未來的功能擴展。​",
+                "solution": "​採用 Python、PostgreSQL、MongoDB、Docker、FastAPI、Airflow 及 Ansible 等技術，建立一個模組化的後端架構。使用 Airflow 進行資料處理流程的自動化，確保資料的一致性與準確性。​",
+                "outcome": "成功建立了一個高效且可擴展的後端系統，提升了系統的穩定性與可維護性，並為未來的功能擴展打下堅實的基礎。"
             },
             "tags": [
                 "Python",
@@ -225,10 +269,10 @@
             "date": "2025/03-Now",
             "category": "Side Project",
             "description": {
-                "background":"​為了分析 GitHub 上的開源開發趨勢，專案建立了一個資料分析管線，從 GitHub 擷取資料，經過處理後，儲存至 Google BigQuery，並使用 Streamlit 建立可視化的分析介面。​",
-                "challenge":"需要處理大量的 GitHub 資料，並確保資料的準確性與一致性，同時建立一個可擴展的資料處理流程，以支援未來的分析需求。​",
-                "solution":"​使用 Terraform 進行基礎設施的自動化部署，並結合 PySpark 與 Airflow 進行大規模資料的處理與排程，確保資料分析的效率與準確性。​",
-                "outcome":"​成功建立了一個完整的資料分析管線，提供了對 GitHub 上開源開發趨勢的深入洞察，並為未來的資料分析需求提供了堅實的基礎。"
+                "background": "​為了分析 GitHub 上的開源開發趨勢，專案建立了一個資料分析管線，從 GitHub 擷取資料，經過處理後，儲存至 Google BigQuery，並使用 Streamlit 建立可視化的分析介面。​",
+                "challenge": "需要處理大量的 GitHub 資料，並確保資料的準確性與一致性，同時建立一個可擴展的資料處理流程，以支援未來的分析需求。​",
+                "solution": "​使用 Terraform 進行基礎設施的自動化部署，並結合 PySpark 與 Airflow 進行大規模資料的處理與排程，確保資料分析的效率與準確性。​",
+                "outcome": "​成功建立了一個完整的資料分析管線，提供了對 GitHub 上開源開發趨勢的深入洞察，並為未來的資料分析需求提供了堅實的基礎。"
             },
             "tags": [
                 "Terraform",
@@ -256,7 +300,7 @@
                 "challenge": "在無後端伺服器的情況下，實現電子書的上傳、儲存與管理功能。",
                 "solution": "利用 Supabase 提供的後端即服務（BaaS）功能，實現使用者認證與資料儲存，並結合 React 建立前端介面。",
                 "outcome": "成功開發出一個支援電子書上傳與閱讀的應用程式，並部署至 GitHub Pages，供使用者閱讀。"
-                },
+            },
             "image": "",
             "reference": "https://a920604a.github.io/ebook-reader/",
             "repo": "https://github.com/a920604a/ebook-reader",
