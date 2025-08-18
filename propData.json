@@ -197,7 +197,7 @@
                 "solution": "設計端到端 MLOps 架構：使用 Prefect 自動化 ETL 與訓練流程，Celery 處理異步任務（如模型訓練與批次預測），MLflow 管理實驗與模型版本，FastAPI 提供預測與訓練 API，Evidently + Prometheus + Grafana 進行資料與模型效能監控。系統以 Docker Compose 部署，結合 GitHub Actions 實現 CI/CD，確保可重現性與可維運性。",
                 "outcome": "成功建立可持續維運的股票預測平台，使用者可查詢即時預測與歷史趨勢，開發者可透過監控與自動 retraining 提升模型準確度與系統穩定性。"
             },
-            "image": "https://github.com/a920604a/stock-mlops/blob/main/demo/dataset.png",
+            "image": "stock-mlops.png",
             "reference": "",
             "repo": "https://github.com/a920604a/stock-mlops"
         },
@@ -226,7 +226,7 @@
                 "solution": "構建完整 RAG 系統：Prefect 排程自動下載 arXiv PDF，Celery 處理非同步任務（PDF 解析、向量索引更新等），解析內容並儲存至 PostgreSQL、Qdrant、MinIO；利用 Qdrant（BM25 + 向量檢索）支援混合搜尋；RAG 管線整合查詢擴展、檢索與 Prompt 模板；LLM 可切換 Ollama 或 OpenAI；FastAPI 提供後端 API，React 負責前端互動。",
                 "outcome": "成功建立研究人員可用的 AI 論文策展平台，自動化蒐集每日 arXiv 新論文，支援關鍵字與語意搜尋及 LLM 問答，系統具備生產等級的可維運性與可觀察性。"
             },
-            "image": "",
+            "image": "llm-assistance.png",
             "reference": "",
             "repo": "https://github.com/a920604a/llm-assistant"
         },
