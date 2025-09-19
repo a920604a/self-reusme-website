@@ -218,13 +218,12 @@
                 "RAG",
                 "LLM",
                 "Ollama",
-                "Celery"
             ],
             "description": {
                 "background": "每日有數百篇 AI 論文發表，研究人員難以及時追蹤。本專案打造生產級 RAG 系統，作為 AI 論文策展與研究助理。",
-                "challenge": "需要自動化處理大量 PDF、結構化解析、支援高效檢索與語意查詢，並整合 LLM 提供即時問答，同時兼顧隱私與可觀察性。",
-                "solution": "構建完整 RAG 系統：Prefect 排程自動下載 arXiv PDF，Celery 處理非同步任務（PDF 解析、向量索引更新等），解析內容並儲存至 PostgreSQL、Qdrant、MinIO；利用 Qdrant（BM25 + 向量檢索）支援混合搜尋；RAG 管線整合查詢擴展、檢索與 Prompt 模板；LLM 可切換 Ollama 或 OpenAI；FastAPI 提供後端 API，React 負責前端互動。",
-                "outcome": "成功建立研究人員可用的 AI 論文策展平台，自動化蒐集每日 arXiv 新論文，支援關鍵字與語意搜尋及 LLM 問答，系統具備生產等級的可維運性與可觀察性。"
+                "challenge": "需要每天自動抓取 arXiv 論文，支援中英文查詢、向量檢索、RAG Q&A 流程，並整合前後端 Dashboard、Email 訂閱與可擴充的微服務架構。",
+                "solution": "使用 FastAPI 建立後端 API，Prefect 3 實作每日論文抓取與資料處理 Pipeline，PDF 與 Metadata 儲存在 MinIO / PostgreSQL，文字向量儲存在 Qdrant。前端使用 React + Vite 打造 Dashboard，提供查詢歷史、統計分析與訂閱管理。整個系統使用 Docker Compose 容器化，並透過 Prometheus + Grafana 進行監控，設計考量可擴充性與後續 CI/CD 流程。",
+                "outcome": "成功開發出一套可重現、可擴充的 AI 知識檢索平台，支援每日自動抓取論文、RAG Q&A、雙語查詢與訂閱功能，提供使用者與開發者完整的論文檢索與管理體驗。"
             },
             "image": "llm-assistance.png",
             "reference": "",
