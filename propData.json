@@ -217,7 +217,7 @@
                 "React",
                 "RAG",
                 "LLM",
-                "Ollama",
+                "Ollama"
             ],
             "description": {
                 "background": "每日有數百篇 AI 論文發表，研究人員難以及時追蹤。本專案打造生產級 RAG 系統，作為 AI 論文策展與研究助理。",
