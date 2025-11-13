@@ -69,6 +69,31 @@
             "reference": ""
         },
         {
+            "id": "gcp-livekit-infra",
+            "title": "Low Vision Glasses: GCP 雲端架構與實時 AI 語音助理平台部署",
+            "date": "2025/10-Now",
+            "category": "Work",
+            "tags": [
+                "GCP",
+                "Ansible",
+                "Cloud Architecture",
+                "FastAPI",
+            ],
+            "description": {
+                "background": "為了設計並實作一個高效、安全且具成本效益的雲端架構，以支援低視力眼鏡的即時 AI 語音助理服務 。",
+                "challenge": "挑戰在於整合複雜的 WebRTC 媒體流與 AI Agent 任務調度，同時必須在 GCP 上建立**高度隔離與精準控制的網路環境** (VPC/Firewall)，以滿足即時通訊服務對 UDP 埠開放與資安的雙重要求。",
+                "solution": "我主要貢獻在於**雲端基礎設施即程式碼 (IaC)** 和**多層次解耦架構**的設計與實施 。具體方案如下：",
+                "core_contributions": [
+                    "**分層架構設計：** 採用分層解耦模式，核心元件包括處理串流的 **WebRTC Server**、負責認證的 **Token Service (FastAPI)**，以及調度智慧問答的 **AI Agent 後端** 。",
+                    "**GCP 網路安全實踐：** 在 GCP 上執行了嚴謹的 IaaS 部署，包括**清理預設 VPC** 以確保網路隔離，並配置了精確的 **Ingress/Egress 防火牆規則**，特別針對 LiveKit 所需的 **UDP 50000-60000 媒體流**、API 專用端口 **TCP 8000** 及外部 LLM 服務的 **Egress TCP 443 限制** [7-9]。",
+                    "**資料與認證系統：** 實作雙重儲存系統，使用 **Cloud SQL (PostgreSQL)** 儲存結構化資料，並搭配 **Qdrant** 進行向量資料儲存以支援 RAG。整合 **Firebase Auth** 並設計 **JWT-based 無狀態授權**機制，確保 Client 端能安全取得 LiveKit Token [10-13]。",
+                    "**Ansible 自動化部署 (IaC)：** 利用 **Ansible Playbook** 實現 LiveKit 環境的**一鍵部署**。自動化範疇涵蓋了系統設定（如 Docker 安裝）、程式碼同步 (`sync_backend_repo.yml`) 和 Docker 容器的建置，顯著提升了部署速度和穩定性 [14]。",
+                    "**資源與成本優化：** 針對開發測試環境，規劃 VM 規格 (如 WebRTC Server 使用 **e2-medium: 2vCPU, 4GB RAM**)，並採用**「逐步上雲」**策略，估算基礎服務總成本約為 **NTS 2000**，實現成本效益最大化。"
+                ],
+                "outcome": "成功在 GCP 上建立了企業級別、高度安全的雲端基礎設施，具備實時媒體串流處理能力和 LLM Agent 的整合框架 。該架構不僅滿足了服務功能要求，同時遵循了**最小權限原則**配置 IAM 角色，確保了系統的穩固運行。"
+            },
+        },
+        {
             "id": "backup-start-up",
             "title": "自動化備份每月stand-up 紀錄",
             "date": "2024/10-Now",
