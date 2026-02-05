@@ -340,10 +340,10 @@
             "years": "2024/05-Now",
             "description": [
                 "與 Python 工程師合作，解決跨領域技術挑戰，並與設計部門和 PM 密切協作，確保專案順利推進。",
-                "使用 Prometheus、Grafana 和 AlertManager 建立白箱監控系統，收集指標數據、可視化性能趨勢，並配置告警通知以實現問題的即時響應與處理。",
-                "協助團隊開發 VR 應用程式及藥物分子模擬，使用 Unity 框架和 C# 開發蛋白質視覺應用程式，實現分子結構的三維視覺化。",
+                "利用 Prometheus、Grafana 和 AlertManager 建構了監控系統，確保系統健康狀況的即時可見性，並能主動回應突發事件。",
+                "使用 Unity 和 C# 開發了適用於 PCVR 環境的 VR 應用和分子模擬工具，並以 Meta Quest 3 為例進行了展示，顯著提升了研究視覺化效果和互動式使用者體驗。",
                 "負責即時 AI 語音助理專案的雲端架構與系統整合，整合 WebRTC 串流服務、Token Service（FastAPI）與 AI Agent 後端。",
-                "規劃 GCP 雲端與資安設定，並以 Ansible 實作自動化部署，提升多環境部署一致性與系統穩定性。"
+                "主導了即時 AI 語音助理的雲端架構和集成，包括 WebRTC、FastAPI 令牌服務和 AI 代理後端；實施了安全的 GCP 基礎設施，並使用 Ansible 實現了多環境部署的自動化。"
             ]
         },
         {
