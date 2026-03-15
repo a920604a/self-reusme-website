@@ -40,7 +40,7 @@ const Footer = ({ data, fileName = "default.json" }) => {
         >
           {/* 文字部分 */}
           <Text fontSize="sm" color="gray.400">
-            Yu-AN, CHEN • © 2024
+            Yu-AN, CHEN • © {new Date().getFullYear()}
           </Text>
 
           {/* 按鈕部分 */}
@@ -49,6 +49,7 @@ const Footer = ({ data, fileName = "default.json" }) => {
             colorScheme="teal"
             size="sm"
             variant="outline"
+            aria-label="Download portfolio data as JSON"
           >
             Download JSON
           </Button>

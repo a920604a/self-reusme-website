@@ -5,7 +5,7 @@ import ProjectsSummary from "./ProjectsSummary";
 const ProjectsPage = ({ projects }) => {
     const [tagsFilter, setTagsFilter] = useState(""); // 篩選標籤
     const [categoryFilter, setCategoryFilter] = useState(""); // 篩選類別
-    const [sort, setSort] = useState(""); // 排序條件
+    const [sort, setSort] = useState("date DESC"); // 排序條件
 
     const categories = [...new Set(projects.map((project) => project.category))];
     const allTags = [...new Set(projects.flatMap((project) => project.tags))];
@@ -39,7 +39,7 @@ const ProjectsPage = ({ projects }) => {
         if (sort === "date ASC") {
             return parseDate(a.date) - parseDate(b.date); // 升序排列
         }
-        if (sort === "date DEC") {
+        if (sort === "date DESC") {
             return parseDate(b.date) - parseDate(a.date); // 降序排列
         }
         if (sort === "title") {
@@ -113,7 +113,7 @@ const ProjectsPage = ({ projects }) => {
                     排序方式
                 </Text>
                 <Select
-                    value={sort || "date ASC"}
+                    value={sort}
                     onChange={(e) => setSort(e.target.value)}
                     bg="gray.50"
                     borderColor="gray.300"
@@ -127,7 +127,7 @@ const ProjectsPage = ({ projects }) => {
                     transition="all 0.3s ease"
                 >
                     <option value="date ASC">日期升序</option>
-                    <option value="date DEC">日期降序</option>
+                    <option value="date DESC">日期降序</option>
                     <option value="title">標題排序</option>
                 </Select>
                 </Flex>

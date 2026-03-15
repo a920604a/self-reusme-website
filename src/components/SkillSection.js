@@ -15,8 +15,6 @@ import {
 import Card from "./Card";
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import { Stack, HStack, VStack } from '@chakra-ui/react';
-import { FaGitAlt, FaDocker, FaReact } from "react-icons/fa";
-import { SiDjango } from "react-icons/si";
 
 const Icons = {
     skills: {
@@ -53,9 +51,9 @@ const SkillSection = ({ skills, tools, frameworks }) => {
                 Skills
             </Heading>
 
-            <HStack spacing={30} justify="space-between" align="flex-start" w="100%">
+            <Flex direction={{ base: "column", md: "row" }} gap={8} justify="space-between" align="flex-start" w="100%">
                 {/* Skills */}
-                <VStack spacing={3} align="flex-start" w="30%">
+                <VStack spacing={3} align="flex-start" w={{ base: "100%", md: "30%" }}>
                     <Heading as="h3" size="sm" color="black" mb={2}>
                         Skills
                     </Heading>
@@ -76,7 +74,6 @@ const SkillSection = ({ skills, tools, frameworks }) => {
                                         colorScheme="teal"
                                         size="sm"
                                         hasStripe
-                                        isAnimated
                                         w="100%"
                                     />
                                     <Text color="gray.400" fontSize="xs">
@@ -89,7 +86,7 @@ const SkillSection = ({ skills, tools, frameworks }) => {
                 </VStack>
 
                 {/* Tools */}
-                <VStack spacing={3} align="flex-start" w="30%">
+                <VStack spacing={3} align="flex-start" w={{ base: "100%", md: "30%" }}>
                     <Heading as="h3" size="sm" color="black" mb={2}>
                         Tools
                     </Heading>
@@ -110,7 +107,7 @@ const SkillSection = ({ skills, tools, frameworks }) => {
                 </VStack>
 
                 {/* Frameworks */}
-                <VStack spacing={3} align="flex-start" w="30%">
+                <VStack spacing={3} align="flex-start" w={{ base: "100%", md: "30%" }}>
                     <Heading as="h3" size="sm" color="black" mb={2}>
                         Frameworks
                     </Heading>
@@ -129,7 +126,7 @@ const SkillSection = ({ skills, tools, frameworks }) => {
                         ))}
                     </List>
                 </VStack>
-            </HStack>
+            </Flex>
         </FullScreenSection>
     );
 };

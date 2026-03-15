@@ -107,7 +107,7 @@ const WorksSummary = ({ works }) => {
                                 <Stack direction="row" spacing={4}>
                                     <ChakraLink
                                         as={Link}
-                                        to={`/works/${index}`}
+                                        to={`/works/${work.id}`}
                                         color="blue.500"
                                         fontWeight="bold"
                                         _hover={{ textDecoration: "underline", color: "blue.700" }}
@@ -157,7 +157,7 @@ const WorksSummary = ({ works }) => {
                                     <Stack direction="row" spacing={4}>
                                         <ChakraLink
                                             as={Link}
-                                            to={`/works/${index}`}
+                                            to={`/works/${work.id}`}
                                             color="blue.500"
                                             fontWeight="bold"
                                             _hover={{ textDecoration: "underline", color: "blue.700" }}

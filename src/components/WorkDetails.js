@@ -1,5 +1,6 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { Box, Text, Heading, Button } from "@chakra-ui/react";
 import DetailTemplate from "./DetailTemplate"; // 引入共用模板
 
 const WorkDetails = ({ works }) => {
@@ -7,7 +8,13 @@ const WorkDetails = ({ works }) => {
     const work = works.find((work) => work.id === id); // 根據 id 找到對應的 work
 
     if (!work) {
-        return <Text>Work experience not found.</Text>; // 如果找不到工作資料，顯示錯誤訊息
+        return (
+            <Box textAlign="center" mt="120px" px={8}>
+                <Heading size="lg" mb={4}>404 - Work Not Found</Heading>
+                <Text color="gray.500" mb={6}>The work experience you're looking for doesn't exist.</Text>
+                <Button as={Link} to="/" colorScheme="teal">Back to Home</Button>
+            </Box>
+        );
     }
 
     return (

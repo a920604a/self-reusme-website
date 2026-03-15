@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Spinner, Center } from "@chakra-ui/react";
 import Header from "./components/Header";
 import LandingSection from "./components/LandingSection";
 import ProjectsSummary from "./components/ProjectsSummary";
@@ -84,7 +84,13 @@ class App extends Component {
 
     const { data } = this.state;
     if (!data) {
-      return <div>Loading...</div>; // 或者返回一個更友好的等待界面
+      return (
+        <ChakraProvider>
+          <Center minH="100vh" bg="#18181b">
+            <Spinner size="xl" color="teal.400" thickness="4px" speed="0.65s" />
+          </Center>
+        </ChakraProvider>
+      );
     }
     return (
       <ChakraProvider>

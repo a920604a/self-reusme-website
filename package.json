@@ -15,6 +15,8 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "ajv": "^8.12.0",
+    "ajv-keywords": "^5.1.0",
     "axios": "^1.7.8",
     "formik": "^2.2.9",
     "framer-motion": "^7.3.5",
@@ -25,12 +27,9 @@
     "react-router-dom": "^6.28.0",
     "react-scripts": "^5.0.1",
     "react-slick": "^0.30.2",
-    "react-wordcloud": "^1.2.7",
     "slick-carousel": "^1.8.1",
     "web-vitals": "^2.1.4",
-    "yup": "^0.32.11",
-    "ajv": "^8.12.0",
-    "ajv-keywords": "^5.1.0"
+    "yup": "^0.32.11"
   },
   "homepage": "https://a920604a.github.io/self-reusme-website",
   "scripts": {

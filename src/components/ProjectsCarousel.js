@@ -12,7 +12,8 @@ const sliderSettings = {
     slidesToShow: 1, // 每次顯示一個內容
     slidesToScroll: 1, // 每次滾動一個內容
     autoplay: true, // 自動播放
-    autoplaySpeed: 2000, // 每 2 秒切換
+    autoplaySpeed: 4000, // 每 4 秒切換
+    pauseOnHover: true, // hover 時暫停
     arrows: false, // 隱藏左右箭頭
 };
 import { Link, useNavigate } from "react-router-dom";
