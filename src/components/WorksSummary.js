@@ -77,14 +77,16 @@ const WorksSummary = ({ works }) => {
                                 boxShadow="xl"
                                 transition="all 0.3s"
                                 _hover={{
-                                    boxShadow: "2xl",
+                                    boxShadow: "lg",
                                     bg: boxHoverBg,
-                                    transform: "translateY(-8px) scale(1.05)", // 強調hover效果
+                                    transform: "translateY(-4px)",
                                 }}
                                 cursor="pointer"
                                 onClick={() => handleBoxClick(work.id)}
                                 w="100%"
                                 mt={6}
+                                borderLeft="3px solid"
+                                borderLeftColor="teal.400"
                             >
                                 <Flex justifyContent="space-between" alignItems="center" mb={4}>
                                     <Flex alignItems="center">
@@ -130,9 +132,9 @@ const WorksSummary = ({ works }) => {
                                     boxShadow="xl"
                                     transition="all 0.3s"
                                     _hover={{
-                                        boxShadow: "2xl",
+                                        boxShadow: "lg",
                                         bg: boxHoverBg,
-                                        transform: "translateY(-8px) scale(1.05)", // 強調hover效果
+                                        transform: "translateY(-4px)",
                                     }}
                                     cursor="pointer"
                                     onClick={() => handleBoxClick(work.id)}

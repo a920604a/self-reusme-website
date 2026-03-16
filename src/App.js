@@ -94,6 +94,7 @@ class App extends Component {
     }
     return (
       <ChakraProvider>
+        <AlertProvider>
         <main>
           <Router>
             <Header />
@@ -117,6 +118,7 @@ class App extends Component {
                       frameworks={data.frameworks}
                     />
                     <EducationSection educationData={data.educationData} />
+                    <ContactMeSection />
                     <Footer data={data} fileName="CV.json" />
                   </main>
 
@@ -139,6 +141,7 @@ class App extends Component {
             </Routes>
           </Router>
         </main>
+        </AlertProvider>
       </ChakraProvider>
     );
   }

@@ -1,60 +1,57 @@
 import React from "react";
-import {
-    Box,
-    VStack,
-    Heading,
-    Text,
-    SimpleGrid,
-    Icon,
-    useColorModeValue,
-} from "@chakra-ui/react";
+import { Box, VStack, Heading, Text, SimpleGrid, Icon } from "@chakra-ui/react";
 import { FaGraduationCap } from "react-icons/fa";
-import FullScreenSection from "./FullScreenSection";
 
 const EducationSection = ({ educationData }) => {
-    const cardBg = useColorModeValue("white", "gray.700");
-    const cardBorder = useColorModeValue("gray.200", "gray.600");
+  return (
+    <Box
+      as="section"
+      bg="#0d2137"
+      py={{ base: 12, md: 16 }}
+      px={{ base: 4, md: 8, lg: 16 }}
+    >
+      <Box maxW="1280px" mx="auto">
+        <Heading as="h2" size="lg" mb={2} id="education-section" textAlign="center" color="white" fontWeight={700}>
+          Education
+        </Heading>
+        <Text textAlign="center" color="whiteAlpha.600" mb={10} fontSize="sm">
+          Academic background
+        </Text>
 
-    return (
-        <FullScreenSection
-            backgroundColor="#14532d"
-            isdarkbackground="true"
-            p={8}
-            alignItems="flex-start"
-            spacing={8}
-        >
-            <Heading as="h1" id="education-section" color="white" mb={6}>
-                Education
-            </Heading>
-
-            <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} w="100%">
-                {educationData.map((item, index) => (
-                    <Box
-                        key={index}
-                        bg={cardBg}
-                        border="1px solid"
-                        borderColor={cardBorder}
-                        borderRadius="lg"
-                        p={6}
-                        shadow="md"
-                    >
-                        <VStack align="flex-start" spacing={4}>
-                            <Icon as={FaGraduationCap} color="teal.400" boxSize={6} />
-                            <Heading as="h3" size="md" color="teal.600">
-                                {item.school}
-                            </Heading>
-                            <Text fontWeight="bold" fontSize="sm" color="gray.500">
-                                {item.major}
-                            </Text>
-                            <Text fontSize="sm" color="gray.400">
-                                {item.duration}
-                            </Text>
-                        </VStack>
-                    </Box>
-                ))}
-            </SimpleGrid>
-        </FullScreenSection>
-    );
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5}>
+          {educationData.map((item, index) => (
+            <Box
+              key={index}
+              bg="whiteAlpha.100"
+              border="1px solid"
+              borderColor="whiteAlpha.200"
+              borderRadius="12px"
+              p={6}
+              transition="all 0.25s ease"
+              _hover={{
+                bg: "whiteAlpha.150",
+                borderColor: "teal.400",
+                transform: "translateY(-2px)",
+              }}
+            >
+              <VStack align="flex-start" spacing={3}>
+                <Icon as={FaGraduationCap} color="teal.300" boxSize={6} />
+                <Heading as="h3" size="md" color="white" fontWeight={700}>
+                  {item.school}
+                </Heading>
+                <Text fontWeight={600} fontSize="sm" color="teal.300">
+                  {item.major}
+                </Text>
+                <Text fontSize="sm" color="whiteAlpha.600">
+                  {item.duration}
+                </Text>
+              </VStack>
+            </Box>
+          ))}
+        </SimpleGrid>
+      </Box>
+    </Box>
+  );
 };
 
 export default EducationSection;

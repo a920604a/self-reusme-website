@@ -8,16 +8,16 @@ import {
   FormLabel,
   Heading,
   Input,
-  Select,
   Textarea,
   VStack,
+  Text,
+  SimpleGrid,
 } from "@chakra-ui/react";
-import * as Yup from 'yup';
-import FullScreenSection from "./FullScreenSection";
+import * as Yup from "yup";
 import useSubmit from "../hooks/useSubmit";
 import { useAlertContext } from "../context/alertContext";
 
-const LandingSection = () => {
+const ContactMeSection = () => {
   const { isLoading, response, submit } = useSubmit();
   const { onOpen } = useAlertContext();
 
@@ -25,90 +25,128 @@ const LandingSection = () => {
     initialValues: {
       firstName: "",
       email: "",
-      type: "",
-      comment: ""
+      subject: "",
+      comment: "",
     },
-    onSubmit: (values) => { submit("", values) },
+    onSubmit: (values) => { submit("", values); },
     validationSchema: Yup.object({
       firstName: Yup.string().required("Required"),
       email: Yup.string().email("Invalid email").required("Required"),
-      comment: Yup.string().min(25, "Must be at leat 25 characters").required("Required"),
+      comment: Yup.string().min(25, "Must be at least 25 characters").required("Required"),
     }),
   });
-
 
   useEffect(() => {
     if (response) {
       onOpen(response.type, response.message);
-
-      if (response.type === 'success') {
+      if (response.type === "success") {
         formik.resetForm();
       }
     }
-  }, [response])
+  }, [response]);
 
+  const inputStyles = {
+    bg: "whiteAlpha.100",
+    border: "1px solid",
+    borderColor: "whiteAlpha.300",
+    color: "white",
+    _placeholder: { color: "whiteAlpha.500" },
+    _hover: { borderColor: "teal.400" },
+    _focus: { borderColor: "teal.400", boxShadow: "0 0 0 1px #4fd1c5" },
+  };
 
   return (
-    <FullScreenSection
-      isdarkbackground="true"
-      backgroundColor="#512DA8"
-      py={16}
-      spacing={8}
+    <Box
+      as="section"
+      id="contactme-section"
+      bg="#1a1033"
+      py={{ base: 12, md: 16 }}
+      px={{ base: 4, md: 8, lg: 16 }}
     >
-      <VStack w="1024px" p={32} alignItems="flex-start">
-        <Heading as="h1" id="contactme-section">
-          Contact me
+      <Box maxW="680px" mx="auto">
+        <Heading as="h2" size="lg" mb={2} textAlign="center" color="white" fontWeight={700}>
+          Contact Me
         </Heading>
-        <Box p={6} rounded="md" w="100%">
+        <Text textAlign="center" color="whiteAlpha.600" mb={10} fontSize="sm">
+          Have a project in mind? Let's talk.
+        </Text>
+
+        <Box
+          bg="whiteAlpha.100"
+          border="1px solid"
+          borderColor="whiteAlpha.200"
+          borderRadius="16px"
+          p={{ base: 6, md: 8 }}
+        >
           <form onSubmit={formik.handleSubmit}>
-            <VStack spacing={4}>
-              <FormControl isInvalid={!!formik.errors.firstName && formik.touched.firstName}>
-                <FormLabel htmlFor="firstName">Name</FormLabel>
-                <Input
-                  id="firstName"
-                  name="firstName"
-                  {...formik.getFieldProps("firstName")}
-                />
-                <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
-              </FormControl>
-              <FormControl isInvalid={!!formik.errors.email && formik.touched.email}>
-                <FormLabel htmlFor="email">Email Address</FormLabel>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  {...formik.getFieldProps("email")}
-                />
-                <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
-              </FormControl>
-              <FormControl>
-                <FormLabel htmlFor="type">Subject</FormLabel>
+            <VStack spacing={5}>
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} w="100%">
+                <FormControl isInvalid={!!formik.errors.firstName && formik.touched.firstName}>
+                  <FormLabel color="whiteAlpha.800" fontSize="sm" fontWeight={600}>Name</FormLabel>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    placeholder="Your name"
+                    {...formik.getFieldProps("firstName")}
+                    {...inputStyles}
+                  />
+                  <FormErrorMessage fontSize="xs">{formik.errors.firstName}</FormErrorMessage>
+                </FormControl>
+                <FormControl isInvalid={!!formik.errors.email && formik.touched.email}>
+                  <FormLabel color="whiteAlpha.800" fontSize="sm" fontWeight={600}>Email</FormLabel>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    {...formik.getFieldProps("email")}
+                    {...inputStyles}
+                  />
+                  <FormErrorMessage fontSize="xs">{formik.errors.email}</FormErrorMessage>
+                </FormControl>
+              </SimpleGrid>
+
+              <FormControl w="100%">
+                <FormLabel color="whiteAlpha.800" fontSize="sm" fontWeight={600}>Subject</FormLabel>
                 <Input
                   id="subject"
                   name="subject"
-                  type="subject"
+                  placeholder="What's this about?"
                   {...formik.getFieldProps("subject")}
+                  {...inputStyles}
                 />
               </FormControl>
-              <FormControl isInvalid={!!formik.errors.comment && formik.touched.comment}>
-                <FormLabel htmlFor="comment">Your message</FormLabel>
+
+              <FormControl isInvalid={!!formik.errors.comment && formik.touched.comment} w="100%">
+                <FormLabel color="whiteAlpha.800" fontSize="sm" fontWeight={600}>Message</FormLabel>
                 <Textarea
                   id="comment"
                   name="comment"
-                  height={250}
+                  placeholder="Tell me about your project..."
+                  rows={6}
                   {...formik.getFieldProps("comment")}
+                  {...inputStyles}
+                  resize="vertical"
                 />
-                <FormErrorMessage>{formik.errors.comment}</FormErrorMessage>
+                <FormErrorMessage fontSize="xs">{formik.errors.comment}</FormErrorMessage>
               </FormControl>
-              <Button type="submit" colorScheme="purple" width="full" isLoading={isLoading}>
-                Submit
+
+              <Button
+                type="submit"
+                colorScheme="teal"
+                width="full"
+                size="lg"
+                isLoading={isLoading}
+                fontWeight={600}
+              >
+                Send Message
               </Button>
             </VStack>
           </form>
         </Box>
-      </VStack>
-    </FullScreenSection>
+      </Box>
+    </Box>
   );
 };
 
-export default LandingSection;
+export default ContactMeSection;
