@@ -1,19 +1,19 @@
 {
   "files": {
-    "main.css": "/self-reusme-website/static/css/main.5ed8dff8.css",
-    "main.js": "/self-reusme-website/static/js/main.ed35c8af.js",
+    "main.css": "/self-reusme-website/static/css/main.1006c412.css",
+    "main.js": "/self-reusme-website/static/js/main.b53437a4.js",
     "static/js/453.8927b4e4.chunk.js": "/self-reusme-website/static/js/453.8927b4e4.chunk.js",
     "static/media/slick.svg": "/self-reusme-website/static/media/slick.2630a3e3eab21c607e21.svg",
     "static/media/slick.eot": "/self-reusme-website/static/media/slick.a4e97f5a2a64f0ab1323.eot",
     "static/media/slick.ttf": "/self-reusme-website/static/media/slick.c94f7671dcc99dce43e2.ttf",
     "static/media/slick.woff": "/self-reusme-website/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/self-reusme-website/index.html",
-    "main.5ed8dff8.css.map": "/self-reusme-website/static/css/main.5ed8dff8.css.map",
-    "main.ed35c8af.js.map": "/self-reusme-website/static/js/main.ed35c8af.js.map",
+    "main.1006c412.css.map": "/self-reusme-website/static/css/main.1006c412.css.map",
+    "main.b53437a4.js.map": "/self-reusme-website/static/js/main.b53437a4.js.map",
     "453.8927b4e4.chunk.js.map": "/self-reusme-website/static/js/453.8927b4e4.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5ed8dff8.css",
-    "static/js/main.ed35c8af.js"
+    "static/css/main.1006c412.css",
+    "static/js/main.b53437a4.js"
   ]
 }
