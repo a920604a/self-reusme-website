@@ -45,16 +45,19 @@ const ProjectsSummary = ({ projects }) => {
           >
             <Flex direction={{ base: "column", md: "row" }} spacing={6}>
               {/* 左側圖片 */}
-              <Box flex="1" mb={{ base: 4, md: 0 }}>
-                <Image
-                  src={`images/portfolio/${project.image}`}
-                  alt={project.title}
-                  objectFit="cover"
-                  height="200px"
-                  width="100%"
-                  borderRadius="md"
-                />
-              </Box>
+              {project.image && (
+                <Box flex="1" mb={{ base: 4, md: 0 }} minW={{ md: "200px" }} maxW={{ md: "220px" }}>
+                  <Image
+                    src={`images/portfolio/${project.image}`}
+                    alt={project.title}
+                    objectFit="cover"
+                    height="160px"
+                    width="100%"
+                    borderRadius="md"
+                    fallback={<Box h="160px" bg="gray.100" borderRadius="md" />}
+                  />
+                </Box>
+              )}
 
               {/* 右側內容 */}
               <Box flex="2" ml={{ md: 6 }}> {/* 在中等及以上大小屏幕加入間距 */}
@@ -65,12 +68,17 @@ const ProjectsSummary = ({ projects }) => {
                   {project.title}
                 </Heading>
 
-                <Stack direction="row" spacing={2} mb={4}>
-                  {project.tags.map((tag, tagIndex) => (
+                <Stack direction="row" spacing={2} mb={4} flexWrap="wrap">
+                  {project.tags.slice(0, 6).map((tag, tagIndex) => (
                     <Tag key={tagIndex} colorScheme="teal" size="sm">
                       <TagLabel>{tag}</TagLabel>
                     </Tag>
                   ))}
+                  {project.tags.length > 6 && (
+                    <Tag colorScheme="gray" size="sm">
+                      <TagLabel>+{project.tags.length - 6}</TagLabel>
+                    </Tag>
+                  )}
                 </Stack>
 
                 <ChakraLink

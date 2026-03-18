@@ -21,6 +21,8 @@ import {
 import { Link } from "react-router-dom";
 import { FaExternalLinkAlt, FaArrowLeft } from "react-icons/fa";
 
+const stripMd = (text) => text.replace(/\*\*(.*?)\*\*/g, "$1");
+
 const DetailTemplate = ({ title, subtitle, category, description, tags, image, reference, repo, index, backLink, backLabel }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -144,21 +146,26 @@ const DetailTemplate = ({ title, subtitle, category, description, tags, image, r
             Array.isArray(description) ? (
               <UnorderedList spacing={3} color="gray.800" fontSize="md" mb={6}>
                 {description.map((item, i) => (
-                  <ListItem key={i} lineHeight="1.8">{item}</ListItem>
+                  <ListItem key={i} lineHeight="1.8">{stripMd(item)}</ListItem>
                 ))}
               </UnorderedList>
             ) : (
               Object.entries(description).map(([key, value], i) => (
                 <div key={i}>
                   <Text as="h2" fontSize="xl" fontWeight="bold" mt={6} mb={3} color="blue.500">
-                    {key.toUpperCase()}
+                    {key.replace(/_/g, " ").toUpperCase()}
                   </Text>
                   <UnorderedList spacing={3} color="gray.800" fontSize="md" mb={6}>
-                    {value.split("。").map((item, idx) =>
-                      item.trim() && (
-                        <ListItem key={idx} lineHeight="1.8">{item.trim()}</ListItem>
-                      )
-                    )}
+                    {Array.isArray(value)
+                      ? value.map((item, idx) => (
+                          <ListItem key={idx} lineHeight="1.8">{stripMd(String(item))}</ListItem>
+                        ))
+                      : String(value).split("。").map((item, idx) =>
+                          item.trim() && (
+                            <ListItem key={idx} lineHeight="1.8">{item.trim()}</ListItem>
+                          )
+                        )
+                    }
                   </UnorderedList>
                 </div>
               ))

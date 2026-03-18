@@ -10,6 +10,8 @@ const Icons = {
     "C#": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg",
     "C++": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg",
     JavaScript: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
+    SQL: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
+    "Shell Script": "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg",
   },
   tools: {
     Git: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
@@ -24,11 +26,16 @@ const Icons = {
     Ansible: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ansible/ansible-original.svg",
     Airflow: "https://raw.githubusercontent.com/devicons/devicon/refs/tags/v2.16.0/icons/apacheairflow/apacheairflow-original.svg",
     Ubuntu: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg",
+    Prometheus: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg",
+    Grafana: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg",
+    GCP: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg",
+    MLflow: "https://raw.githubusercontent.com/mlflow/mlflow/master/assets/logo.svg",
   },
   frameworks: {
     React: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
     FastAPI: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg",
     PyTorch: "https://pytorch.org/assets/images/pytorch-logo.png",
+    Flask: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg",
   },
 };
 
@@ -96,6 +103,7 @@ const SkillSection = ({ skills, tools, frameworks }) => {
                         w="16px"
                         h="16px"
                         objectFit="contain"
+                        fallback={<Box w="16px" h="16px" bg="gray.200" borderRadius="2px" />}
                       />
                       <Text fontSize="sm" fontWeight={600} color="gray.700">{skill.name}</Text>
                     </HStack>
