@@ -45,7 +45,7 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
     <VStack spacing={8} textAlign="center" maxW="680px" position="relative" zIndex={1}>
       <Avatar
         name="Yu-An Chen"
-        src="images/portfolio/profilepic.jpeg"
+        src="images/portfolio/_profile/profilepic.jpeg"
         size="2xl"
         border="3px solid"
         borderColor="teal.400"

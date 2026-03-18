@@ -27,7 +27,7 @@
                 ],
                 "outcome": "成功建立具即時串流能力且符合企業級資安要求的雲端架構，確保系統穩定運行並具備良好擴展彈性。"
             },
-            "image": "gcp-livekit-infra.png",
+            "image": "gcp-livekit-infra/arch.png",
             "reference": ""
         },
         {
@@ -56,7 +56,7 @@
                 "solution": "設計端到端 MLOps 架構：使用 Prefect 自動化 ETL 與訓練流程，Celery 處理異步任務（如模型訓練與批次預測），MLflow 管理實驗與模型版本，FastAPI 提供預測與訓練 API，Evidently + Prometheus + Grafana 進行資料與模型效能監控。系統以 Docker Compose 部署，結合 GitHub Actions 實現 CI/CD，確保可重現性與可維運性。",
                 "outcome": "成功建立可持續維運的股票預測平台，使用者可查詢即時預測與歷史趨勢，開發者可透過監控與自動 retraining 提升模型準確度與系統穩定性。"
             },
-            "image": "stock-mlops.png",
+            "image": "stock-mlops/arch.png",
             "reference": "",
             "repo": "https://github.com/a920604a/stock-mlops"
         },
@@ -84,7 +84,7 @@
                 "solution": "使用 FastAPI 建立後端 API，Prefect 3 實作每日論文抓取與資料處理 Pipeline，PDF 與 Metadata 儲存在 MinIO / PostgreSQL，文字向量儲存在 Qdrant。前端使用 React + Vite 打造 Dashboard，提供查詢歷史、統計分析與訂閱管理。整個系統使用 Docker Compose 容器化，並透過 Prometheus + Grafana 進行監控，設計考量可擴充性與後續 CI/CD 流程。",
                 "outcome": "成功開發出一套可重現、可擴充的 AI 知識檢索平台，支援每日自動抓取論文、RAG Q&A、雙語查詢與訂閱功能，提供使用者與開發者完整的論文檢索與管理體驗。"
             },
-            "image": "llm-assistance.png",
+            "image": "llm-assistance/arch.png",
             "reference": "",
             "repo": "https://github.com/a920604a/llm-assistant"
         },
@@ -109,7 +109,7 @@
                 "dbt",
                 "Docker"
             ],
-            "image": "de-streamlit.png",
+            "image": "de/streamlit.png",
             "reference": "https://github.com/a920604a/data-engineering-zoomcamp/blob/main/project/Readme_zh.md",
             "repo": "https://github.com/a920604a/data-engineering-zoomcamp"
         },
@@ -130,7 +130,7 @@
                 "solution": "使用 Prometheus 作為數據收集工具，將各服務的指標數據進行采集，並將其推送到 Grafana 進行可視化。Grafana 提供了實時性能數據的儀表板，幫助團隊快速定位性能問題。使用 AlertManager 配置多種告警規則，當指標超過預設閾值時，自動發送通知至相關人員，實現問題的即時響應。",
                 "outcome": "成功搭建了可擴展且高效的監控系統，提升了團隊的問題響應速度，減少了故障時間，並大大提升了系統運行的穩定性。"
             },
-            "image": "monitoring_system.png",
+            "image": "monitoring-system/arch.png",
             "reference": "",
             "repo": "https://github.com/a920604a/monitoring_system",
             "note": "透過 Prometheus 與 Grafana 的集成，實現了指標數據的全面監控，並結合 AlertManager 配置高效的告警系統，有效提升了運維的管理效率。"
@@ -155,7 +155,7 @@
                 "Airflow",
                 "Ansible"
             ],
-            "image": "daodao.png",
+            "image": "daodao/arch.png",
             "reference": "https://www.daoedu.tw/",
             "repo": [
                 {
@@ -186,7 +186,7 @@
                 "solution": "使用 Airflow 作為工作流管理工具，設計並開發了自動化備份系統，將會議記錄定期備份並存儲於 PostgreSQL 資料庫中。使用 Python 編寫腳本配置 Airflow 任務排程，自動執行備份過程，並將系統部署於 Docker 容器中以提高可移植性和穩定性。",
                 "outcome": "成功實現了數據備份的自動化，減少了手動操作，提高了資料的可靠性與維護性。"
             },
-            "image": "backup-startup.png",
+            "image": "backup-start-up/arch.png",
             "reference": "",
             "repo": "https://github.com/a920604a/monthly-report"
         },
@@ -208,7 +208,7 @@
                 "solution": "爬取並整合其他平台的公開穿搭資料，提供多樣化的穿搭參考。使用 Python 和 FastAPI 搭建高效的後端 API，實現快速的數據處理和請求響應。結合 MySQL 和 Redis，提升數據查詢的速度和可靠性，確保即時推薦的準確性。前端使用 React 實現動態交互式介面，提供直觀且用戶友好的體驗。",
                 "outcome": "成功提供了個性化穿搭建議，提升用戶穿搭決策效率，增強穿搭體驗。"
             },
-            "image": "clothes.png",
+            "image": "clothes/arch.png",
             "reference": "https://docs.google.com/presentation/d/1DiWmyrWgODBOlg2iwQTTcxoKf-HZ7MG8mB_UrH6xXkI/edit#slide=id.g274d6715e6a_3_772",
             "repo": "https://github.com/a920604a/clothes-outfit",
             "note": "設計了基於顏色搭配的穿搭推薦演算法，將不同風格（如簡約、工業、復古等）對應到一組顏色，根據用戶需求精準提供個性化建議，提升穿搭決策的效率"
@@ -231,7 +231,7 @@
                 "solution": "整合並開發物件檢測與影像分類演算法，提升檢測精度和效率。設計並搭建高效能的後端服務，確保大數據的實時處理能力。選擇 Flask 作為後端框架，實現簡單且高效的 API 設計。使用 MySQL 進行數據存儲，保證數據的高效存取與管理。通過 Docker 實現容器化部署，提升平台的可擴展性和靈活性。",
                 "outcome": "成功提升檢測系統效能，顯著縮短訓練時間並提升檢測精度，幫助企業在質量控制中取得更高效的結果，支持大規模生產需求。"
             },
-            "image": "aie_adc_train.png",
+            "image": "aidc/arch.png",
             "reference": "http://www.aie-tec.com/?products_26/"
         },
         {
@@ -250,7 +250,7 @@
                 "solution": "使用 Unity 開發前端介面，實現了視覺訓練平台的直觀操作界面。整合瞳孔追蹤算法於後端邏輯中。搭配 SQLite 實現資料存儲，保證了患者訓練資料的高效存取與管理。利用 System Service 實現特定功能，確保平台的穩定運行。使用 Ansible 作為自動化部署工具，實現了平台的快速、可重複性部署，大幅提高了部署過程的效率和穩定性。",
                 "outcome": "成功開發出一個不僅僅是工具的復健平台，更為醫療團隊提供創新解決方案，大幅提升了患者的復健效率。"
             },
-            "image": "amd_flow_chart.png",
+            "image": "amd/arch.png",
             "reference": "",
             "repo": [
                 {
@@ -276,7 +276,7 @@
                 "solution": "在此專案中，我負責調用 Azure 的語音轉文字 API，將會議中的語音實時轉換為文字並儲存為會議紀錄。我還調用網站後端的 API 來處理會議物件的管理和顯示，同時實現了表情符號的即時顯示功能，提升了會議的互動性。我使用 Unity 進行跨平台兼容開發，確保系統能在不同設備間順利運行，並優化了會議物件的傳輸過程。",
                 "outcome": "成功消除了語言障礙，為遠端會議系統提供更加包容的解決方案，顯著提升了使用者的會議體驗，並提供了即時、完整的會議紀錄。"
             },
-            "image": "rm2.png",
+            "image": "rm2/arch.png",
             "reference": "",
             "note": ""
         },
@@ -295,7 +295,7 @@
                 "solution": "使用 Unity 開發虛擬實境應用，實現了藥物分子結構的視覺化，並提供了關鍵的操作功能。重要的顯示元件包括分子結構、蛋白質與藥物分子的交互作用以及相互間的動態變化。此外，為了便於日後回顧，我加入了錄影與截圖功能，能夠捕捉和存儲視覺效果以供參考。在交互操作上，實現了多種功能，如針對模型的視角切換、旋轉、放大縮小以及凸顯效果等，讓使用者能夠精確控制視覺焦點，進一步提升了對分子結構的直觀理解。",
                 "outcome": "成功開發了基於 Unity 的虛擬實境應用，提升了藥物開發過程中的可視化效果，促進研究人員對分子結構的直觀理解，進而提高了研究效率。"
             },
-            "image": "molrx.png",
+            "image": "molrx/arch.png",
             "reference": ""
         },
         {
@@ -313,7 +313,7 @@
                 "solution": "編寫 Shell Script 與 Udev 規則，定義自動化服務，提升顯示效果和解析度調整，使用 Uptime Kuma 黑箱監控與告警，確保穩定運行。",
                 "outcome": "成功升級會議系統，使主管能輕鬆參與遠端會議，提升了整體會議效率和工作流的穩定性。"
             },
-            "image": "meeting_room.png",
+            "image": "remote-meeting-system/arch.png",
             "reference": ""
         },
         {
@@ -331,7 +331,7 @@
                 "solution": "利用 Supabase 提供的後端即服務（BaaS）功能，實現使用者認證與資料儲存，並結合 React 建立前端介面。",
                 "outcome": "成功開發出一個支援電子書上傳與閱讀的應用程式，並部署至 GitHub Pages，供使用者閱讀。"
             },
-            "image": "ebook.png",
+            "image": "ebook/arch.png",
             "reference": "https://a920604a.github.io/ebook-reader/",
             "repo": "https://github.com/a920604a/ebook-reader"
         }
