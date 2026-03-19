@@ -25,11 +25,12 @@ const ProjectDetails = ({ projects }) => {
             description={project.description}
             category={project.category}
             tags={project.tags}
+            images={project.images}
             image={project.image}
             reference={project.reference}
             repo={project.repo}
             index={id}
-            backLink="/projects" // 這裡可以設置回到專案列表的鏈接
+            backLink="/projects"
             backLabel="Projects"
         />
     );

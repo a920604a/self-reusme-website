@@ -17,14 +17,33 @@ import {
   ModalContent,
   ModalBody,
   ModalCloseButton,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanels,
+  TabPanel,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { FaExternalLinkAlt, FaArrowLeft } from "react-icons/fa";
 
+/** Derive a human-readable tab label from an image filename. */
+const imgLabel = (path) => {
+  const file = path.split("/").pop().replace(/\.(png|jpe?g)$/i, "");
+  return (
+    { flow: "User Flow", arch: "Architecture", ui: "Interface",
+      airflow: "Pipeline", streamlit: "Dashboard" }[file] ||
+    file.charAt(0).toUpperCase() + file.slice(1)
+  );
+};
+
 const stripMd = (text) => text.replace(/\*\*(.*?)\*\*/g, "$1");
 
-const DetailTemplate = ({ title, subtitle, category, description, tags, image, reference, repo, index, backLink, backLabel }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+const DetailTemplate = ({ title, subtitle, category, description, tags, images, image, reference, repo, index, backLink, backLabel }) => {
+  const [isModalOpen, setIsModalOpen]   = useState(false);
+  const [modalImg,    setModalImg]       = useState(null);
+
+  // Normalise: prefer new `images[]`, fall back to legacy `image` string
+  const gallery = images && images.length > 0 ? images : image ? [image] : [];
 
   const renderRepoLinks = (repo) => {
     if (Array.isArray(repo)) {
@@ -106,30 +125,61 @@ const DetailTemplate = ({ title, subtitle, category, description, tags, image, r
             </Stack>
           )}
 
-          {/* Image */}
-          {image && (
+          {/* Image Gallery */}
+          {gallery.length > 0 && (
             <>
-              <Image
-                src={`images/portfolio/${image}`}
-                alt={title}
-                objectFit="cover"
-                borderRadius="md"
-                height="300px"
-                width="100%"
-                mb={6}
-                boxShadow="sm"
-                cursor="zoom-in"
-                transition="transform 0.2s"
-                _hover={{ transform: "scale(1.02)" }}
-                onClick={() => setIsModalOpen(true)}
-              />
+              {gallery.length === 1 ? (
+                <Image
+                  src={`images/portfolio/${gallery[0]}`}
+                  alt={title}
+                  objectFit="contain"
+                  borderRadius="md"
+                  maxH="340px"
+                  width="100%"
+                  bg="gray.900"
+                  mb={6}
+                  boxShadow="sm"
+                  cursor="zoom-in"
+                  _hover={{ opacity: 0.92 }}
+                  onClick={() => { setModalImg(gallery[0]); setIsModalOpen(true); }}
+                />
+              ) : (
+                <Tabs variant="soft-rounded" colorScheme="teal" size="sm" mb={6}>
+                  <TabList mb={3} flexWrap="wrap" gap={1}>
+                    {gallery.map((img, i) => (
+                      <Tab key={i} fontSize="xs" fontWeight="bold">{imgLabel(img)}</Tab>
+                    ))}
+                  </TabList>
+                  <TabPanels>
+                    {gallery.map((img, i) => (
+                      <TabPanel key={i} p={0}>
+                        <Image
+                          src={`images/portfolio/${img}`}
+                          alt={`${title} — ${imgLabel(img)}`}
+                          objectFit="contain"
+                          borderRadius="md"
+                          maxH="340px"
+                          width="100%"
+                          bg="gray.900"
+                          boxShadow="sm"
+                          cursor="zoom-in"
+                          _hover={{ opacity: 0.92 }}
+                          onClick={() => { setModalImg(img); setIsModalOpen(true); }}
+                        />
+                      </TabPanel>
+                    ))}
+                  </TabPanels>
+                </Tabs>
+              )}
+
+              {/* Full-screen lightbox */}
               <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="full">
                 <ModalOverlay />
                 <ModalContent bg="blackAlpha.900">
-                  <ModalCloseButton color="white" />
+                  <ModalCloseButton color="white" zIndex={1} />
                   <ModalBody p={0} display="flex" alignItems="center" justifyContent="center">
                     <Image
-                      src={`images/portfolio/${image}`}
+                      src={`images/portfolio/${modalImg}`}
                       alt={title}
                       objectFit="contain"
                       maxW="100vw"

@@ -44,11 +44,11 @@ const ProjectsSummary = ({ projects }) => {
 
           >
             <Flex direction={{ base: "column", md: "row" }} spacing={6}>
-              {/* 左側圖片 */}
-              {project.image && (
+              {/* 左側縮圖 — 優先使用 images[0] (flow diagram)，fallback 到 image */}
+              {(project.images?.[0] || project.image) && (
                 <Box flex="1" mb={{ base: 4, md: 0 }} minW={{ md: "200px" }} maxW={{ md: "220px" }}>
                   <Image
-                    src={`images/portfolio/${project.image}`}
+                    src={`images/portfolio/${project.images?.[0] ?? project.image}`}
                     alt={project.title}
                     objectFit="cover"
                     height="160px"
