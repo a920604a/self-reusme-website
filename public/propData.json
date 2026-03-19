@@ -20,12 +20,12 @@
                 "challenge": "需整合 WebRTC 即時媒體串流與 AI Agent 任務調度，同時在 GCP 上建立高度隔離且可精準控管的網路環境，以兼顧即時通訊需求與整體資安。",
                 "solution": "負責雲端基礎設施(IaC) 與解耦式服務架構設計，重點包含:",
                 "core_contributions": [
-                    "規劃分層解耦架構，整合 **WebRTC Server**、**Token Service** 與 **AI Agent 後端服務**。",
-                    "於 GCP 建立專屬 VPC 與最小權限的 **Ingress / Egress Firewall 規則**，支援 WebRTC 所需的 UDP 與 API 通訊。",
-                    "整合 **Firebase Authentication**，並設計 **JWT-based 無狀態授權流程**，安全簽發 WebRTC 存取 Token。",
-                    "使用 **Ansible** 實作自動化部署，提升部署一致性與系統穩定性。"
+                    "以 **livekit-agent-app** 建置 **FastAPI 後端**，提供 token 簽發、agent lifecycle 管理與健康監控（含 Prometheus/Grafana）。",
+                    "以 **androidusbcamera/usbstreamer** 實作前端串流流程，整合 **Google Sign-In + Firebase Authentication**、後端換 token、以及 LiveKit 房間連線與音視頻 track 發布。",
+                    "在 **self-host-livekit** 維護自架 LiveKit（LiveKit Server + Caddy + Redis）部署配置，支援即時通訊服務上線。",
+                    "使用 **Ansible**（`livekit-ansible`）自動化主機基礎設定與部署流程，包含 Docker/Docker Compose 安裝與 UFW 防火牆規則配置（TCP 80/443/7880/7881/8000、UDP 3478、50000-60000）。"
                 ],
-                "outcome": "成功建立具即時串流能力且符合企業級資安要求的雲端架構，確保系統穩定運行並具備良好擴展彈性。"
+                "outcome": "建立可端到端運作的即時 AI 語音助理平台，完成前端裝置、後端服務與雲端部署整合，提升部署一致性與系統穩定度。"
             },
             "reference": "",
             "images": [
