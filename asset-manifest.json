@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/self-reusme-website/static/css/main.1006c412.css",
-    "main.js": "/self-reusme-website/static/js/main.2c2de904.js",
+    "main.js": "/self-reusme-website/static/js/main.4c0657a7.js",
     "static/js/453.8927b4e4.chunk.js": "/self-reusme-website/static/js/453.8927b4e4.chunk.js",
     "static/media/slick.svg": "/self-reusme-website/static/media/slick.2630a3e3eab21c607e21.svg",
     "static/media/slick.eot": "/self-reusme-website/static/media/slick.a4e97f5a2a64f0ab1323.eot",
@@ -9,11 +9,11 @@
     "static/media/slick.woff": "/self-reusme-website/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/self-reusme-website/index.html",
     "main.1006c412.css.map": "/self-reusme-website/static/css/main.1006c412.css.map",
-    "main.2c2de904.js.map": "/self-reusme-website/static/js/main.2c2de904.js.map",
+    "main.4c0657a7.js.map": "/self-reusme-website/static/js/main.4c0657a7.js.map",
     "453.8927b4e4.chunk.js.map": "/self-reusme-website/static/js/453.8927b4e4.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.1006c412.css",
-    "static/js/main.2c2de904.js"
+    "static/js/main.4c0657a7.js"
   ]
 }
