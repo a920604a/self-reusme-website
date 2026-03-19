@@ -64,6 +64,9 @@
             "images": [
                 "stock-mlops/flow.png",
                 "stock-mlops/arch.png"
+            ],
+            "uiImages": [
+                "stock-mlops/ui.png"
             ]
         },
         {
@@ -95,6 +98,9 @@
             "images": [
                 "llm-assistance/flow.png",
                 "llm-assistance/arch.png"
+            ],
+            "uiImages": [
+                "llm-assistance/ui.png"
             ]
         },
         {
@@ -124,6 +130,9 @@
                 "de/flow.png",
                 "de/streamlit.png",
                 "de/airflow.png"
+            ],
+            "uiImages": [
+                "de/ui.png"
             ]
         },
         {
@@ -149,6 +158,9 @@
             "images": [
                 "monitoring-system/flow.png",
                 "monitoring-system/arch.png"
+            ],
+            "uiImages": [
+                "monitoring-system/ui.png"
             ]
         },
         {
@@ -171,7 +183,7 @@
                 "Airflow",
                 "Ansible"
             ],
-            "reference": "https://www.daoedu.tw/",
+            "reference": "https://daodao.so/",
             "repo": [
                 {
                     "daodao-storage": "https://github.com/daodaoedu/daodao-storage"
@@ -210,6 +222,9 @@
             "images": [
                 "backup-start-up/flow.png",
                 "backup-start-up/arch.png"
+            ],
+            "uiImages": [
+                "backup-start-up/ui.png"
             ]
         },
         {
@@ -236,6 +251,9 @@
             "images": [
                 "clothes/flow.png",
                 "clothes/arch.png"
+            ],
+            "uiImages": [
+                "clothes/ui.png"
             ]
         },
         {
@@ -260,6 +278,9 @@
             "images": [
                 "aidc/flow.png",
                 "aidc/arch.png"
+            ],
+            "uiImages": [
+                "aidc/ui.png"
             ]
         },
         {
