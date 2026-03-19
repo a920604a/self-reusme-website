@@ -63,7 +63,7 @@ const ProjectsCarousel = ({ projects }) => {
                                 {/* 圖片區塊 */}
                                 <Box flex="1" mb={{ base: 4, md: 0 }} mr={{ md: 4 }}>
                                     <Image
-                                        src={`images/portfolio/${project.image}`}
+                                        src={`${process.env.PUBLIC_URL}/images/portfolio/${project.images?.[0] || project.image}`}
                                         alt={project.title}
                                         objectFit="cover"
                                         height="250px"

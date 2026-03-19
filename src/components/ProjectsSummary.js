@@ -48,7 +48,7 @@ const ProjectsSummary = ({ projects }) => {
               {(project.images?.[0] || project.image) && (
                 <Box flex="1" mb={{ base: 4, md: 0 }} minW={{ md: "200px" }} maxW={{ md: "220px" }}>
                   <Image
-                    src={`images/portfolio/${project.images?.[0] ?? project.image}`}
+                    src={`${process.env.PUBLIC_URL}/images/portfolio/${project.images?.[0] ?? project.image}`}
                     alt={project.title}
                     objectFit="cover"
                     height="160px"
