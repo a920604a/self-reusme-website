@@ -27,6 +27,7 @@ const ProjectDetails = ({ projects }) => {
             tags={project.tags}
             images={project.images}
             image={project.image}
+            uiImages={project.uiImages}
             reference={project.reference}
             repo={project.repo}
             index={id}

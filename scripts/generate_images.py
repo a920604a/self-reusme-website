@@ -346,68 +346,79 @@ def draw_daodao():
 def draw_gcp_livekit_infra():
     fig, ax = fig_setup()
     title_bar(ax, "Low Vision Glasses  —  GCP Cloud Architecture",
-              "GCP · LiveKit WebRTC · FastAPI · Firebase Auth · Ansible IaC")
+              "Ansible · FastAPI · LiveKit · Caddy · Firebase Auth · Prometheus")
 
-    box(ax, 0.4, 7.6, 2.5, 1.0, "Client App", "Low Vision Glasses",
-        color=TEAL, bg=CARD)
-    ax.text(1.65, 7.25, "HTTPS / WSS / WebRTC UDP",
-            ha="center", va="center", color=GRAY, fontsize=7.5)
-    box(ax, 4.0, 7.6, 3.0, 1.0, "Firebase Auth",
-        "GitHub / Google OAuth · JWT", color=ORANGE, bg="#2a1400")
-    arrow(ax, 2.92, 8.1, 3.98, 8.1, "Auth Request", ORANGE)
+    # ── Client zone (ABOVE GCP VPC) ───────────────────────────────────────────
+    box(ax, 0.4, 7.65, 3.2, 0.9, "Android Device",
+        "USB Camera · usbstreamer app", color=TEAL, bg=CARD, fontsize=10)
+    box(ax, 4.3, 7.65, 4.2, 0.9, "Google Sign-In / Firebase Auth",
+        "OAuth2 · JWT issued to client", color=ORANGE, bg="#2a1400", fontsize=9)
+    arrow(ax, 3.62, 8.1, 4.28, 8.1, "Sign-In", ORANGE)
+    # Client sends JWT + requests WebRTC token from FastAPI
+    arrow(ax, 6.4, 7.63, 4.8, 6.62, "JWT + token req", BLUE)
 
-    ax.add_patch(FancyBboxPatch((0.3, 0.6), 15.2, 6.6,
+    # ── GCP VPC outer box (y: 0.55 → 7.35, clearly below client zone) ────────
+    ax.add_patch(FancyBboxPatch((0.3, 0.55), 15.2, 6.8,
                                 boxstyle="round,pad=0.1,rounding_size=0.4",
                                 linewidth=2.5, edgecolor="#4285F4",
                                 facecolor="#030d1f", zorder=0))
-    ax.text(8.0, 7.05, "GCP VPC  (Isolated Network)",
+    ax.text(8.0, 7.22, "GCP VPC  —  Isolated Network",
             ha="center", va="center", color="#4285F4",
-            fontsize=10, fontweight="bold", alpha=0.8)
-    ax.text(8.0, 6.75, "Ingress / Egress Firewall Rules  (Min Privilege)",
-            ha="center", va="center", color=GRAY, fontsize=8.5, style="italic")
-    ax.plot([0.5, 15.5], [6.6, 6.6], color=BORDER, lw=1.2, ls="--", alpha=0.6)
+            fontsize=10, fontweight="bold", alpha=0.9)
+    ax.text(8.0, 6.98, "UFW: TCP 80/443/7880/7881/8000  ·  UDP 3478 / 50000-60000",
+            ha="center", va="center", color=GRAY, fontsize=8, style="italic")
+    ax.plot([0.5, 15.5], [6.75, 6.75], color=BORDER, lw=1.2, ls="--", alpha=0.5)
 
-    ax.add_patch(FancyBboxPatch((0.6, 3.5), 7.0, 2.8,
+    # ── Public Subnet ─────────────────────────────────────────────────────────
+    ax.add_patch(FancyBboxPatch((0.5, 3.35), 9.2, 3.2,
                                 boxstyle="round,pad=0.1,rounding_size=0.3",
-                                linewidth=1.5, edgecolor=TEAL,
-                                facecolor="#0a1e20", zorder=1))
-    ax.text(4.1, 6.12, "Public Subnet",
+                                linewidth=1.5, edgecolor=TEAL, facecolor="#0a1e20", zorder=1))
+    ax.text(5.1, 6.42, "Public Subnet",
             ha="center", va="center", color=TEAL, fontsize=9, fontweight="bold")
-    box(ax, 0.8, 4.7, 3.0, 1.2, "Token Service", "FastAPI · JWT Signing",
-        color=BLUE, bg="#0a1628", fontsize=10)
-    box(ax, 4.5, 4.7, 2.8, 1.2, "WebRTC Server", "LiveKit · UDP / SRTP",
-        color=TEAL, bg=CARD, fontsize=10)
 
-    arrow(ax, 4.45, 8.1, 3.65, 6.0, "JWT Token", BLUE)
-    arrow(ax, 3.82, 5.3, 4.48, 5.3, "token", TEAL2)
-    ax.text(3.2, 3.7, "WebRTC / UDP (media stream)",
-            ha="center", va="center", color=TEAL, fontsize=7.5, style="italic")
+    # FastAPI Backend (livekit-agent-app)
+    box(ax, 0.7, 4.95, 5.5, 1.2, "FastAPI Backend  (livekit-agent-app)",
+        "token sign · agent lifecycle · Prometheus / Grafana",
+        color=BLUE, bg="#0a1628", fontsize=9)
+    # Caddy reverse proxy
+    box(ax, 0.7, 3.55, 2.0, 1.0, "Caddy",
+        "Rev. proxy\n· TLS 443", color=GREEN, bg="#0a1a0f", fontsize=9)
+    # LiveKit Server
+    box(ax, 3.1, 3.55, 3.5, 1.0, "LiveKit Server",
+        "WebRTC · UDP 50000-60000", color=TEAL, bg=CARD, fontsize=9)
+    # Redis
+    box(ax, 7.0, 3.55, 2.5, 1.0, "Redis",
+        "Room / session\nstate cache", color=RED, bg="#2a0a0a", fontsize=9)
+    # Arrows inside Public Subnet
+    arrow(ax, 3.45, 4.93, 1.7, 4.57, color=BLUE)    # FastAPI → Caddy
+    arrow(ax, 3.45, 4.93, 4.85, 4.57, color=TEAL)   # FastAPI → LiveKit
+    arrow(ax, 6.62, 4.05, 6.98, 4.05, color=RED)    # LiveKit → Redis
+    # WebRTC UDP back to Android (crosses VPC border upward)
+    arrow(ax, 4.85, 6.55, 3.82, 7.63, "WebRTC UDP", TEAL2)
 
-    ax.add_patch(FancyBboxPatch((8.2, 3.5), 7.0, 2.8,
+    # ── Private Subnet ────────────────────────────────────────────────────────
+    ax.add_patch(FancyBboxPatch((10.0, 3.35), 5.2, 3.2,
                                 boxstyle="round,pad=0.1,rounding_size=0.3",
-                                linewidth=1.5, edgecolor=PURPLE,
-                                facecolor="#160d2a", zorder=1))
-    ax.text(11.7, 6.12, "Private Subnet",
+                                linewidth=1.5, edgecolor=PURPLE, facecolor="#160d2a", zorder=1))
+    ax.text(12.6, 6.42, "Private Subnet",
             ha="center", va="center", color=PURPLE, fontsize=9, fontweight="bold")
-    box(ax, 8.5, 4.5, 6.5, 1.6, "AI Agent Backend",
-        "LLM Processing · Task Scheduling · Internal APIs",
-        color=PURPLE, bg="#1a0a2e", fontsize=11)
-    arrow(ax, 7.62, 5.2, 8.48, 5.2, "Internal API", PURPLE)
+    box(ax, 10.2, 4.15, 4.8, 1.9, "AI Agent Backend",
+        "LLM Processing · Audio Analysis\nInternal Task Scheduling",
+        color=PURPLE, bg="#1a0a2e", fontsize=10)
+    arrow(ax, 9.72, 5.05, 10.18, 5.05, "Internal", PURPLE)  # LiveKit → AI Agent
 
-    box(ax, 0.8, 1.0, 4.5, 1.8, "Ansible IaC",
-        "Multi-env Deployment · Idempotent Playbooks",
+    # ── Ansible IaC ──────────────────────────────────────────────────────────
+    box(ax, 0.6, 0.72, 5.5, 1.58, "Ansible  (livekit-ansible)",
+        "Docker / Docker Compose · UFW firewall rules · multi-host playbooks",
         color=GREEN, bg="#0a1a0f", fontsize=10)
-    ax.text(3.05, 0.75, "Dev / Staging / Production",
-            ha="center", va="center", color=GRAY, fontsize=7.5)
-    arrow(ax, 3.05, 2.82, 2.3,  3.48, color=GREEN)
-    arrow(ax, 3.05, 2.82, 5.9,  3.48, color=GREEN)
-    arrow(ax, 3.05, 2.82, 11.7, 3.48, color=GREEN)
+    arrow(ax, 3.35, 2.32, 3.35, 3.33, color=GREEN)   # Ansible → Public Subnet
+    arrow(ax, 5.2,  2.32, 11.5, 3.33, color=GREEN)   # Ansible → Private Subnet
 
-    box(ax, 11.0, 1.0, 4.3, 2.2, "GCP Services",
-        "Cloud Compute · VPC · IAM · Firewall",
+    box(ax, 6.8, 0.72, 8.7, 1.58, "GCP Services",
+        "Compute Engine · VPC · Cloud IAM · Firewall Rules",
         color="#4285F4", bg="#0a1020", fontsize=10)
-    for i, t in enumerate(["Compute Engine", "Cloud VPC", "Cloud IAM", "Firebase"]):
-        tag(ax, 11.4 + (i % 2) * 2.0, 1.5 - (i // 2) * 0.55, t, "#4285F4")
+    for i, t in enumerate(["Compute Engine", "Cloud VPC", "Cloud IAM", "Firebase Auth"]):
+        tag(ax, 7.4 + (i % 2) * 4.0, 1.15 - (i // 2) * 0.45, t, "#4285F4")
 
     plt.tight_layout(pad=0.5)
     _save(fig, "gcp-livekit-infra")
@@ -626,7 +637,7 @@ def draw_de():
             ha="center", va="center", color=GRAY, fontsize=8)
 
     plt.tight_layout(pad=0.5)
-    _save(fig, "de", "streamlit.png")
+    _save(fig, "de", "arch.png")
 
 
 def draw_monitoring_system():
@@ -776,76 +787,73 @@ def draw_clothes():
 def draw_aidc():
     fig, ax = fig_setup()
     title_bar(ax, "AI Defect Detection Platform  —  System Architecture",
-              "YOLO · PyTorch · Flask · MySQL · Redis · Docker Compose")
+              "Detectron2 · Faster R-CNN · Mask R-CNN · Panoptic FPN · Flask · MySQL")
 
-    # ── Left: Capture ────────────────────────────────────────────────────────
-    box(ax, 0.4, 7.5, 3.5, 1.1, "Industrial Camera",
+    # ── Left: Capture & API ───────────────────────────────────────────────────
+    box(ax, 0.4, 7.5, 3.5, 1.05, "Industrial Camera",
         "Production line · frame grab",
         color=ORANGE, bg="#2a1400", fontsize=10)
-    box(ax, 0.4, 5.9, 3.5, 1.1, "Image Preprocessor",
+    box(ax, 0.4, 5.95, 3.5, 1.05, "Image Preprocessor",
         "Resize · Normalize · Augment",
         color=ORANGE, bg="#2a1000", fontsize=10)
-    arrow(ax, 2.15, 7.48, 2.15, 7.02, color=ORANGE)
-    arrow(ax, 2.15, 5.88, 2.15, 5.12, color=ORANGE)
-
-    # ── Center: AI Inference ─────────────────────────────────────────────────
-    ax.add_patch(FancyBboxPatch((4.5, 5.0), 7.0, 3.7,
-                                boxstyle="round,pad=0.1,rounding_size=0.3",
-                                linewidth=2, edgecolor=RED, facecolor="#200808"))
-    ax.text(8.0, 8.5, "AI Inference Engine",
-            ha="center", va="center", color=RED, fontsize=12, fontweight="bold")
-    box(ax, 4.7, 6.8, 3.0, 1.1, "YOLO Detection",
-        "Localize defects · bounding box", color=RED, bg="#2a0a0a", fontsize=10)
-    box(ax, 8.3, 6.8, 3.0, 1.1, "CNN Classifier",
-        "Defect type · confidence score",  color=PURPLE, bg="#160d2a", fontsize=10)
-    box(ax, 5.5, 5.2, 5.0, 1.1, "Result Aggregator",
-        "Ensemble · bounding box · defect class",
-        color=YELLOW, bg="#1a1500", fontsize=10)
-    arrow(ax, 3.92, 6.4, 4.68, 7.1,  color=ORANGE)
-    arrow(ax, 7.82, 7.35, 8.28, 7.35, "combine", RED)
-    arrow(ax, 6.2,  6.78, 6.2,  6.32, color=RED)
-    arrow(ax, 9.8,  6.78, 9.3,  6.32, color=PURPLE)
-
-    # ── Model Training Pipeline ──────────────────────────────────────────────
-    ax.add_patch(FancyBboxPatch((4.5, 2.9), 7.0, 1.8,
-                                boxstyle="round,pad=0.1,rounding_size=0.3",
-                                linewidth=1.5, edgecolor=TEAL, facecolor="#0a1e20"))
-    ax.text(8.0, 4.52, "Model Training Pipeline",
-            ha="center", va="center", color=TEAL, fontsize=11, fontweight="bold")
-    for i, (lab, sub, c) in enumerate([
-        ("Dataset Prep", "Annotate · split", ORANGE),
-        ("Train / Val",  "Epoch · mAP",      TEAL),
-        ("Export",       ".pt → TensorRT",   GREEN),
-    ]):
-        box(ax, 4.7 + i * 2.3, 3.02, 2.1, 1.2, lab, sub,
-            color=c, bg=PANEL, fontsize=9)
-    arrow(ax, 8.0, 5.18, 8.0, 4.72, color=YELLOW)
-
-    # ── Bottom: Backend + Storage ────────────────────────────────────────────
-    box(ax, 0.4, 3.4, 3.5, 1.1, "Flask REST API",
+    box(ax, 0.4, 4.4, 3.5, 1.05, "Flask REST API",
         "POST /detect · GET /results",
         color=BLUE, bg="#0a1020", fontsize=10)
-    box(ax, 0.4, 1.8, 1.5, 1.1, "MySQL",
+    box(ax, 0.4, 2.5, 1.55, 1.05, "MySQL",
         "Results\n· history", color=TEAL, bg=CARD, fontsize=9)
-    box(ax, 2.2, 1.8, 1.5, 1.1, "Redis",
+    box(ax, 2.2, 2.5, 1.6, 1.05, "Redis",
         "Hot cache\n· queue", color=RED, bg="#2a0a0a", fontsize=9)
-    arrow(ax, 2.15, 5.38, 2.15, 4.52, color=BLUE)
-    arrow(ax, 1.15, 3.38, 1.15, 2.92, color=TEAL)
-    arrow(ax, 3.15, 3.38, 2.95, 2.92, color=RED)
+    arrow(ax, 2.15, 7.48, 2.15, 7.02, color=ORANGE)
+    arrow(ax, 2.15, 5.93, 2.15, 5.47, color=ORANGE)
+    arrow(ax, 2.15, 4.38, 2.15, 3.57, color=BLUE)
+    arrow(ax, 1.18, 4.38, 1.18, 3.57, color=TEAL)
+    arrow(ax, 3.08, 4.38, 3.08, 3.57, color=RED)
+
+    # ── Center: Detectron2 Framework ─────────────────────────────────────────
+    ax.add_patch(FancyBboxPatch((4.4, 2.4), 7.6, 6.55,
+                                boxstyle="round,pad=0.1,rounding_size=0.3",
+                                linewidth=2, edgecolor="#e11d48", facecolor="#1a0008", zorder=0))
+    ax.text(8.2, 8.77, "Detectron2 Framework",
+            ha="center", va="center", color="#e11d48", fontsize=12, fontweight="bold")
+    # Shared backbone
+    box(ax, 5.2, 7.5, 5.6, 0.95, "Backbone: ResNet-50 FPN",
+        "Shared multi-scale feature extraction",
+        color=PURPLE, bg="#160d2a", fontsize=10)
+    # Detection models
+    box(ax, 4.6, 5.9, 3.0, 1.05, "Faster R-CNN",
+        "Object detection · bounding boxes", color=RED, bg="#2a0808", fontsize=9)
+    box(ax, 8.1, 5.9, 3.5, 1.05, "RetinaNet",
+        "One-stage detection · focal loss",  color=ORANGE, bg="#2a1200", fontsize=9)
+    # Segmentation models
+    box(ax, 4.6, 4.4, 3.0, 1.05, "Mask R-CNN",
+        "Instance segmentation · pixel mask", color=BLUE, bg="#0a1020", fontsize=9)
+    box(ax, 8.1, 4.4, 3.5, 1.05, "Panoptic FPN",
+        "Panoptic segmentation · semantic",   color=TEAL, bg="#0a1e20", fontsize=9)
+    # Result aggregator
+    box(ax, 5.2, 2.6, 5.6, 0.95, "Result Aggregator",
+        "Merge · NMS · confidence filter",
+        color=YELLOW, bg="#1a1500", fontsize=9)
+    # Arrows backbone → models
+    arrow(ax, 7.0, 7.48, 6.1, 6.97, color=PURPLE)
+    arrow(ax, 8.95, 7.48, 9.5, 6.97, color=PURPLE)
+    arrow(ax, 6.1, 5.88, 6.1, 5.47, color=RED)
+    arrow(ax, 9.5, 5.88, 9.5, 5.47, color=ORANGE)
+    arrow(ax, 6.1, 4.38, 6.1, 3.57, color=BLUE)
+    arrow(ax, 9.5, 4.38, 9.5, 3.57, color=TEAL)
+    # Input → Detectron2
+    arrow(ax, 3.92, 5.0, 4.58, 5.0, color=ORANGE)
+    # Aggregator → outputs
+    arrow(ax, 11.2, 3.08, 12.18, 7.58, color=GREEN)
+    arrow(ax, 11.2, 3.08, 12.18, 5.88, color=RED)
 
     # ── Right: Dashboard ─────────────────────────────────────────────────────
-    box(ax, 12.2, 7.3, 3.3, 1.1, "Inspection Dashboard",
+    box(ax, 12.2, 7.3, 3.3, 1.05, "Inspection Dashboard",
         "Real-time defect viewer", color=GREEN, bg="#0a1a0a", fontsize=10)
-    box(ax, 12.2, 5.7, 3.3, 1.1, "Training Monitor",
-        "Loss curve · accuracy",   color=YELLOW, bg="#1a1500", fontsize=10)
-    box(ax, 12.2, 4.1, 3.3, 1.1, "Alert System",
-        "Threshold · notify",      color=RED, bg="#2a0a0a", fontsize=10)
-    arrow(ax, 11.52, 5.7, 12.18, 7.6, color=GREEN)
-    arrow(ax, 11.52, 4.5, 12.18, 6.0, color=YELLOW)
-    arrow(ax, 3.92, 3.95, 12.18, 4.5, color=RED)
+    box(ax, 12.2, 5.6, 3.3, 1.05, "Alert System",
+        "Threshold · notify operator", color=RED, bg="#2a0a0a", fontsize=10)
 
-    ax.text(8.0, 0.9,
-            "Docker Compose · Flask · MySQL · Redis · PyTorch · YOLO · Nginx",
+    ax.text(8.0, 0.85,
+            "Docker Compose · Flask · MySQL · Redis · PyTorch · Detectron2 · Nginx",
             ha="center", va="center", color=GRAY, fontsize=8)
 
     plt.tight_layout(pad=0.5)
@@ -1318,26 +1326,28 @@ def draw_daodao_flow():
 def draw_gcp_livekit_infra_flow():
     fig, ax = fig_setup()
     title_bar(ax, "Low Vision Glasses  —  User Session Flow",
-              "Firebase Auth · JWT · LiveKit WebRTC · AI Agent")
-    phase_bar(ax, Y6[0] + FH/2, Y6[2] - FH/2, "AUTH",    ORANGE)
-    phase_bar(ax, Y6[2] + FH/2, Y6[4] - FH/2, "SESSION", TEAL)
-    phase_bar(ax, Y6[4] + FH/2, Y6[6] - FH/2, "CLOSE",   GRAY)
+              "Google Sign-In · Firebase · FastAPI · Caddy · LiveKit · AI Agent")
+    phase_bar(ax, Y7[0] + FH/2, Y7[1] - FH/2, "AUTH",    ORANGE)
+    phase_bar(ax, Y7[2] + FH/2, Y7[4] - FH/2, "STREAM",  TEAL)
+    phase_bar(ax, Y7[5] + FH/2, Y7[6] - FH/2, "CLOSE",   GRAY)
     steps = [
-        (Y6[0], "Open Glasses App",            "Client device startup",              TEAL),
-        (Y6[1], "Firebase Authentication",     "OAuth · JWT issued",                 ORANGE),
-        (Y6[2], "Get WebRTC Token",            "Token Service FastAPI · signed JWT",  BLUE),
-        (Y6[3], "Connect to LiveKit Server",   "UDP / SRTP media stream",            TEAL),
-        (Y6[4], "Real-time AI Agent Session",  "LLM processing · audio response",    PURPLE),
-        (Y6[5], "End Session",                 "Disconnect · cleanup resources",     GRAY),
-        (Y6[6], "Session Archived",            "Log · billing record",               GRAY),
+        (Y7[0], "Android App Startup",              "USB camera · usbstreamer ready",             TEAL),
+        (Y7[1], "Google Sign-In + Firebase Auth",   "OAuth2 · Firebase JWT issued",               ORANGE),
+        (Y7[2], "Request WebRTC Token",             "POST FastAPI · signed LiveKit JWT",           BLUE),
+        (Y7[3], "Caddy → LiveKit Server",           "Reverse proxy · TCP 443 / UDP 50000–60000",  GREEN),
+        (Y7[4], "Publish Audio/Video Tracks",       "USB camera stream · SRTP encrypted",         TEAL),
+        (Y7[5], "AI Agent Processes Audio",         "LLM inference · voice response generated",   PURPLE),
+        (Y7[6], "Session End & Cleanup",            "Disconnect · resource release · log",        GRAY),
     ]
     for cy, lbl, sub, c in steps:
         fbox(ax, 8.0, cy, FW, FH, lbl, sub, color=c)
     for i in range(len(steps) - 1):
         fconnect(ax, steps[i][0], steps[i + 1][0], color=steps[i][3])
-    sidebar(ax, Y6[2], "GCP VPC",      "Firewall · IAM",  BLUE)
-    sidebar(ax, Y6[3], "Ansible IaC",  "Auto deploy",     GREEN)
-    ax.text(8.0, 0.55, "GCP · Firebase Auth · LiveKit · FastAPI · WebRTC · Ansible · Python",
+    sidebar(ax, Y7[2], "GCP VPC",         "UFW firewall · IAM",       BLUE)
+    sidebar(ax, Y7[4], "Ansible IaC",     "livekit-ansible playbook", GREEN)
+    sidebar(ax, Y7[5], "Prometheus/Graf", "Latency · health monitor", GRAY)
+    ax.text(8.0, 0.55,
+            "GCP · Firebase Auth · FastAPI · Caddy · LiveKit · WebRTC · Ansible · Python",
             ha="center", va="center", color=GRAY, fontsize=8)
     _save(fig, "gcp-livekit-infra", "flow.png")
 
@@ -1479,29 +1489,35 @@ def draw_clothes_flow():
 def draw_aidc_flow():
     fig, ax = fig_setup()
     title_bar(ax, "AI Defect Detection  —  Inspection Flow",
-              "Camera → YOLO → CNN → Alert → MySQL")
+              "Camera → Detectron2 (Faster R-CNN / Mask R-CNN / Panoptic FPN) → Alert → MySQL")
     ys = [8.30, 7.15, 6.00, 4.75, 3.55, 2.40, 1.35]
     phase_bar(ax, ys[0] + FH/2, ys[1] - FH/2, "CAPTURE", ORANGE)
-    phase_bar(ax, ys[1] + FH/2, ys[3] - FH/2, "DETECT",  RED)
+    phase_bar(ax, ys[1] + FH/2, ys[3] - FH/2, "INFER",   RED)
     phase_bar(ax, ys[3] + FH/2, ys[5] - FH/2, "ACTION",  GREEN)
-    fbox(ax, 8.0, ys[0], FW, FH, "Industrial Camera Capture",  "Production line · frame grab",       ORANGE)
+    fbox(ax, 8.0, ys[0], FW, FH, "Industrial Camera Capture",
+         "Production line · frame grab", ORANGE)
     fconnect(ax, ys[0], ys[1], color=ORANGE)
-    fbox(ax, 8.0, ys[1], FW, FH, "Image Preprocessing",        "Resize · normalize · augment",       ORANGE)
+    fbox(ax, 8.0, ys[1], FW, FH, "Image Preprocessing",
+         "Resize · normalize · augment", ORANGE)
     fconnect(ax, ys[1], ys[2], color=ORANGE)
-    fbox(ax, 8.0, ys[2], FW, FH, "YOLO Object Detection",      "Localise defect · bounding box",     RED)
-    # box → diamond (use diamond half-height = 0.5)
-    arrow(ax, 8.0, ys[2] - FH/2, 8.0, ys[3] + 0.5, None, RED)
+    fbox(ax, 8.0, ys[2], FW, FH, "Detectron2 Inference",
+         "Faster R-CNN / Mask R-CNN / Panoptic FPN  ·  ResNet-50 FPN backbone", RED)
+    fconnect(ax, ys[2], ys[3] + 0.5, color=RED)
     fdiamond(ax, 8.0, ys[3], 5.5, 1.0, "Defect Confidence > Threshold?", YELLOW)
     fconnect_d(ax, ys[3], ys[4], label="YES", color=RED)
-    fbox(ax, 13.8, ys[3], 3.2, FH, "Pass ✓",  "Continue production", GREEN)
+    fbox(ax, 13.8, ys[3], 3.2, FH, "Pass ✓", "Continue production", GREEN)
     arrow(ax, 8.0 + 2.75, ys[3], 12.2, ys[3], "NO", GREEN)
-    fbox(ax, 8.0, ys[4], FW, FH, "Alert Operator",       "Trigger alarm · highlight region", RED)
+    fbox(ax, 8.0, ys[4], FW, FH, "Alert Operator",
+         "Trigger alarm · highlight defect region", RED)
     fconnect(ax, ys[4], ys[5], color=RED)
-    fbox(ax, 8.0, ys[5], FW, FH, "Log Defect to MySQL",  "Type · image path · timestamp",    TEAL)
+    fbox(ax, 8.0, ys[5], FW, FH, "Log Defect to MySQL",
+         "Type · mask path · confidence · timestamp", TEAL)
     fconnect(ax, ys[5], ys[6], color=TEAL)
     fbox(ax, 8.0, ys[6], 6.0, FH, "Generate Inspection Report",
-         "Daily summary · defect rate stats", GRAY)
-    ax.text(8.0, 0.55, "Python · Flask · YOLO · PyTorch · MySQL · Redis · Docker",
+         "Daily summary · defect rate · segmentation stats", GRAY)
+    sidebar(ax, ys[2], "Backbone", "ResNet-50 FPN", PURPLE)
+    ax.text(8.0, 0.55,
+            "Python · Flask · Detectron2 · PyTorch · MySQL · Redis · Docker",
             ha="center", va="center", color=GRAY, fontsize=8)
     _save(fig, "aidc", "flow.png")
 
@@ -1648,27 +1664,6 @@ def draw_remote_meeting_system_flow():
             ha="center", va="center", color=GRAY, fontsize=8)
     _save(fig, "remote-meeting-system", "flow.png")
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-# REGISTRY  project_id → {arch, flow}
-# ══════════════════════════════════════════════════════════════════════════════
-
-DIAGRAMS = {
-    "ebook":                 {"arch": draw_ebook,                 "flow": draw_ebook_flow},
-    "daodao":                {"arch": draw_daodao,                "flow": draw_daodao_flow},
-    "gcp-livekit-infra":     {"arch": draw_gcp_livekit_infra,     "flow": draw_gcp_livekit_infra_flow},
-    "stock-mlops":           {"arch": draw_stock_mlops,           "flow": draw_stock_mlops_flow},
-    "llm-assistance":        {"arch": draw_llm_assistance,        "flow": draw_llm_assistance_flow},
-    "de":                    {"arch": draw_de,                    "flow": draw_de_flow},
-    "monitoring-system":     {"arch": draw_monitoring_system,     "flow": draw_monitoring_system_flow},
-    "clothes":               {"arch": draw_clothes,               "flow": draw_clothes_flow},
-    "aidc":                  {"arch": draw_aidc,                  "flow": draw_aidc_flow},
-    "amd":                   {"arch": draw_amd,                   "flow": draw_amd_flow},
-    "backup-start-up":       {"arch": draw_backup_start_up,       "flow": draw_backup_start_up_flow},
-    "rm2":                   {"arch": draw_rm2,                   "flow": draw_rm2_flow},
-    "molrx":                 {"arch": draw_molrx,                 "flow": draw_molrx_flow},
-    "remote-meeting-system": {"arch": draw_remote_meeting_system, "flow": draw_remote_meeting_system_flow},
-}
 
 # ══════════════════════════════════════════════════════════════════════════════
 # UI MOCKUPS  (ui.png per project)   — light theme for web, dark for Unity/VR
@@ -2057,7 +2052,7 @@ def draw_aidc_ui():
     kpi_card(ax, 9.6,  0.5, 2.6, 1.75, "8.4ms", "Inference",    TEAL)
     kpi_card(ax, 12.5, 0.5, 2.9, 1.75, "99.2%", "Uptime",       BLUE)
 
-    ax.text(5.0, 0.18, "YOLO  ·  PyTorch  ·  Flask  ·  MySQL  ·  Redis  ·  Docker",
+    ax.text(5.0, 0.18, "Detectron2  ·  Mask R-CNN  ·  Panoptic FPN  ·  Flask  ·  MySQL  ·  Redis",
             ha="center", va="center", color=UIGRAY, fontsize=8)
     plt.tight_layout(pad=0.5)
     _save(fig, "aidc", "ui.png")
@@ -2307,6 +2302,481 @@ def draw_molrx_ui():
     _save(fig, "molrx", "ui.png")
 
 
+def draw_daodao_ui():
+    """DaoDao education platform — light theme with category sidebar + course grid."""
+    fig, ax = fig_setup_light()
+    browser_chrome(ax, "daodao.tw/courses", "DaoDao  —  Explore & Learn")
+
+    # Top nav
+    ax.add_patch(FancyBboxPatch((0.3, 7.6), 15.4, 0.72,
+                                boxstyle="square,pad=0", lw=0, facecolor=UIPANEL))
+    ax.text(1.1, 7.96, "DaoDao", ha="left", va="center",
+            color="#0f766e", fontsize=13, fontweight="bold")
+    for i, (lbl, c) in enumerate([("Explore", UIDARK), ("Events", UIGRAY), ("Learn", UIGRAY), ("Community", UIGRAY)]):
+        ax.text(3.2 + i * 2.2, 7.96, lbl, ha="left", va="center",
+                color=c, fontsize=9.5, fontweight="bold" if i == 0 else "normal")
+    ax.plot([3.12, 5.32], [7.6, 7.6], color="#0f766e", lw=2.5)
+    lbox(ax, 9.5, 7.68, 5.0, 0.42, color=UIBORD, bg=UILIGHT)
+    ax.text(10.1, 7.90, "Search courses / events...", ha="left", va="center",
+            color=UIGRAY, fontsize=8.5)
+    ax.plot([0.3, 15.7], [7.6, 7.6], color=UIBORD, lw=0.8)
+
+    # Left category sidebar
+    ax.add_patch(FancyBboxPatch((0.3, 0.3), 2.8, 7.1,
+                                boxstyle="square,pad=0", lw=0, facecolor=UILIGHT))
+    ax.plot([3.1, 3.1], [0.3, 7.6], color=UIBORD, lw=0.8)
+    ax.text(0.75, 7.28, "Categories", ha="left", va="center",
+            color=UIDARK, fontsize=10, fontweight="bold")
+    categories = [
+        ("Learning",   True),
+        ("Events",     False),
+        ("Challenges", False),
+        ("Community",  False),
+        ("Store",      False),
+        ("Bookmarks",  False),
+    ]
+    for i, (cat, active) in enumerate(categories):
+        by = 6.8 - i * 0.88
+        if active:
+            ax.add_patch(FancyBboxPatch((0.38, by - 0.22), 2.65, 0.52,
+                                        boxstyle="round,pad=0,rounding_size=0.1",
+                                        lw=0, facecolor="#ccfbf1"))
+        ax.text(0.65, by + 0.04, cat, ha="left", va="center",
+                color="#0f766e" if active else UIDARK, fontsize=9,
+                fontweight="bold" if active else "normal")
+
+    # Course cards grid (3 × 2)
+    card_data = [
+        ("Python Data\nAnalysis",   "Beginner · 12 lessons", "#0f766e"),
+        ("JavaScript\nFundamentals","42 enrolled · 8 lessons","#1d4ed8"),
+        ("Machine\nLearning",       "Advanced · 20 lessons",  "#9333ea"),
+        ("Airflow\nWorkshop",       "Event 8/20 · Limited",   "#ea580c"),
+        ("Git &\nGitHub",           "Full-stack · 10 lessons", "#0369a1"),
+        ("Data\nVisualization",     "Tableau · 6 lessons",    "#16a34a"),
+    ]
+    for i, (title, sub, c) in enumerate(card_data):
+        cx = 3.35 + (i % 3) * 4.15
+        cy = 3.85 - (i // 3) * 3.35
+        ax.add_patch(FancyBboxPatch((cx, cy), 3.8, 3.05,
+                                    boxstyle="round,pad=0.05,rounding_size=0.12",
+                                    linewidth=1, edgecolor=UIBORD, facecolor=UIPANEL, zorder=2))
+        ax.add_patch(FancyBboxPatch((cx, cy + 1.65), 3.8, 1.4,
+                                    boxstyle="square,pad=0", lw=0, facecolor=c, alpha=0.18, zorder=3))
+        ax.text(cx + 1.9, cy + 2.35, title, ha="center", va="center",
+                color=c, fontsize=9, fontweight="bold", zorder=4)
+        ax.text(cx + 1.9, cy + 1.05, sub, ha="center", va="center",
+                color=UIGRAY, fontsize=7.5, zorder=3)
+        ax.add_patch(FancyBboxPatch((cx + 0.25, cy + 0.22), 3.3, 0.5,
+                                    boxstyle="round,pad=0.04,rounding_size=0.1",
+                                    lw=0, facecolor=c, alpha=0.85, zorder=3))
+        ax.text(cx + 1.9, cy + 0.47, "Join Now", ha="center", va="center",
+                color=WHITE, fontsize=8.5, fontweight="bold", zorder=4)
+
+    ax.text(8.0, 0.18, "Next.js  ·  PostgreSQL  ·  Airflow ETL  ·  MongoDB  ·  Notion API",
+            ha="center", va="center", color=UIGRAY, fontsize=8)
+    plt.tight_layout(pad=0.5)
+    _save(fig, "daodao", "ui.png")
+
+
+def draw_gcp_livekit_infra_ui():
+    """Low Vision Glasses monitoring — dark dashboard theme."""
+    fig, ax = fig_setup()
+    appbar(ax, "Low Vision Glasses  —  Operations Dashboard", TEAL)
+
+    # Status bar
+    ax.add_patch(FancyBboxPatch((0.3, 8.1), 15.4, 0.52,
+                                boxstyle="square,pad=0", lw=0, facecolor=PANEL))
+    for i, (lbl, val, c) in enumerate([
+        ("Device",     "ONLINE",  GREEN),
+        ("LiveKit",    "LIVE",    TEAL),
+        ("AI Agent",   "ACTIVE",  PURPLE),
+        ("Uptime",     "99.8%",   TEAL2),
+    ]):
+        bx = 0.7 + i * 3.8
+        ax.text(bx, 8.37, lbl, ha="left", va="center", color=GRAY, fontsize=8)
+        ax.add_patch(FancyBboxPatch((bx + 0.9, 8.2), 1.2, 0.32,
+                                    boxstyle="round,pad=0.04,rounding_size=0.08",
+                                    lw=0, facecolor=c, alpha=0.25))
+        ax.text(bx + 1.5, 8.36, val, ha="center", va="center",
+                color=c, fontsize=8, fontweight="bold")
+
+    # Left: Audio waveform panel
+    ax.add_patch(FancyBboxPatch((0.3, 4.2), 7.5, 3.7,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=BORDER, facecolor=PANEL, zorder=2))
+    ax.text(0.7, 7.7, "AI Voice Stream  —  Live Waveform", ha="left", va="center",
+            color=TEAL, fontsize=10, fontweight="bold", zorder=3)
+    import math as _m
+    xs = [0.5 + j * 0.12 for j in range(58)]
+    ys_wave = [6.05 + 0.55 * _m.sin(j * 0.55) * (0.6 + 0.4 * _m.sin(j * 0.17)) for j in range(58)]
+    ax.plot(xs, ys_wave, color=TEAL, lw=1.8, zorder=3)
+    ax.fill_between(xs, [6.05] * 58, ys_wave, color=TEAL, alpha=0.15, zorder=3)
+    ax.text(0.7, 4.55, "Latency: 112 ms  |  Codec: Opus  |  Track: audio/video", ha="left",
+            va="center", color=GRAY, fontsize=8, zorder=3)
+
+    # Left bottom: RTSP / camera feed placeholder
+    ax.add_patch(FancyBboxPatch((0.3, 0.4), 7.5, 3.6,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=BORDER, facecolor="#0a0f1a", zorder=2))
+    ax.text(0.7, 3.78, "USB Camera Feed  —  Device View", ha="left", va="center",
+            color=ORANGE, fontsize=10, fontweight="bold", zorder=3)
+    for row in range(3):
+        for col in range(4):
+            ax.add_patch(FancyBboxPatch((0.5 + col * 1.8, 0.62 + row * 0.98), 1.6, 0.85,
+                                        boxstyle="square,pad=0", lw=1,
+                                        edgecolor=BORDER, facecolor="#0f172a", zorder=3))
+    ax.text(3.8, 0.52, "Frame buffer  —  30 FPS", ha="center", va="center",
+            color=GRAY, fontsize=7.5, zorder=4)
+
+    # Right: Prometheus KPI cards
+    for i, (val, lbl, c) in enumerate([
+        ("4",     "Active Sessions",  TEAL),
+        ("112ms", "E2E Latency",      GREEN),
+        ("7",     "AI Requests/s",    PURPLE),
+        ("0",     "Error Rate",       GRAY),
+    ]):
+        kpi_card(ax, 8.1, 5.8 - i * 1.55, 7.6, 1.35, val, lbl, c)
+
+    # Right bottom: deploy info
+    ax.add_patch(FancyBboxPatch((8.1, 0.4), 7.6, 1.3,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=BORDER, facecolor=PANEL, zorder=2))
+    ax.text(8.4, 1.45, "Ansible  —  Last Deploy:", ha="left", va="center",
+            color=GREEN, fontsize=9, fontweight="bold", zorder=3)
+    ax.text(8.4, 1.05, "livekit-ansible · playbook.yml · env: production · status: OK", ha="left",
+            va="center", color=GRAY, fontsize=8, zorder=3)
+    ax.text(8.4, 0.65, "UFW: TCP 80/443/7880/7881/8000  UDP 3478  UDP 50000-60000", ha="left",
+            va="center", color=TEAL2, fontsize=7.5, zorder=3)
+
+    ax.text(8.0, 0.18,
+            "GCP · FastAPI · LiveKit · Caddy · Redis · Ansible · Prometheus · Grafana",
+            ha="center", va="center", color=GRAY, fontsize=8)
+    plt.tight_layout(pad=0.5)
+    _save(fig, "gcp-livekit-infra", "ui.png")
+
+
+def draw_de_ui():
+    """GitHub Data Engineering pipeline — Airflow-style light dashboard."""
+    fig, ax = fig_setup_light()
+    browser_chrome(ax, "airflow.de-pipeline.app/dags", "Data Pipeline — DAG View")
+
+    # Top nav bar
+    ax.add_patch(FancyBboxPatch((0.3, 7.6), 15.4, 0.72,
+                                boxstyle="square,pad=0", lw=0, facecolor="#1a2744"))
+    ax.text(0.9, 7.96, "Airflow", ha="left", va="center",
+            color="#38b2ac", fontsize=12, fontweight="bold")
+    for i, lbl in enumerate(["DAGs", "Datasets", "Browse", "Admin"]):
+        ax.text(2.6 + i * 2.2, 7.96, lbl, ha="left", va="center",
+                color="#94a3b8" if i > 0 else WHITE, fontsize=9)
+    ax.plot([2.52, 3.92], [7.6, 7.6], color=TEAL, lw=2.5)
+    ax.plot([0.3, 15.7], [7.6, 7.6], color="#334155", lw=0.8)
+
+    # Left: DAG list panel
+    ax.add_patch(FancyBboxPatch((0.3, 0.3), 5.0, 7.1,
+                                boxstyle="square,pad=0", lw=0, facecolor=UILIGHT))
+    ax.plot([5.3, 5.3], [0.3, 7.6], color=UIBORD, lw=0.8)
+    ax.text(0.65, 7.3, "DAG List", ha="left", va="center",
+            color=UIDARK, fontsize=10, fontweight="bold")
+    dag_items = [
+        ("github_activities_dag", "Daily",    GREEN,  "success"),
+        ("github_users_dag",      "Monthly",  BLUE,   "running"),
+        ("github_repos_dag",      "Daily",    TEAL,   "success"),
+        ("github_issues_dag",     "Weekly",   PURPLE, "paused"),
+        ("dbt_transform_dag",     "After ETL",ORANGE, "success"),
+        ("streamlit_refresh",     "Hourly",   GREEN,  "success"),
+    ]
+    for i, (name, sched, c, status) in enumerate(dag_items):
+        by = 6.7 - i * 1.02
+        sc = {"success": GREEN, "running": ORANGE, "paused": GRAY}[status]
+        ax.add_patch(FancyBboxPatch((0.4, by - 0.35), 4.8, 0.75,
+                                    boxstyle="round,pad=0.03,rounding_size=0.08",
+                                    lw=1, edgecolor=c if i == 1 else UIBORD,
+                                    facecolor="#e0f2fe" if i == 1 else UIPANEL, zorder=2))
+        ax.text(0.65, by + 0.05, name, ha="left", va="center",
+                color=UIDARK, fontsize=8, fontweight="bold", zorder=3)
+        ax.text(0.65, by - 0.18, sched, ha="left", va="center",
+                color=UIGRAY, fontsize=7, zorder=3)
+        ax.add_patch(FancyBboxPatch((4.5, by - 0.12), 0.65, 0.3,
+                                    boxstyle="round,pad=0.03,rounding_size=0.08",
+                                    lw=0, facecolor=sc, alpha=0.2, zorder=3))
+        ax.text(4.83, by + 0.03, status[:3].upper(), ha="center", va="center",
+                color=sc, fontsize=6.5, fontweight="bold", zorder=4)
+
+    # Right: Pipeline visualization
+    ax.add_patch(FancyBboxPatch((5.5, 3.5), 10.1, 3.9,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=UIBORD, facecolor=UIPANEL, zorder=2))
+    ax.text(5.85, 7.2, "github_activities_dag  —  Task Graph", ha="left", va="center",
+            color=UIDARK, fontsize=10, fontweight="bold", zorder=3)
+    # Pipeline nodes
+    pipeline_nodes = [
+        (6.3,  5.4, "fetch\ngithub_api",  GREEN,  True),
+        (8.3,  5.4, "transform\nactivities", BLUE, True),
+        (10.3, 5.4, "load\npostgres",    TEAL,   True),
+        (12.3, 5.4, "dbt\ntransform",    ORANGE, False),
+        (14.3, 5.4, "streamlit\nrefresh",PURPLE, False),
+    ]
+    for j, (px, py, lbl, c, done) in enumerate(pipeline_nodes):
+        alpha = 0.9 if done else 0.45
+        ax.add_patch(FancyBboxPatch((px - 0.75, py - 0.5), 1.5, 1.0,
+                                    boxstyle="round,pad=0.05,rounding_size=0.12",
+                                    lw=1.5, edgecolor=c, facecolor=c, alpha=alpha * 0.25, zorder=3))
+        ax.text(px, py, lbl, ha="center", va="center",
+                color=UIDARK, fontsize=7.5, fontweight="bold", zorder=4)
+        if j < len(pipeline_nodes) - 1:
+            ax.annotate("", xy=(pipeline_nodes[j+1][0] - 0.75, pipeline_nodes[j+1][1]),
+                        xytext=(px + 0.75, py),
+                        arrowprops=dict(arrowstyle="-|>", color=c, lw=1.5, mutation_scale=14),
+                        zorder=4)
+
+    # Streamlit & stats cards
+    for i, (val, lbl, c) in enumerate([
+        ("1,247", "Repos Crawled", TEAL),
+        ("38K",   "Events/Day",    BLUE),
+        ("99.1%", "Pipeline SLA",  GREEN),
+    ]):
+        kpi_card(ax, 5.6 + i * 3.35, 0.55, 3.1, 2.7, val, lbl, c)
+
+    ax.text(8.0, 0.22, "Python  ·  Airflow  ·  PostgreSQL  ·  dbt  ·  Streamlit  ·  Docker",
+            ha="center", va="center", color=UIGRAY, fontsize=8)
+    plt.tight_layout(pad=0.5)
+    _save(fig, "de", "ui.png")
+
+
+def draw_backup_start_up_ui():
+    """Automated Stand-Up Backup — Airflow scheduler UI, light theme."""
+    fig, ax = fig_setup_light()
+    browser_chrome(ax, "airflow.local/dags/backup_standup", "Backup Stand-Up  —  Scheduler")
+
+    # Header nav
+    ax.add_patch(FancyBboxPatch((0.3, 7.6), 15.4, 0.72,
+                                boxstyle="square,pad=0", lw=0, facecolor="#1e3a5f"))
+    ax.text(0.9, 7.96, "Backup Scheduler", ha="left", va="center",
+            color="#4fd1c5", fontsize=12, fontweight="bold")
+    for i, lbl in enumerate(["Overview", "Runs", "Logs", "Config"]):
+        ax.text(3.8 + i * 2.5, 7.96, lbl, ha="left", va="center",
+                color=WHITE if i == 0 else "#94a3b8", fontsize=9)
+    ax.plot([3.72, 5.52], [7.6, 7.6], color="#4fd1c5", lw=2.5)
+
+    # KPI cards row
+    for i, (val, lbl, c) in enumerate([
+        ("24",   "Runs This Month", BLUE),
+        ("100%", "Success Rate",    GREEN),
+        ("0",    "Failures",        GRAY),
+        ("4.2s", "Avg Duration",    TEAL),
+    ]):
+        kpi_card(ax, 0.4 + i * 3.8, 5.9, 3.5, 1.5, val, lbl, c)
+
+    # Cron jobs table
+    ax.add_patch(FancyBboxPatch((0.3, 2.0), 9.8, 3.7,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=UIBORD, facecolor=UIPANEL, zorder=2))
+    ax.text(0.65, 5.5, "Scheduled Jobs", ha="left", va="center",
+            color=UIDARK, fontsize=10, fontweight="bold", zorder=3)
+    headers = ["Job Name", "Schedule", "Last Run", "Status"]
+    for j, h in enumerate(headers):
+        ax.text(0.65 + j * 2.4, 5.15, h, ha="left", va="center",
+                color=UIGRAY, fontsize=8, fontweight="bold", zorder=3)
+    ax.plot([0.4, 10.0], [4.95, 4.95], color=UIBORD, lw=0.8, zorder=3)
+    jobs = [
+        ("fetch_notion_standup", "0 9 * * 1-5", "Today 09:01", GREEN,  "Success"),
+        ("backup_to_gdrive",     "5 9 * * 1-5", "Today 09:06", GREEN,  "Success"),
+        ("send_summary_email",   "10 9 * * 1-5","Today 09:11", GREEN,  "Success"),
+        ("monthly_report",       "0 9 1 * *",   "2026/03/01",  BLUE,   "Success"),
+    ]
+    for k, (name, cron, last, c, status) in enumerate(jobs):
+        by = 4.6 - k * 0.7
+        if k % 2 == 0:
+            ax.add_patch(FancyBboxPatch((0.38, by - 0.25), 9.55, 0.55,
+                                        boxstyle="square,pad=0", lw=0, facecolor=UILIGHT, zorder=2))
+        ax.text(0.65, by, name,   ha="left", va="center", color=UIDARK, fontsize=8, zorder=3)
+        ax.text(3.05, by, cron,   ha="left", va="center", color=UIGRAY, fontsize=7.5, zorder=3)
+        ax.text(5.45, by, last,   ha="left", va="center", color=UIGRAY, fontsize=7.5, zorder=3)
+        ax.add_patch(FancyBboxPatch((7.78, by - 0.15), 1.15, 0.35,
+                                    boxstyle="round,pad=0.03,rounding_size=0.08",
+                                    lw=0, facecolor=c, alpha=0.2, zorder=3))
+        ax.text(8.35, by + 0.02, status, ha="center", va="center",
+                color=c, fontsize=7.5, fontweight="bold", zorder=4)
+
+    # Stand-up records panel
+    ax.add_patch(FancyBboxPatch((10.2, 2.0), 5.5, 3.7,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=UIBORD, facecolor=UIPANEL, zorder=2))
+    ax.text(10.55, 5.5, "Recent Stand-Up Records", ha="left", va="center",
+            color=UIDARK, fontsize=10, fontweight="bold", zorder=3)
+    records = [
+        ("2026-03-20", "Week 12 Sprint Review", TEAL),
+        ("2026-03-19", "Deployment blockers discussed", BLUE),
+        ("2026-03-18", "DB migration completed", GREEN),
+        ("2026-03-17", "API refactor in progress", ORANGE),
+    ]
+    for r, (date, note, c) in enumerate(records):
+        ry = 4.9 - r * 0.75
+        ax.add_patch(FancyBboxPatch((10.3, ry - 0.25), 5.3, 0.58,
+                                    boxstyle="round,pad=0.03,rounding_size=0.08",
+                                    lw=1, edgecolor=c, facecolor=UILIGHT, alpha=0.8, zorder=3))
+        ax.text(10.5, ry + 0.04, date, ha="left", va="center",
+                color=c, fontsize=8, fontweight="bold", zorder=4)
+        ax.text(10.5, ry - 0.16, note, ha="left", va="center",
+                color=UIGRAY, fontsize=7.5, zorder=4)
+
+    # Next run countdown
+    ax.add_patch(FancyBboxPatch((0.3, 0.35), 15.4, 1.45,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=UIBORD, facecolor=UILIGHT, zorder=2))
+    ax.text(0.65, 1.52, "Next Scheduled Run:", ha="left", va="center",
+            color=UIDARK, fontsize=9, fontweight="bold", zorder=3)
+    ax.text(0.65, 1.08, "2026-03-21 09:00  ·  fetch_notion_standup  →  backup_to_gdrive  →  send_summary_email",
+            ha="left", va="center", color=UIGRAY, fontsize=8.5, zorder=3)
+    ax.text(0.65, 0.62, "Python  ·  Airflow  ·  Notion API  ·  Google Drive API  ·  Docker",
+            ha="left", va="center", color=UIGRAY, fontsize=8, zorder=3)
+    plt.tight_layout(pad=0.5)
+    _save(fig, "backup-start-up", "ui.png")
+
+
+def draw_remote_meeting_system_ui():
+    """Remote meeting system — dark conference room UI."""
+    fig, ax = fig_setup()
+    appbar(ax, "Remote Meeting System  —  Conference Room  #3", TEAL)
+
+    # Recording + status bar
+    ax.add_patch(FancyBboxPatch((0.3, 8.1), 15.4, 0.52,
+                                boxstyle="square,pad=0", lw=0, facecolor="#0d1b2a"))
+    ax.add_patch(FancyBboxPatch((0.5, 8.2), 0.6, 0.3,
+                                boxstyle="round,pad=0.03,rounding_size=0.06",
+                                lw=0, facecolor=RED))
+    ax.text(0.8, 8.35, "REC", ha="center", va="center",
+            color=WHITE, fontsize=6.5, fontweight="bold")
+    for i, (lbl, val, c) in enumerate([
+        ("Duration", "00:42:17", WHITE),
+        ("Streams",  "4 RTSP",   TEAL),
+        ("Bitrate",  "2.8 Mbps", GREEN),
+        ("Packet Loss", "0.1%",  GRAY),
+    ]):
+        bx = 1.6 + i * 3.6
+        ax.text(bx, 8.38, lbl, ha="left", va="center", color=GRAY, fontsize=7.5)
+        ax.text(bx + 1.0, 8.38, val, ha="left", va="center",
+                color=c, fontsize=8, fontweight="bold")
+
+    # Main screen share area
+    ax.add_patch(FancyBboxPatch((0.3, 3.1), 10.2, 4.8,
+                                boxstyle="round,pad=0.05,rounding_size=0.12",
+                                linewidth=1.5, edgecolor=TEAL, facecolor="#0a0f1a", zorder=2))
+    ax.text(5.4, 7.7, "Screen Share  —  Presenter: Alice", ha="center", va="center",
+            color=TEAL, fontsize=10, fontweight="bold", zorder=3)
+    # Simulate code editor on screen
+    ax.add_patch(FancyBboxPatch((0.5, 3.25), 9.8, 4.42,
+                                boxstyle="square,pad=0", lw=0, facecolor="#0d1117", zorder=3))
+    for row, (line, c) in enumerate([
+        ("class RTSPStreamer:", TEAL2),
+        ("    def __init__(self, url):", WHITE),
+        ("        self.cap = cv2.VideoCapture(url)", GRAY),
+        ("        self.stream_active = False", GRAY),
+        ("    def start_stream(self):", WHITE),
+        ("        self.stream_active = True", GREEN),
+    ]):
+        ax.text(0.75, 7.38 - row * 0.65, line, ha="left", va="center",
+                color=c, fontsize=8, family="monospace", zorder=4)
+
+    # Participant grid (right)
+    ax.add_patch(FancyBboxPatch((10.7, 3.1), 5.0, 4.8,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=BORDER, facecolor=PANEL, zorder=2))
+    ax.text(11.0, 7.7, "Participants  (4)", ha="left", va="center",
+            color=WHITE, fontsize=9, fontweight="bold", zorder=3)
+    participants = [
+        ("Alice",  TEAL,   True,  True),
+        ("Bob",    BLUE,   True,  False),
+        ("Carol",  ORANGE, False, True),
+        ("Dave",   PURPLE, True,  True),
+    ]
+    for p, (name, c, mic, cam) in enumerate(participants):
+        row, col = divmod(p, 2)
+        px = 10.85 + col * 2.45
+        py = 6.5 - row * 1.75
+        ax.add_patch(FancyBboxPatch((px, py - 0.3), 2.2, 1.4,
+                                    boxstyle="round,pad=0.05,rounding_size=0.1",
+                                    lw=1.5, edgecolor=c, facecolor=c, alpha=0.15, zorder=3))
+        ax.add_patch(FancyBboxPatch((px + 0.6, py + 0.2), 1.0, 0.75,
+                                    boxstyle="round,pad=0.05,rounding_size=0.15",
+                                    lw=0, facecolor=c, alpha=0.3, zorder=4))
+        ax.text(px + 1.1, py + 0.58, name[0], ha="center", va="center",
+                color=WHITE, fontsize=11, fontweight="bold", zorder=5)
+        ax.text(px + 1.1, py - 0.05, name, ha="center", va="center",
+                color=WHITE, fontsize=7.5, zorder=4)
+        ax.text(px + 0.25, py - 0.2, "MIC" if mic else "---", ha="center",
+                va="center", color=GREEN if mic else GRAY, fontsize=6.5, fontweight="bold", zorder=5)
+        ax.text(px + 1.9, py - 0.2, "CAM" if cam else "OFF", ha="center",
+                va="center", color=TEAL if cam else GRAY, fontsize=6.5, fontweight="bold", zorder=5)
+
+    # RTSP stream status bar
+    ax.add_patch(FancyBboxPatch((0.3, 1.6), 15.4, 1.3,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=BORDER, facecolor=PANEL, zorder=2))
+    ax.text(0.65, 2.7, "RTSP Streams", ha="left", va="center",
+            color=GRAY, fontsize=9, fontweight="bold", zorder=3)
+    for s, (stream, status, c) in enumerate([
+        ("rtsp://cam-1/live", "ACTIVE",      GREEN),
+        ("rtsp://cam-2/live", "ACTIVE",      GREEN),
+        ("rtsp://cam-3/live", "BUFFERING",   ORANGE),
+        ("rtsp://cam-4/live", "STANDBY",     GRAY),
+    ]):
+        bx = 0.55 + s * 3.8
+        ax.add_patch(FancyBboxPatch((bx, 1.78), 3.5, 0.72,
+                                    boxstyle="round,pad=0.04,rounding_size=0.09",
+                                    lw=1, edgecolor=c, facecolor=c, alpha=0.12, zorder=3))
+        ax.text(bx + 0.18, 2.2, stream,  ha="left", va="center",
+                color=WHITE, fontsize=7.5, zorder=4)
+        ax.text(bx + 0.18, 1.93, status, ha="left", va="center",
+                color=c, fontsize=7.5, fontweight="bold", zorder=4)
+
+    # Control bar
+    ax.add_patch(FancyBboxPatch((0.3, 0.3), 15.4, 1.1,
+                                boxstyle="round,pad=0.05,rounding_size=0.1",
+                                linewidth=1, edgecolor=BORDER, facecolor="#0d1b2a", zorder=2))
+    for b, (lbl, c) in enumerate([
+        ("Mute",     TEAL),
+        ("Camera",   BLUE),
+        ("Share",    GREEN),
+        ("Record",   RED),
+        ("Chat",     GRAY),
+        ("End Call", RED),
+    ]):
+        bx = 1.2 + b * 2.35
+        ax.add_patch(FancyBboxPatch((bx - 0.6, 0.42), 1.7, 0.78,
+                                    boxstyle="round,pad=0.04,rounding_size=0.1",
+                                    lw=1, edgecolor=c,
+                                    facecolor="#7f1d1d" if lbl == "End Call" else PANEL, zorder=3))
+        ax.text(bx + 0.25, 0.81, lbl, ha="center", va="center",
+                color=c if lbl != "End Call" else WHITE, fontsize=8, fontweight="bold", zorder=4)
+
+    ax.text(8.0, 0.18, "Python  ·  OpenCV  ·  RTSP  ·  FFmpeg  ·  WebSocket  ·  Shell Script",
+            ha="center", va="center", color=GRAY, fontsize=8)
+    plt.tight_layout(pad=0.5)
+    _save(fig, "remote-meeting-system", "ui.png")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# REGISTRY  project_id → {arch, flow, ui}  — defined AFTER all draw_* functions
+# ══════════════════════════════════════════════════════════════════════════════
+
+DIAGRAMS = {
+    "ebook":                 {"arch": draw_ebook,                 "flow": draw_ebook_flow,                 "ui": draw_ebook_ui},
+    "daodao":                {"arch": draw_daodao,                "flow": draw_daodao_flow,                "ui": draw_daodao_ui},
+    "gcp-livekit-infra":     {"arch": draw_gcp_livekit_infra,     "flow": draw_gcp_livekit_infra_flow,     "ui": draw_gcp_livekit_infra_ui},
+    "stock-mlops":           {"arch": draw_stock_mlops,           "flow": draw_stock_mlops_flow,           "ui": draw_stock_mlops_ui},
+    "llm-assistance":        {"arch": draw_llm_assistance,        "flow": draw_llm_assistance_flow,        "ui": draw_llm_assistance_ui},
+    "de":                    {"arch": draw_de,                    "flow": draw_de_flow,                    "ui": draw_de_ui},
+    "monitoring-system":     {"arch": draw_monitoring_system,     "flow": draw_monitoring_system_flow,     "ui": draw_monitoring_system_ui},
+    "clothes":               {"arch": draw_clothes,               "flow": draw_clothes_flow,               "ui": draw_clothes_ui},
+    "aidc":                  {"arch": draw_aidc,                  "flow": draw_aidc_flow,                  "ui": draw_aidc_ui},
+    "amd":                   {"arch": draw_amd,                   "flow": draw_amd_flow,                   "ui": draw_amd_ui},
+    "backup-start-up":       {"arch": draw_backup_start_up,       "flow": draw_backup_start_up_flow,       "ui": draw_backup_start_up_ui},
+    "rm2":                   {"arch": draw_rm2,                   "flow": draw_rm2_flow,                   "ui": draw_rm2_ui},
+    "molrx":                 {"arch": draw_molrx,                 "flow": draw_molrx_flow,                 "ui": draw_molrx_ui},
+    "remote-meeting-system": {"arch": draw_remote_meeting_system, "flow": draw_remote_meeting_system_flow, "ui": draw_remote_meeting_system_ui},
+}
+
 # Backward-compat alias used by older tooling
 PROJECTS = {pid: fns["arch"] for pid, fns in DIAGRAMS.items()}
 
@@ -2320,7 +2790,7 @@ def main():
         help="Project IDs to regenerate (default: all)",
     )
     parser.add_argument(
-        "--type", choices=["arch", "flow", "all"], default="all",
+        "--type", choices=["arch", "flow", "ui", "all"], default="all",
         help="Which diagram type to generate (default: all)",
     )
     parser.add_argument(
@@ -2342,7 +2812,7 @@ def main():
         print("Run with --list to see available IDs.", file=sys.stderr)
         sys.exit(1)
 
-    types = ["arch", "flow"] if args.type == "all" else [args.type]
+    types = ["arch", "flow", "ui"] if args.type == "all" else [args.type]
     os.makedirs(IMG_ROOT, exist_ok=True)
     print(f"Generating {len(targets) * len(types)} diagram(s)  [type={args.type}] ...")
     for pid in targets:

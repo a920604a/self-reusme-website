@@ -24,7 +24,7 @@ import {
   TabPanel,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { FaExternalLinkAlt, FaArrowLeft } from "react-icons/fa";
+import { FaExternalLinkAlt, FaArrowLeft, FaDesktop } from "react-icons/fa";
 
 /** Derive a human-readable tab label from an image filename. */
 const imgLabel = (path) => {
@@ -38,12 +38,75 @@ const imgLabel = (path) => {
 
 const stripMd = (text) => text.replace(/\*\*(.*?)\*\*/g, "$1");
 
-const DetailTemplate = ({ title, subtitle, category, description, tags, images, image, reference, repo, index, backLink, backLabel }) => {
-  const [isModalOpen, setIsModalOpen]   = useState(false);
-  const [modalImg,    setModalImg]       = useState(null);
+/** Reusable image gallery: tabs for multiple images, single image otherwise. */
+const ImageGallery = ({ images, title, onZoom, darkBg = true }) => {
+  const bg = darkBg ? "gray.900" : "gray.50";
+  const border = darkBg ? {} : { border: "1px solid", borderColor: "gray.200" };
+
+  if (images.length === 1) {
+    return (
+      <Image
+        src={`${process.env.PUBLIC_URL}/images/portfolio/${images[0]}`}
+        alt={title}
+        objectFit="contain"
+        borderRadius="md"
+        maxH="340px"
+        width="100%"
+        bg={bg}
+        mb={6}
+        boxShadow="sm"
+        cursor="zoom-in"
+        _hover={{ opacity: 0.92 }}
+        onClick={() => onZoom(images[0])}
+        {...border}
+      />
+    );
+  }
+
+  return (
+    <Tabs variant="soft-rounded" colorScheme={darkBg ? "teal" : "blue"} size="sm" mb={6}>
+      <TabList mb={3} flexWrap="wrap" gap={1}>
+        {images.map((img, i) => (
+          <Tab key={i} fontSize="xs" fontWeight="bold">{imgLabel(img)}</Tab>
+        ))}
+      </TabList>
+      <TabPanels>
+        {images.map((img, i) => (
+          <TabPanel key={i} p={0}>
+            <Image
+              src={`${process.env.PUBLIC_URL}/images/portfolio/${img}`}
+              alt={`${title} — ${imgLabel(img)}`}
+              objectFit="contain"
+              borderRadius="md"
+              maxH="340px"
+              width="100%"
+              bg={bg}
+              boxShadow="sm"
+              cursor="zoom-in"
+              _hover={{ opacity: 0.92 }}
+              onClick={() => onZoom(img)}
+              {...border}
+            />
+          </TabPanel>
+        ))}
+      </TabPanels>
+    </Tabs>
+  );
+};
+
+const DetailTemplate = ({
+  title, subtitle, category, description, tags,
+  images, image, uiImages,
+  reference, repo, index, backLink, backLabel,
+}) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImg,    setModalImg]    = useState(null);
+
+  const openZoom = (img) => { setModalImg(img); setIsModalOpen(true); };
 
   // Normalise: prefer new `images[]`, fall back to legacy `image` string
-  const gallery = images && images.length > 0 ? images : image ? [image] : [];
+  const gallery   = images   && images.length   > 0 ? images   : image ? [image] : [];
+  const uiGallery = uiImages && uiImages.length > 0 ? uiImages : [];
 
   const renderRepoLinks = (repo) => {
     if (Array.isArray(repo)) {
@@ -125,70 +188,9 @@ const DetailTemplate = ({ title, subtitle, category, description, tags, images, 
             </Stack>
           )}
 
-          {/* Image Gallery */}
+          {/* ── Technical Diagrams (arch / flow / pipeline) ── */}
           {gallery.length > 0 && (
-            <>
-              {gallery.length === 1 ? (
-                <Image
-                  src={`images/portfolio/${gallery[0]}`}
-                  alt={title}
-                  objectFit="contain"
-                  borderRadius="md"
-                  maxH="340px"
-                  width="100%"
-                  bg="gray.900"
-                  mb={6}
-                  boxShadow="sm"
-                  cursor="zoom-in"
-                  _hover={{ opacity: 0.92 }}
-                  onClick={() => { setModalImg(gallery[0]); setIsModalOpen(true); }}
-                />
-              ) : (
-                <Tabs variant="soft-rounded" colorScheme="teal" size="sm" mb={6}>
-                  <TabList mb={3} flexWrap="wrap" gap={1}>
-                    {gallery.map((img, i) => (
-                      <Tab key={i} fontSize="xs" fontWeight="bold">{imgLabel(img)}</Tab>
-                    ))}
-                  </TabList>
-                  <TabPanels>
-                    {gallery.map((img, i) => (
-                      <TabPanel key={i} p={0}>
-                        <Image
-                          src={`images/portfolio/${img}`}
-                          alt={`${title} — ${imgLabel(img)}`}
-                          objectFit="contain"
-                          borderRadius="md"
-                          maxH="340px"
-                          width="100%"
-                          bg="gray.900"
-                          boxShadow="sm"
-                          cursor="zoom-in"
-                          _hover={{ opacity: 0.92 }}
-                          onClick={() => { setModalImg(img); setIsModalOpen(true); }}
-                        />
-                      </TabPanel>
-                    ))}
-                  </TabPanels>
-                </Tabs>
-              )}
-
-              {/* Full-screen lightbox */}
-              <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="full">
-                <ModalOverlay />
-                <ModalContent bg="blackAlpha.900">
-                  <ModalCloseButton color="white" zIndex={1} />
-                  <ModalBody p={0} display="flex" alignItems="center" justifyContent="center">
-                    <Image
-                      src={`images/portfolio/${modalImg}`}
-                      alt={title}
-                      objectFit="contain"
-                      maxW="100vw"
-                      maxH="100vh"
-                    />
-                  </ModalBody>
-                </ModalContent>
-              </Modal>
-            </>
+            <ImageGallery images={gallery} title={title} onZoom={openZoom} darkBg={true} />
           )}
 
           {/* Description */}
@@ -226,6 +228,29 @@ const DetailTemplate = ({ title, subtitle, category, description, tags, images, 
             </Text>
           )}
 
+          {/* ── UI Screenshots section (only when uiImages provided) ── */}
+          {uiGallery.length > 0 && (
+            <>
+              <Divider my={6} />
+              <Stack direction="row" align="center" spacing={2} mb={4}>
+                <Icon as={FaDesktop} color="purple.500" />
+                <Heading as="h2" fontSize="lg" fontWeight="bold" color="purple.600">
+                  User Interface
+                </Heading>
+              </Stack>
+              <Box
+                bg="purple.50"
+                borderRadius="12px"
+                p={4}
+                border="1px solid"
+                borderColor="purple.100"
+              >
+                <ImageGallery images={uiGallery} title={title} onZoom={openZoom} darkBg={false} />
+              </Box>
+            </>
+          )}
+
+          {/* Reference / Repo links */}
           {(reference || repo) && (
             <>
               <Divider my={6} />
@@ -250,6 +275,25 @@ const DetailTemplate = ({ title, subtitle, category, description, tags, images, 
           )}
         </Box>
       </Box>
+
+      {/* ── Shared full-screen lightbox (handles both gallery & uiGallery) ── */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="full">
+        <ModalOverlay />
+        <ModalContent bg="blackAlpha.900">
+          <ModalCloseButton color="white" zIndex={1} />
+          <ModalBody p={0} display="flex" alignItems="center" justifyContent="center">
+            {modalImg && (
+              <Image
+                src={`${process.env.PUBLIC_URL}/images/portfolio/${modalImg}`}
+                alt={title}
+                objectFit="contain"
+                maxW="100vw"
+                maxH="100vh"
+              />
+            )}
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };
