@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { ChakraProvider, Spinner, Center } from "@chakra-ui/react";
+import theme from "./theme";
 import Header from "./components/Header";
 import LandingSection from "./components/LandingSection";
 import ProjectsSummary from "./components/ProjectsSummary";
@@ -85,15 +86,15 @@ class App extends Component {
     const { data } = this.state;
     if (!data) {
       return (
-        <ChakraProvider>
-          <Center minH="100vh" bg="#18181b">
-            <Spinner size="xl" color="teal.400" thickness="4px" speed="0.65s" />
+        <ChakraProvider theme={theme}>
+          <Center minH="100vh" bg="#0b1326">
+            <Spinner size="xl" color="#c0c1ff" thickness="4px" speed="0.65s" />
           </Center>
         </ChakraProvider>
       );
     }
     return (
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <AlertProvider>
         <main>
           <Router>
@@ -116,6 +117,7 @@ class App extends Component {
                       skills={data.skills}
                       tools={data.tools}
                       frameworks={data.frameworks}
+                      tryLearn={data.tryLearn}
                     />
                     <EducationSection educationData={data.educationData} />
                     <ContactMeSection />

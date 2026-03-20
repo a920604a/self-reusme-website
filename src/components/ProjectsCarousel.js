@@ -1,119 +1,166 @@
 import React from "react";
-import { Box, Heading, Tag, TagLabel, Stack, Link as ChakraLink, Image, Text, useBreakpointValue, Flex } from "@chakra-ui/react";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+import {
+  Box, Heading, Text, Image, Flex, VStack, Stack,
+  Tag, TagLabel, Link as ChakraLink,
+} from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
-// Slick carousel 配置
-const sliderSettings = {
-    dots: true, // 顯示底部點
-    infinite: true, // 無限循環
-    speed: 800, // 切換速度 (ms)
-    slidesToShow: 1, // 每次顯示一個內容
-    slidesToScroll: 1, // 每次滾動一個內容
-    autoplay: true, // 自動播放
-    autoplaySpeed: 4000, // 每 4 秒切換
-    pauseOnHover: true, // hover 時暫停
-    arrows: false, // 隱藏左右箭頭
-};
-import { Link, useNavigate } from "react-router-dom";
+const ProjectsCarousel = ({ projects }) => (
+  <Box as="section" bg="#131b2e" py={{ base: 16, md: 24 }} px={{ base: 4, md: 8 }}>
+    <Box maxW="1100px" mx="auto">
 
+      {/* Section header */}
+      <Box mb={{ base: 12, md: 16 }} textAlign="center">
+        <Text
+          fontFamily="var(--font-label)"
+          fontSize="xs"
+          letterSpacing="widest"
+          textTransform="uppercase"
+          mb={3}
+          style={{ color: "#5de6ff" }}
+        >
+          Selected Work
+        </Text>
+        <Heading
+          fontFamily="var(--font-headline)"
+          fontWeight="800"
+          fontSize={{ base: "2xl", md: "3xl" }}
+          letterSpacing="-0.02em"
+          style={{ color: "#dae2fd" }}
+          id="projects-section"
+        >
+          Featured Projects
+        </Heading>
+      </Box>
 
-const ProjectsCarousel = ({ projects }) => {
-    // const navigate = useNavigate(); // 使用 useNavigate 來導航
-
-    // const handleBoxClick = (id) => {
-    //     navigate(`/projects/${id}`); // 導航到專案詳情頁，基於唯一的 id
-    // };
-
-
-
-    // 斷點控制背景和陰影
-    const boxBg = useBreakpointValue({ base: "white", md: "#e0fbf5" });
-    const boxShadow = useBreakpointValue({ base: "none", md: "lg" });
-
-    return (
-        <section>
-            <Heading as="h2" size="lg" mb={6} id="projects-section" textAlign="center" color="blue.700">
-                Projects
-            </Heading>
-            {/* 添加 Box 來增加底部留白 */}
-            <Box mb={10}>
-                <Slider {...sliderSettings}>
-                    {projects.map((project, index) => (
-                        <Box
-                            key={index}
-                            borderWidth="1px"
-                            borderRadius="lg"
-                            p={6}
-                            bg={boxBg}
-                            boxShadow={boxShadow}
-                            _hover={{
-                                boxShadow: "2xl",
-                                transform: "translateY(-6px)",
-                                transition: "all 0.3s ease",
-                            }}
-                            transition="all 0.3s ease"
-                        // cursor="pointer" // 改變游標樣式，提示用戶這是可點擊的
-                        // onClick={() => handleBoxClick(project.id)}
-                        // 點擊時觸發導航
-                        >
-                            {/* 使用 Flex 布局讓圖片在左邊 */}
-                            <Flex direction={{ base: "column", md: "row" }} align="center" justify="space-between">
-                                {/* 圖片區塊 */}
-                                <Box flex="1" mb={{ base: 4, md: 0 }} mr={{ md: 4 }}>
-                                    <Image
-                                        src={`${process.env.PUBLIC_URL}/images/portfolio/${project.images?.[0] || project.image}`}
-                                        alt={project.title}
-                                        objectFit="cover"
-                                        height="250px"
-                                        width="100%"
-                                        borderRadius="md"
-                                        boxShadow="lg"
-                                        transition="transform 0.3s ease"
-                                        _hover={{ transform: "scale(1.05)" }}
-                                    />
-                                </Box>
-
-                                {/* 右側內容區塊 */}
-                                <Box flex="2" mt={4}>
-                                    <Text fontSize="sm" color="gray.400" mb={2}>
-                                        {project.date}
-                                    </Text>
-                                    <Heading as="h3" size="md" mb={4} color="blue.700">
-                                        {project.title}
-                                    </Heading>
-
-                                    {/* 標籤區塊 */}
-                                    <Stack direction="row" spacing={2} mb={4}>
-                                        {project.tags.map((tag, tagIndex) => (
-                                            <Tag key={tagIndex} colorScheme="teal" size="sm">
-                                                <TagLabel>{tag}</TagLabel>
-                                            </Tag>
-                                        ))}
-                                    </Stack>
-
-                                    {/* 連結區塊 */}
-                                    <ChakraLink
-                                        as={Link}
-                                        to={`/projects/${project.id}`}
-                                        color="blue.500"
-                                        fontWeight="bold"
-                                        _hover={{
-                                            textDecoration: "underline",
-                                            color: "blue.700",
-                                        }}
-                                    >
-                                        View Details →
-                                    </ChakraLink>
-                                </Box>
-                            </Flex>
-                        </Box>
-                    ))}
-                </Slider>
+      {/* Alternating project rows */}
+      <VStack spacing={{ base: 16, md: 24 }} align="stretch">
+        {projects.map((project, index) => (
+          <Flex
+            key={project.id}
+            direction={{
+              base: "column",
+              lg: index % 2 === 0 ? "row" : "row-reverse",
+            }}
+            align="center"
+            gap={{ base: 8, lg: 14 }}
+          >
+            {/* Image */}
+            <Box flex="1" minW={0}>
+              <Link to={`/projects/${project.id}`} style={{ textDecoration: "none" }}>
+                <Box
+                  borderRadius="16px"
+                  overflow="hidden"
+                  border="1px solid #464554"
+                  role="group"
+                  transition="border-color 0.3s ease"
+                  _hover={{ borderColor: "#c0c1ff" }}
+                >
+                  <Image
+                    src={`${process.env.PUBLIC_URL}/images/portfolio/${
+                      project.images?.[0] || project.image
+                    }`}
+                    alt={project.title}
+                    w="100%"
+                    h={{ base: "200px", md: "280px" }}
+                    objectFit="cover"
+                    transition="transform 0.5s ease"
+                    _groupHover={{ transform: "scale(1.04)" }}
+                    bg="#171f33"
+                  />
+                </Box>
+              </Link>
             </Box>
-        </section>
-    );
-};
+
+            {/* Content */}
+            <Box flex="1" minW={0}>
+              <Text
+                fontFamily="var(--font-label)"
+                fontSize="xs"
+                letterSpacing="widest"
+                textTransform="uppercase"
+                mb={3}
+                style={{ color: "#5de6ff" }}
+              >
+                {project.category} · {project.date}
+              </Text>
+
+              <Heading
+                as="h3"
+                fontFamily="var(--font-headline)"
+                fontWeight="800"
+                fontSize={{ base: "xl", md: "2xl" }}
+                letterSpacing="-0.02em"
+                lineHeight="1.2"
+                mb={4}
+                style={{ color: "#c0c1ff" }}
+              >
+                {project.title}
+              </Heading>
+
+              <Stack direction="row" flexWrap="wrap" gap={2} mb={6}>
+                {project.tags.slice(0, 5).map((tag, i) => (
+                  <Tag
+                    key={i}
+                    size="sm"
+                    borderRadius="full"
+                    px={3}
+                    py={1}
+                    fontSize="xs"
+                    fontFamily="var(--font-label)"
+                    bg="#222a3d"
+                    color="#c7c4d7"
+                    border="1px solid #464554"
+                  >
+                    <TagLabel>{tag}</TagLabel>
+                  </Tag>
+                ))}
+                {project.tags.length > 5 && (
+                  <Tag size="sm" borderRadius="full" px={3} bg="#171f33" color="#908fa0" border="1px solid #464554">
+                    <TagLabel>+{project.tags.length - 5}</TagLabel>
+                  </Tag>
+                )}
+              </Stack>
+
+              <ChakraLink
+                as={Link}
+                to={`/projects/${project.id}`}
+                fontFamily="var(--font-headline)"
+                fontWeight="700"
+                fontSize="sm"
+                letterSpacing="wide"
+                style={{ color: "#5de6ff", textDecoration: "none" }}
+                _hover={{ color: "#c0c1ff", textDecoration: "none" }}
+              >
+                View Project →
+              </ChakraLink>
+            </Box>
+          </Flex>
+        ))}
+      </VStack>
+
+      {/* View all */}
+      <Box textAlign="center" mt={{ base: 16, md: 20 }}>
+        <ChakraLink
+          as={Link}
+          to="/projects"
+          display="inline-block"
+          px={8} py={3}
+          borderRadius="md"
+          border="1px solid #c0c1ff"
+          fontFamily="var(--font-headline)"
+          fontWeight="700"
+          fontSize="sm"
+          letterSpacing="wide"
+          style={{ color: "#c0c1ff", textDecoration: "none" }}
+          _hover={{ bg: "rgba(192,193,255,0.07)", textDecoration: "none" }}
+          transition="background 0.2s"
+        >
+          View All Projects →
+        </ChakraLink>
+      </Box>
+    </Box>
+  </Box>
+);
 
 export default ProjectsCarousel;

@@ -1,180 +1,139 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-    Box,
-    Heading,
-    Text,
-    VStack,
-    Flex,
-    Link as ChakraLink,
-    Badge,
-    useColorModeValue,
-    Stack,
-    Avatar,
-    Button,
-    Grid,
-    GridItem,
-    useBreakpointValue
+  Box, Heading, Text, VStack, Flex, Badge,
+  Link as ChakraLink,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 
 const WorksSummary = ({ works }) => {
-    const [viewMode, setViewMode] = useState("grid");
-    const boxBg = useColorModeValue("white", "gray.800");
-    const boxHoverBg = useColorModeValue("blue.50", "gray.700");
-    const textColor = useColorModeValue("gray.600", "gray.300");
-    const headingColor = useColorModeValue("blue.700", "blue.300");
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleBoxClick = (id) => {
-        navigate(`/works/${id}`);
-    };
+  return (
+    <Box as="section" bg="#0b1326" py={{ base: 16, md: 24 }} px={{ base: 4, md: 8 }}>
+      <Box maxW="900px" mx="auto">
 
-    const gridColumns = useBreakpointValue({ base: 1, sm: 2, md: 3, lg: 4 }); // 優化響應式設計
+        {/* Section header */}
+        <Box mb={{ base: 10, md: 14 }} textAlign="center">
+          <Text
+            fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
+            textTransform="uppercase" mb={3} style={{ color: "#5de6ff" }}
+          >
+            Career
+          </Text>
+          <Heading
+            fontFamily="var(--font-headline)" fontWeight="800"
+            fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
+            style={{ color: "#dae2fd" }} id="work-experience-section"
+          >
+            Work Experience
+          </Heading>
+        </Box>
 
-    return (
-        <section>
-            <Heading
-                as="h2"
-                size="lg"
-                mb={8}
-                id="work-experience-section"
-                textAlign="center"
-                color={headingColor}
-                fontWeight="bold"
-            >
-                Work Experience
-            </Heading>
+        {/* Timeline */}
+        <VStack spacing={0} align="stretch" position="relative">
+          {/* Vertical line */}
+          <Box className="timeline-line" />
 
-            {/* 顯示模式切換按鈕 */}
-            <Flex justify="center" mb={6}>
-                <Button
-                    onClick={() => setViewMode("card")}
-                    colorScheme={viewMode === "card" ? "blue" : "gray"}
-                    mr={4}
-                    _hover={{ bg: "blue.600", transform: "scale(1.05)" }} // 增加hover效果
+          {works.map((work, index) => {
+            const isCurrent = work.years && work.years.includes("Now");
+            return (
+              <Flex key={index} pl="36px" pb={index < works.length - 1 ? 10 : 0} position="relative">
+
+                {/* Timeline dot */}
+                <Box
+                  position="absolute"
+                  left="5px"
+                  top="6px"
+                  w="14px"
+                  h="14px"
+                  borderRadius="full"
+                  border="2px solid"
+                  borderColor={isCurrent ? "#c0c1ff" : "#464554"}
+                  bg={isCurrent ? "#c0c1ff" : "#0b1326"}
+                  zIndex={1}
+                  flexShrink={0}
+                />
+
+                {/* Card */}
+                <Box
+                  flex="1"
+                  bg="#171f33"
+                  borderRadius="16px"
+                  border="1px solid #464554"
+                  borderLeft={isCurrent ? "3px solid #c0c1ff" : "1px solid #464554"}
+                  p={6}
+                  cursor="pointer"
+                  transition="border-color 0.25s, transform 0.25s"
+                  _hover={{
+                    borderColor: "#c0c1ff",
+                    transform: "translateY(-3px)",
+                  }}
+                  onClick={() => navigate(`/works/${work.id}`)}
                 >
-                    Card View
-                </Button>
-                <Button
-                    onClick={() => setViewMode("grid")}
-                    colorScheme={viewMode === "grid" ? "blue" : "gray"}
-                    _hover={{ bg: "blue.600", transform: "scale(1.05)" }} // 增加hover效果
-                >
-                    Grid View
-                </Button>
-            </Flex>
+                  <Flex justify="space-between" align="flex-start" wrap="wrap" gap={2} mb={3}>
+                    <Flex align="center" gap={3}>
+                      <Heading
+                        fontFamily="var(--font-headline)"
+                        fontWeight="800"
+                        fontSize="md"
+                        style={{ color: "#c0c1ff" }}
+                      >
+                        {work.company}
+                      </Heading>
+                    </Flex>
+                    <Badge
+                      px={3} py={1} borderRadius="full" fontSize="xs"
+                      fontFamily="var(--font-label)"
+                      bg={isCurrent ? "rgba(192,193,255,0.12)" : "#222a3d"}
+                      style={{ color: isCurrent ? "#c0c1ff" : "#908fa0" }}
+                      border={`1px solid ${isCurrent ? "rgba(192,193,255,0.3)" : "#464554"}`}
+                    >
+                      {work.years}
+                    </Badge>
+                  </Flex>
 
-            <VStack spacing={8} align="stretch">
-                {viewMode === "card" ? (
-                    <VStack spacing={8} align="stretch">
-                        {works.map((work, index) => (
-                            <Box
-                                key={index}
-                                borderWidth="1px"
-                                borderRadius="lg"
-                                p={8}
-                                bg={boxBg}
-                                boxShadow="xl"
-                                transition="all 0.3s"
-                                _hover={{
-                                    boxShadow: "lg",
-                                    bg: boxHoverBg,
-                                    transform: "translateY(-4px)",
-                                }}
-                                cursor="pointer"
-                                onClick={() => handleBoxClick(work.id)}
-                                w="100%"
-                                mt={6}
-                                borderLeft="3px solid"
-                                borderLeftColor="teal.400"
-                            >
-                                <Flex justifyContent="space-between" alignItems="center" mb={4}>
-                                    <Flex alignItems="center">
-                                        {/* 公司名稱和公司Logo */}
-                                        <Avatar size="sm" name={work.company} src={work.logo} mr={4} />
-                                        <Heading size="md" color={headingColor} fontWeight="semibold">
-                                            {work.company}
-                                        </Heading>
-                                    </Flex>
-                                    <Badge colorScheme="green" fontSize="0.9em" fontWeight="bold">
-                                        {work.years}
-                                    </Badge>
-                                </Flex>
-                                <Text fontSize="lg" fontStyle="italic" color={textColor} mb={4}>
-                                    {work.position}
-                                </Text>
-                                <Text fontSize="sm" color={textColor} mb={4}>
-                                    {work.description}
-                                </Text>
-                                <Stack direction="row" spacing={4}>
-                                    <ChakraLink
-                                        as={Link}
-                                        to={`/works/${work.id}`}
-                                        color="blue.500"
-                                        fontWeight="bold"
-                                        _hover={{ textDecoration: "underline", color: "blue.700" }}
-                                    >
-                                        View Details →
-                                    </ChakraLink>
-                                </Stack>
-                            </Box>
-                        ))}
-                    </VStack>
-                ) : (
-                    <Grid templateColumns={`repeat(${gridColumns}, 1fr)`} gap={6}>
-                        {works.map((work, index) => (
-                            <GridItem key={index} w="100%">
-                                <Box
-                                    borderWidth="1px"
-                                    borderRadius="lg"
-                                    p={6}
-                                    bg={boxBg}
-                                    boxShadow="xl"
-                                    transition="all 0.3s"
-                                    _hover={{
-                                        boxShadow: "lg",
-                                        bg: boxHoverBg,
-                                        transform: "translateY(-4px)",
-                                    }}
-                                    cursor="pointer"
-                                    onClick={() => handleBoxClick(work.id)}
-                                >
-                                    <Flex justifyContent="space-between" alignItems="center" mb={4}>
-                                        <Flex alignItems="center">
-                                            <Avatar size="sm" name={work.company} src={work.logo} mr={4} />
-                                            <Heading size="md" color={headingColor} fontWeight="semibold">
-                                                {work.company}
-                                            </Heading>
-                                        </Flex>
-                                        <Badge colorScheme="green" fontSize="0.9em" fontWeight="bold">
-                                            {work.years}
-                                        </Badge>
-                                    </Flex>
-                                    <Text fontSize="lg" fontStyle="italic" color={textColor} mb={4}>
-                                        {work.position}
-                                    </Text>
-                                    <Text fontSize="sm" color={textColor} mb={4}>
-                                        {work.description}
-                                    </Text>
-                                    <Stack direction="row" spacing={4}>
-                                        <ChakraLink
-                                            as={Link}
-                                            to={`/works/${work.id}`}
-                                            color="blue.500"
-                                            fontWeight="bold"
-                                            _hover={{ textDecoration: "underline", color: "blue.700" }}
-                                        >
-                                            View Details →
-                                        </ChakraLink>
-                                    </Stack>
-                                </Box>
-                            </GridItem>
-                        ))}
-                    </Grid>
-                )}
-            </VStack>
-        </section>
-    );
+                  <Text
+                    fontFamily="var(--font-body)"
+                    fontSize="sm"
+                    fontStyle="italic"
+                    mb={3}
+                    style={{ color: "#5de6ff" }}
+                  >
+                    {work.position}
+                  </Text>
+
+                  <Text
+                    fontFamily="var(--font-body)"
+                    fontSize="sm"
+                    lineHeight="1.75"
+                    mb={4}
+                    style={{ color: "#c7c4d7" }}
+                    noOfLines={3}
+                  >
+                    {work.description}
+                  </Text>
+
+                  <ChakraLink
+                    as={Link}
+                    to={`/works/${work.id}`}
+                    fontFamily="var(--font-headline)"
+                    fontWeight="700"
+                    fontSize="xs"
+                    letterSpacing="wide"
+                    style={{ color: "#5de6ff", textDecoration: "none" }}
+                    _hover={{ color: "#c0c1ff", textDecoration: "none" }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    View Details →
+                  </ChakraLink>
+                </Box>
+              </Flex>
+            );
+          })}
+        </VStack>
+      </Box>
+    </Box>
+  );
 };
 
 export default WorksSummary;

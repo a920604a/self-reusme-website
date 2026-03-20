@@ -1,200 +1,150 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEnvelope, faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope, faBars } from "@fortawesome/free-solid-svg-icons";
+import { faGithub, faLinkedin, faMedium } from "@fortawesome/free-brands-svg-icons";
 import {
-  faGithub,
-  faLinkedin,
-  faMedium,
-  faStackOverflow,
-} from "@fortawesome/free-brands-svg-icons";
-import {
-  Box,
-  HStack,
+  Box, Flex, HStack, Text, VStack,
   IconButton,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
-  VStack,
-  useDisclosure,
-  useBreakpointValue,
+  Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
+  useDisclosure, useBreakpointValue,
 } from "@chakra-ui/react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const socials = [
-  {
-    icon: faEnvelope,
-    url: "mailto:a920604a@gmail.com",
-    label: "Send email",
-  },
-  {
-    icon: faGithub,
-    url: "https://github.com/a920604a",
-    label: "GitHub profile",
-  },
-  {
-    icon: faLinkedin,
-    url: "https://www.linkedin.com/in/chen-yuan-2b4b7212b/",
-    label: "LinkedIn profile",
-  },
-  {
-    icon: faMedium,
-    url: "https://medium.com/@a920604a",
-    label: "Medium blog",
-  },
-  {
-    icon: faStackOverflow,
-    url: "https://stackoverflow.com/users/22876310/a920604a",
-    label: "Stack Overflow profile",
-  },
+  { icon: faEnvelope, url: "mailto:a920604a@gmail.com",                        label: "Email" },
+  { icon: faGithub,   url: "https://github.com/a920604a",                      label: "GitHub" },
+  { icon: faLinkedin, url: "https://www.linkedin.com/in/chen-yuan-2b4b7212b/", label: "LinkedIn" },
+  { icon: faMedium,   url: "https://medium.com/@a920604a",                     label: "Medium" },
 ];
 
 const navItems = [
-  { label: "Home", to: "/", anchor: "" },
-  { label: "Projects", to: "/#projects", anchor: "projects" },
-  { label: "Experiences", to: "/#work-experience", anchor: "work-experience" },
-  { label: "Skills", to: "/#skills", anchor: "skills" },
-  { label: "Education", to: "/#education", anchor: "education" },
+  { label: "Home",       to: "/",                 anchor: "" },
+  { label: "Projects",   to: "/#projects",        anchor: "projects" },
+  { label: "Experience", to: "/#work-experience", anchor: "work-experience" },
+  { label: "Skills",     to: "/#skills",          anchor: "skills" },
 ];
 
 const Header = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const headerRef = useRef(null);
+  const location = useLocation();
 
-  const handleClick = (anchor) => () => {
+  const scrollTo = (anchor) => {
     onClose();
-    const id = `${anchor}-section`;
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
+    if (!anchor) { window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+    const el = document.getElementById(`${anchor}-section`);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    let prevScrollPos = window.scrollY;
-    const handleScroll = () => {
-      const currScrollPos = window.scrollY;
-      const currHeaderElement = headerRef.current;
-      if (!currHeaderElement) return;
-      if (prevScrollPos > currScrollPos) {
-        currHeaderElement.style.transform = "translateY(0)";
-      } else {
-        currHeaderElement.style.transform = "translateY(-200px)";
-      }
-      prevScrollPos = currScrollPos;
+    let prev = window.scrollY;
+    const onScroll = () => {
+      const curr = window.scrollY;
+      if (headerRef.current)
+        headerRef.current.style.transform =
+          prev > curr || curr < 60 ? "translateY(0)" : "translateY(-80px)";
+      prev = curr;
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const socialLinks = socials.map((social) => (
-    <a
-      key={social.url}
-      href={social.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={social.label}
-      style={{ color: "white" }}
-    >
-      <FontAwesomeIcon icon={social.icon} size="2x" />
-    </a>
-  ));
 
   return (
     <>
-      <a
-        href="#main-content"
-        style={{
-          position: "absolute",
-          left: "-9999px",
-          top: "auto",
-          width: "1px",
-          height: "1px",
-          overflow: "hidden",
-        }}
-        onFocus={(e) => { e.target.style.left = "0"; e.target.style.width = "auto"; e.target.style.height = "auto"; }}
-      >
+      <a href="#main-content" style={{ position: "absolute", left: "-9999px", top: "auto", width: "1px", height: "1px", overflow: "hidden" }}
+        onFocus={(e) => { e.target.style.left = "0"; e.target.style.width = "auto"; e.target.style.height = "auto"; }}>
         Skip to content
       </a>
 
-      <Box
-        position="fixed"
-        top={0}
-        left={0}
-        right={0}
-        translateY={0}
-        transitionProperty="transform"
-        transitionDuration=".3s"
-        transitionTimingFunction="ease-in-out"
-        backgroundColor="#18181b"
-        ref={headerRef}
-        zIndex={1000}
-      >
-        <Box color="white" maxWidth="1280px" margin="0 auto">
-          <HStack px={{ base: 4, md: 16 }} py={4} justifyContent="space-between" alignItems="center">
-            {/* Social links — hidden on mobile */}
-            <nav aria-label="Social links">
-              <HStack spacing={6} display={{ base: "none", md: "flex" }}>
-                {socialLinks}
-              </HStack>
-            </nav>
+      <Box as="nav" className="glass-nav" position="fixed" top={0} left={0} right={0} zIndex={1000}
+        ref={headerRef} style={{ transition: "transform 0.3s ease-in-out" }}>
+        <Flex maxW="1280px" mx="auto" px={{ base: 4, md: 8 }} h="70px" align="center" justify="space-between">
 
-            {/* Desktop nav */}
-            <nav aria-label="Main navigation">
-              <HStack spacing={8} display={{ base: "none", md: "flex" }}>
-                {navItems.map((item) => (
-                  <Link key={item.label} to={item.to} onClick={handleClick(item.anchor)} className="nav-item">
-                    {item.label}
-                  </Link>
+          {/* Logo */}
+          <Link to="/" onClick={() => scrollTo("")} style={{ textDecoration: "none" }}>
+            <Text fontFamily="var(--font-headline)" fontWeight="900" fontSize="xl"
+              letterSpacing="-0.03em" style={{ color: "#c0c1ff" }}>
+              YA·Dev
+            </Text>
+          </Link>
+
+          {/* Desktop nav */}
+          {!isMobile && (
+            <HStack spacing={8}>
+              {navItems.map((item) => (
+                <Link key={item.label} to={item.to} onClick={() => scrollTo(item.anchor)}
+                  style={{
+                    color: location.hash === `#${item.anchor}` || (item.anchor === "" && location.pathname === "/" && !location.hash)
+                      ? "#c0c1ff" : "#94a3b8",
+                    fontFamily: "var(--font-headline)", fontWeight: 600, fontSize: "0.875rem",
+                    textDecoration: "none", letterSpacing: "-0.01em", transition: "color 0.2s",
+                  }}
+                  onMouseEnter={(e) => { if (e.currentTarget.style.color !== "#c0c1ff") e.currentTarget.style.color = "#dae2fd"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = location.hash === `#${item.anchor}` || (item.anchor === "" && location.pathname === "/" && !location.hash) ? "#c0c1ff" : "#94a3b8"; }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </HStack>
+          )}
+
+          {/* Right: socials or hamburger */}
+          <HStack spacing={4}>
+            {!isMobile && (
+              <HStack spacing={4}>
+                {socials.map((s) => (
+                  <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.label}
+                    style={{ color: "#908fa0", fontSize: "14px", transition: "color 0.2s" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = "#c0c1ff")}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#908fa0")}>
+                    <FontAwesomeIcon icon={s.icon} />
+                  </a>
                 ))}
               </HStack>
-            </nav>
-
-            {/* Mobile hamburger */}
+            )}
             {isMobile && (
-              <IconButton
-                icon={<FontAwesomeIcon icon={faBars} />}
-                aria-label="Open navigation menu"
-                variant="ghost"
-                color="white"
-                fontSize="20px"
-                onClick={onOpen}
-                _hover={{ bg: "whiteAlpha.200" }}
-              />
+              <IconButton icon={<FontAwesomeIcon icon={faBars} />} aria-label="Open menu"
+                variant="ghost" size="sm" color="#908fa0"
+                _hover={{ color: "#c0c1ff", bg: "rgba(192,193,255,0.05)" }} onClick={onOpen} />
             )}
           </HStack>
-        </Box>
+        </Flex>
       </Box>
 
       {/* Mobile Drawer */}
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
-        <DrawerOverlay />
-        <DrawerContent bg="#18181b" color="white">
-          <DrawerCloseButton color="white" />
-          <DrawerHeader borderBottomWidth="1px" borderColor="whiteAlpha.300">
-            Menu
+        <DrawerOverlay bg="rgba(6,14,32,0.75)" />
+        <DrawerContent bg="#131b2e" color="#dae2fd" borderLeft="1px solid #464554">
+          <DrawerCloseButton color="#908fa0" _hover={{ color: "#c0c1ff" }} />
+          <DrawerHeader borderBottomWidth="1px" borderColor="#464554"
+            fontFamily="var(--font-headline)" fontWeight="900" color="#c0c1ff" letterSpacing="-0.03em">
+            YA·Dev
           </DrawerHeader>
           <DrawerBody>
-            <VStack spacing={6} align="stretch" mt={4}>
-              <VStack spacing={4} align="stretch">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.label}
-                    to={item.to}
-                    onClick={handleClick(item.anchor)}
-                    style={{ fontSize: "1.1rem", fontWeight: "500" }}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </VStack>
-
-              <Box borderTopWidth="1px" borderColor="whiteAlpha.300" pt={4}>
-                <HStack spacing={5} justify="center">
-                  {socialLinks}
+            <VStack spacing={1} align="stretch" mt={4}>
+              {navItems.map((item) => (
+                <Box key={item.label} as={Link} to={item.to} onClick={() => scrollTo(item.anchor)}
+                  px={3} py={3} borderRadius="md"
+                  fontFamily="var(--font-headline)" fontWeight={600} fontSize="1rem"
+                  display="block"
+                  style={{ color: "#c7c4d7", textDecoration: "none" }}
+                  _hover={{ color: "#c0c1ff", bg: "rgba(192,193,255,0.06)", textDecoration: "none" }}>
+                  {item.label}
+                </Box>
+              ))}
+              <Box pt={6} borderTop="1px solid #464554" mt={4}>
+                <Text fontSize="xs" fontFamily="var(--font-label)" color="#464554"
+                  letterSpacing="widest" textTransform="uppercase" mb={3}>
+                  Connect
+                </Text>
+                <HStack spacing={5}>
+                  {socials.map((s) => (
+                    <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer"
+                      aria-label={s.label} style={{ color: "#908fa0", fontSize: "18px" }}>
+                      <FontAwesomeIcon icon={s.icon} />
+                    </a>
+                  ))}
                 </HStack>
               </Box>
             </VStack>

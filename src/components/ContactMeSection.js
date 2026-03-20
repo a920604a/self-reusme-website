@@ -1,17 +1,8 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import {
-  Box,
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Input,
-  Textarea,
-  VStack,
-  Text,
-  SimpleGrid,
+  Box, Button, FormControl, FormErrorMessage, FormLabel,
+  Heading, Input, Textarea, VStack, Text, SimpleGrid,
 } from "@chakra-ui/react";
 import * as Yup from "yup";
 import useSubmit from "../hooks/useSubmit";
@@ -22,12 +13,7 @@ const ContactMeSection = () => {
   const { onOpen } = useAlertContext();
 
   const formik = useFormik({
-    initialValues: {
-      firstName: "",
-      email: "",
-      subject: "",
-      comment: "",
-    },
+    initialValues: { firstName: "", email: "", subject: "", comment: "" },
     onSubmit: (values) => { submit("", values); },
     validationSchema: Yup.object({
       firstName: Yup.string().required("Required"),
@@ -39,105 +25,136 @@ const ContactMeSection = () => {
   useEffect(() => {
     if (response) {
       onOpen(response.type, response.message);
-      if (response.type === "success") {
-        formik.resetForm();
-      }
+      if (response.type === "success") formik.resetForm();
     }
   }, [response]);
 
-  const inputStyles = {
-    bg: "whiteAlpha.100",
+  const inputStyle = {
+    bg: "#222a3d",
     border: "1px solid",
-    borderColor: "whiteAlpha.300",
-    color: "white",
-    _placeholder: { color: "whiteAlpha.500" },
-    _hover: { borderColor: "teal.400" },
-    _focus: { borderColor: "teal.400", boxShadow: "0 0 0 1px #4fd1c5" },
+    borderColor: "#464554",
+    color: "#dae2fd",
+    borderRadius: "10px",
+    fontFamily: "var(--font-body)",
+    fontSize: "sm",
+    _placeholder: { color: "#908fa0" },
+    _hover: { borderColor: "#c0c1ff" },
+    _focus: { borderColor: "#c0c1ff", boxShadow: "0 0 0 1px #c0c1ff" },
+  };
+
+  const labelStyle = {
+    color: "#c7c4d7",
+    fontSize: "sm",
+    fontFamily: "var(--font-label)",
+    fontWeight: 600,
+    letterSpacing: "wide",
+    mb: 1,
   };
 
   return (
     <Box
       as="section"
       id="contactme-section"
-      bg="#1a1033"
-      py={{ base: 12, md: 16 }}
-      px={{ base: 4, md: 8, lg: 16 }}
+      bg="#0b1326"
+      py={{ base: 16, md: 24 }}
+      px={{ base: 4, md: 8 }}
     >
       <Box maxW="680px" mx="auto">
-        <Heading as="h2" size="lg" mb={2} textAlign="center" color="white" fontWeight={700}>
-          Contact Me
-        </Heading>
-        <Text textAlign="center" color="whiteAlpha.600" mb={10} fontSize="sm">
-          Have a project in mind? Let's talk.
-        </Text>
 
+        {/* Header */}
+        <Box mb={10} textAlign="center">
+          <Text
+            fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
+            textTransform="uppercase" mb={3} style={{ color: "#5de6ff" }}
+          >
+            Get in Touch
+          </Text>
+          <Heading
+            as="h2"
+            fontFamily="var(--font-headline)" fontWeight="800"
+            fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
+            style={{ color: "#dae2fd" }}
+          >
+            Contact Me
+          </Heading>
+          <Text
+            mt={3} fontFamily="var(--font-body)" fontSize="sm"
+            style={{ color: "#908fa0" }}
+          >
+            Have a project in mind? Let's talk.
+          </Text>
+        </Box>
+
+        {/* Form card */}
         <Box
-          bg="whiteAlpha.100"
-          border="1px solid"
-          borderColor="whiteAlpha.200"
-          borderRadius="16px"
+          bg="#131b2e"
+          border="1px solid #464554"
+          borderRadius="20px"
           p={{ base: 6, md: 8 }}
         >
           <form onSubmit={formik.handleSubmit}>
             <VStack spacing={5}>
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} w="100%">
                 <FormControl isInvalid={!!formik.errors.firstName && formik.touched.firstName}>
-                  <FormLabel color="whiteAlpha.800" fontSize="sm" fontWeight={600}>Name</FormLabel>
+                  <FormLabel {...labelStyle}>Name</FormLabel>
                   <Input
-                    id="firstName"
-                    name="firstName"
+                    id="firstName" name="firstName"
                     placeholder="Your name"
                     {...formik.getFieldProps("firstName")}
-                    {...inputStyles}
+                    {...inputStyle}
                   />
                   <FormErrorMessage fontSize="xs">{formik.errors.firstName}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!formik.errors.email && formik.touched.email}>
-                  <FormLabel color="whiteAlpha.800" fontSize="sm" fontWeight={600}>Email</FormLabel>
+                  <FormLabel {...labelStyle}>Email</FormLabel>
                   <Input
-                    id="email"
-                    name="email"
-                    type="email"
+                    id="email" name="email" type="email"
                     placeholder="your@email.com"
                     {...formik.getFieldProps("email")}
-                    {...inputStyles}
+                    {...inputStyle}
                   />
                   <FormErrorMessage fontSize="xs">{formik.errors.email}</FormErrorMessage>
                 </FormControl>
               </SimpleGrid>
 
               <FormControl w="100%">
-                <FormLabel color="whiteAlpha.800" fontSize="sm" fontWeight={600}>Subject</FormLabel>
+                <FormLabel {...labelStyle}>Subject</FormLabel>
                 <Input
-                  id="subject"
-                  name="subject"
+                  id="subject" name="subject"
                   placeholder="What's this about?"
                   {...formik.getFieldProps("subject")}
-                  {...inputStyles}
+                  {...inputStyle}
                 />
               </FormControl>
 
               <FormControl isInvalid={!!formik.errors.comment && formik.touched.comment} w="100%">
-                <FormLabel color="whiteAlpha.800" fontSize="sm" fontWeight={600}>Message</FormLabel>
+                <FormLabel {...labelStyle}>Message</FormLabel>
                 <Textarea
-                  id="comment"
-                  name="comment"
+                  id="comment" name="comment"
                   placeholder="Tell me about your project..."
                   rows={6}
-                  {...formik.getFieldProps("comment")}
-                  {...inputStyles}
                   resize="vertical"
+                  {...formik.getFieldProps("comment")}
+                  {...inputStyle}
                 />
                 <FormErrorMessage fontSize="xs">{formik.errors.comment}</FormErrorMessage>
               </FormControl>
 
               <Button
                 type="submit"
-                colorScheme="teal"
                 width="full"
                 size="lg"
                 isLoading={isLoading}
-                fontWeight={600}
+                className="editorial-gradient"
+                style={{ color: "#1000a9" }}
+                border="none"
+                borderRadius="10px"
+                fontFamily="var(--font-headline)"
+                fontWeight={700}
+                fontSize="sm"
+                letterSpacing="wide"
+                _hover={{ opacity: 0.9, transform: "translateY(-1px)" }}
+                transition="all 0.2s"
               >
                 Send Message
               </Button>

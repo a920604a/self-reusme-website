@@ -10,97 +10,101 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
     display="flex"
     alignItems="center"
     justifyContent="center"
-    bgGradient="linear(to-br, #0f172a 0%, #1a3a5c 60%, #0f172a 100%)"
-    pt="80px"
+    bg="#0b1326"
+    pt="70px"
     px={4}
     position="relative"
     overflow="hidden"
   >
-    {/* Decorative glow circles */}
-    <Box
-      position="absolute"
-      top="-100px"
-      right="-100px"
-      w="400px"
-      h="400px"
-      borderRadius="full"
-      bg="teal.600"
-      opacity={0.07}
-      filter="blur(80px)"
-      pointerEvents="none"
-    />
-    <Box
-      position="absolute"
-      bottom="-80px"
-      left="-80px"
-      w="300px"
-      h="300px"
-      borderRadius="full"
-      bg="blue.600"
-      opacity={0.07}
-      filter="blur(60px)"
-      pointerEvents="none"
-    />
+    {/* Gradient blobs */}
+    <Box position="absolute" top="-80px" right="-60px" w="500px" h="500px"
+      borderRadius="full" bg="#c0c1ff" opacity={0.04} filter="blur(100px)" pointerEvents="none" />
+    <Box position="absolute" bottom="-60px" left="-60px" w="400px" h="400px"
+      borderRadius="full" bg="#5de6ff" opacity={0.04} filter="blur(80px)" pointerEvents="none" />
+    <Box position="absolute" top="30%" left="20%" w="300px" h="300px"
+      borderRadius="full" bg="#8083ff" opacity={0.03} filter="blur(120px)" pointerEvents="none" />
 
     <VStack spacing={8} textAlign="center" maxW="680px" position="relative" zIndex={1}>
-      <Avatar
-        name="Yu-An Chen"
-        src={`${process.env.PUBLIC_URL}/images/portfolio/_profile/profilepic.jpeg`}
-        size="2xl"
-        border="3px solid"
-        borderColor="teal.400"
-        boxShadow="0 0 0 6px rgba(56,178,172,0.15), 0 20px 60px rgba(0,0,0,0.4)"
-      />
+      {/* Avatar */}
+      <Box
+        borderRadius="full"
+        p="3px"
+        className="editorial-gradient"
+        display="inline-block"
+      >
+        <Avatar
+          name="Yu-An Chen"
+          src={`${process.env.PUBLIC_URL}/images/portfolio/_profile/profilepic.jpeg`}
+          size="2xl"
+          border="3px solid #0b1326"
+          boxShadow="0 0 40px rgba(192,193,255,0.15)"
+        />
+      </Box>
 
       <VStack spacing={3}>
+        {/* Role badge */}
         <Badge
-          colorScheme="teal"
-          variant="subtle"
-          px={4}
-          py={1}
+          px={4} py={1}
           borderRadius="full"
           fontSize="xs"
+          fontFamily="var(--font-label)"
           letterSpacing="widest"
           textTransform="uppercase"
-        >
-          {greeting}
-        </Badge>
-
-        <Heading
-          size="3xl"
-          fontWeight="800"
-          color="white"
-          letterSpacing="tight"
-          lineHeight="1.1"
+          style={{
+            background: "rgba(192,193,255,0.1)",
+            color: "#c0c1ff",
+            border: "1px solid rgba(192,193,255,0.2)",
+          }}
         >
           {bio1}
+        </Badge>
+
+        {/* Name / Greeting */}
+        <Heading
+          as="h1"
+          fontFamily="var(--font-headline)"
+          fontWeight="800"
+          fontSize={{ base: "3xl", md: "5xl" }}
+          lineHeight="1.1"
+          letterSpacing="-0.02em"
+          style={{ color: "#dae2fd" }}
+        >
+          {greeting}
         </Heading>
 
+        {/* Bio */}
         <Text
-          color="gray.400"
+          fontFamily="var(--font-body)"
           fontSize={{ base: "md", md: "lg" }}
+          lineHeight="1.8"
           maxW="520px"
-          lineHeight="1.75"
           pt={1}
+          style={{ color: "#c7c4d7" }}
         >
           {bio2}
         </Text>
       </VStack>
 
+      {/* CTA Button */}
       <Button
         as="a"
         href={resumeDownload}
         target="_blank"
         rel="noopener noreferrer"
-        colorScheme="teal"
-        size="lg"
         leftIcon={<FaDownload />}
+        size="lg"
         px={10}
-        fontSize="md"
-        fontWeight={600}
+        fontFamily="var(--font-headline)"
+        fontWeight={700}
+        fontSize="sm"
+        letterSpacing="wide"
+        className="editorial-gradient"
+        style={{ color: "#1000a9" }}
+        border="none"
         _hover={{
           transform: "translateY(-2px)",
-          boxShadow: "0 8px 30px rgba(56,178,172,0.35)",
+          boxShadow: "0 8px 30px rgba(192,193,255,0.25)",
+          opacity: 0.92,
         }}
         transition="all 0.2s ease"
       >
