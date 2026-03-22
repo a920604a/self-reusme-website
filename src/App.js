@@ -45,7 +45,7 @@ class App extends Component {
         }));
         const recommendedProjects = projects
           .filter(
-            (project) => project.category === "Work" || project.category === "Misc",
+            (project) => project.category === "Work" || project.category === "Side Project",
           )
           .sort((a, b) => {
             const parseDate = (dateStr) => {
@@ -96,53 +96,53 @@ class App extends Component {
     return (
       <ChakraProvider theme={theme}>
         <AlertProvider>
-        <main>
-          <Router>
-            <Header />
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <main>
-                    <LandingSection
-                      greeting={data.greeting}
-                      bio1={data.bio1}
-                      bio2={data.bio2}
-                      resumeDownload={data.resumeDownload}
-                    />
-                    <ProjectsCarousel projects={data.recommendedProjects} />
-                    {/* <ProjectsSummary projects={data.recommendedProjects} /> */}
-                    <WorksSummary works={data.works} />
-                    <SkillSection
-                      skills={data.skills}
-                      tools={data.tools}
-                      frameworks={data.frameworks}
-                      tryLearn={data.tryLearn}
-                    />
-                    <EducationSection educationData={data.educationData} />
-                    <ContactMeSection />
-                    <Footer data={data} fileName="CV.json" />
-                  </main>
+          <main>
+            <Router>
+              <Header />
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <main>
+                      <LandingSection
+                        greeting={data.greeting}
+                        bio1={data.bio1}
+                        bio2={data.bio2}
+                        resumeDownload={data.resumeDownload}
+                      />
+                      <ProjectsCarousel projects={data.recommendedProjects} />
+                      {/* <ProjectsSummary projects={data.recommendedProjects} /> */}
+                      <WorksSummary works={data.works} />
+                      <SkillSection
+                        skills={data.skills}
+                        tools={data.tools}
+                        frameworks={data.frameworks}
+                        tryLearn={data.tryLearn}
+                      />
+                      <EducationSection educationData={data.educationData} />
+                      <ContactMeSection />
+                      <Footer data={data} fileName="CV.json" />
+                    </main>
 
-                }
-              />
-              <Route
-                path="/projects"
-                element={
-                  <ProjectsPage projects={data.projects} />
-                }
-              />
-              <Route
-                path="/projects/:id"
-                element={<ProjectDetails projects={data.projects} />}
-              />
-              <Route
-                path="/works/:id"
-                element={<WorkDetails works={data.works} />}
-              />
-            </Routes>
-          </Router>
-        </main>
+                  }
+                />
+                <Route
+                  path="/projects"
+                  element={
+                    <ProjectsPage projects={data.projects} />
+                  }
+                />
+                <Route
+                  path="/projects/:id"
+                  element={<ProjectDetails projects={data.projects} />}
+                />
+                <Route
+                  path="/works/:id"
+                  element={<WorkDetails works={data.works} />}
+                />
+              </Routes>
+            </Router>
+          </main>
         </AlertProvider>
       </ChakraProvider>
     );
