@@ -1,100 +1,107 @@
 import React from "react";
 import {
-  Box,
-  Heading,
-  Tag,
-  TagLabel,
-  Stack,
-  Link as ChakraLink,
-  Image,
-  Flex,
-  Text,
+  Box, Heading, Text, Tag, TagLabel, Stack, Image, SimpleGrid,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 
-
-
-
 const ProjectsSummary = ({ projects }) => {
-  const navigate = useNavigate(); // 使用 useNavigate 來導航
-
-
-  const handleBoxClick = (id) => {
-    navigate(`/projects/${id}`); // 導航到專案詳情頁，基於唯一的 id
-  };
+  const navigate = useNavigate();
 
   return (
-    <section>
-      <Heading as="h2" size="lg" mb={6} id="projects-section">
-        Projects
-      </Heading>
-      <Stack spacing={6}>
-        {projects.map((project) => (
-          <Box
-            key={project.id}
-            borderWidth="1px"
-            borderRadius="lg"
-            p={6}
-            boxShadow="sm"
-            bg="#e0fbf5"
-            color="black"
-            _hover={{ boxShadow: "md", bg: "gray.100" }}
-            cursor="pointer" // 改變游標樣式，提示用戶這是可點擊的
-            onClick={() => handleBoxClick(project.id)} // 點擊時觸發導航
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+      {projects.map((project) => (
+        <Box
+          key={project.id}
+          bg="#171f33"
+          borderRadius="16px"
+          border="1px solid #464554"
+          overflow="hidden"
+          cursor="pointer"
+          role="group"
+          onClick={() => navigate(`/projects/${project.id}`)}
+          transition="border-color 0.25s, transform 0.25s, box-shadow 0.25s"
+          _hover={{
+            borderColor: "#c0c1ff",
+            transform: "translateY(-4px)",
+            boxShadow: "0 12px 40px rgba(192,193,255,0.08)",
+          }}
+        >
+          {/* Thumbnail */}
+          {(project.images?.[0] || project.image) && (
+            <Box overflow="hidden" h="160px" bg="#0b1326">
+              <Image
+                src={`${process.env.PUBLIC_URL}/images/portfolio/${
+                  project.images?.[0] ?? project.image
+                }`}
+                alt={project.title}
+                objectFit="cover"
+                w="100%"
+                h="160px"
+                transition="transform 0.5s ease"
+                _groupHover={{ transform: "scale(1.05)" }}
+                fallback={<Box w="100%" h="160px" bg="#0b1326" />}
+              />
+            </Box>
+          )}
 
-          >
-            <Flex direction={{ base: "column", md: "row" }} spacing={6}>
-              {/* 左側縮圖 — 優先使用 images[0] (flow diagram)，fallback 到 image */}
-              {(project.images?.[0] || project.image) && (
-                <Box flex="1" mb={{ base: 4, md: 0 }} minW={{ md: "200px" }} maxW={{ md: "220px" }}>
-                  <Image
-                    src={`${process.env.PUBLIC_URL}/images/portfolio/${project.images?.[0] ?? project.image}`}
-                    alt={project.title}
-                    objectFit="cover"
-                    height="160px"
-                    width="100%"
-                    borderRadius="md"
-                    fallback={<Box h="160px" bg="gray.100" borderRadius="md" />}
-                  />
-                </Box>
+          {/* Content */}
+          <Box p={5}>
+            <Text
+              fontFamily="var(--font-label)"
+              fontSize="xs"
+              letterSpacing="widest"
+              textTransform="uppercase"
+              mb={2}
+              style={{ color: "#5de6ff" }}
+            >
+              {project.category} · {project.date}
+            </Text>
+
+            <Heading
+              as="h3"
+              fontFamily="var(--font-headline)"
+              fontWeight="800"
+              fontSize="md"
+              letterSpacing="-0.01em"
+              mb={3}
+              style={{ color: "#c0c1ff" }}
+            >
+              {project.title}
+            </Heading>
+
+            <Stack direction="row" flexWrap="wrap" gap={1} mb={4}>
+              {project.tags.slice(0, 4).map((tag, i) => (
+                <Tag key={i} size="sm" borderRadius="full" px={2}
+                  bg="#222a3d" color="#c7c4d7" border="1px solid #464554"
+                  fontSize="xs" fontFamily="var(--font-label)">
+                  <TagLabel>{tag}</TagLabel>
+                </Tag>
+              ))}
+              {project.tags.length > 4 && (
+                <Tag size="sm" borderRadius="full" px={2}
+                  bg="#131b2e" color="#908fa0" border="1px solid #464554" fontSize="xs">
+                  <TagLabel>+{project.tags.length - 4}</TagLabel>
+                </Tag>
               )}
+            </Stack>
 
-              {/* 右側內容 */}
-              <Box flex="2" ml={{ md: 6 }}> {/* 在中等及以上大小屏幕加入間距 */}
-                <Text fontSize="sm" color="gray.400" mb={2}>
-                  {project.date}
-                </Text>
-                <Heading as="h3" size="md" mb={4}>
-                  {project.title}
-                </Heading>
-
-                <Stack direction="row" spacing={2} mb={4} flexWrap="wrap">
-                  {project.tags.slice(0, 6).map((tag, tagIndex) => (
-                    <Tag key={tagIndex} colorScheme="teal" size="sm">
-                      <TagLabel>{tag}</TagLabel>
-                    </Tag>
-                  ))}
-                  {project.tags.length > 6 && (
-                    <Tag colorScheme="gray" size="sm">
-                      <TagLabel>+{project.tags.length - 6}</TagLabel>
-                    </Tag>
-                  )}
-                </Stack>
-
-                <ChakraLink
-                  as={Link}
-                  to={`/projects/${project.id}`}
-                  color="blue.500"
-                  _hover={{ textDecoration: "underline" }}
-                >
-                  View Details →
-                </ChakraLink>
-              </Box>
-            </Flex>
+            <Text
+              as={Link}
+              to={`/projects/${project.id}`}
+              fontFamily="var(--font-headline)"
+              fontWeight="700"
+              fontSize="xs"
+              letterSpacing="wide"
+              style={{ color: "#5de6ff", textDecoration: "none" }}
+              onClick={(e) => e.stopPropagation()}
+              _hover={{ color: "#c0c1ff" }}
+            >
+              View Details →
+            </Text>
           </Box>
-        ))}
-      </Stack>
-    </section>
+        </Box>
+      ))}
+    </SimpleGrid>
   );
 };
 

@@ -1,32 +1,12 @@
 import React, { useState } from "react";
 import {
-  Box,
-  Heading,
-  Text,
-  Tag,
-  TagLabel,
-  Stack,
-  Link as ChakraLink,
-  Image,
-  Divider,
-  UnorderedList,
-  ListItem,
-  Icon,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalBody,
-  ModalCloseButton,
-  Tabs,
-  TabList,
-  Tab,
-  TabPanels,
-  TabPanel,
+  Box, Heading, Text, Tag, TagLabel, Stack, Link as ChakraLink, Image,
+  Divider, UnorderedList, ListItem, Icon, Modal, ModalOverlay, ModalContent,
+  ModalBody, ModalCloseButton, Tabs, TabList, Tab, TabPanels, TabPanel,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { FaExternalLinkAlt, FaArrowLeft, FaDesktop } from "react-icons/fa";
 
-/** Derive a human-readable tab label from an image filename. */
 const imgLabel = (path) => {
   const file = path.split("/").pop().replace(/\.(png|jpe?g)$/i, "");
   return (
@@ -38,36 +18,48 @@ const imgLabel = (path) => {
 
 const stripMd = (text) => text.replace(/\*\*(.*?)\*\*/g, "$1");
 
-/** Reusable image gallery: tabs for multiple images, single image otherwise. */
-const ImageGallery = ({ images, title, onZoom, darkBg = true }) => {
-  const bg = darkBg ? "gray.900" : "gray.50";
-  const border = darkBg ? {} : { border: "1px solid", borderColor: "gray.200" };
-
+const ImageGallery = ({ images, title, onZoom }) => {
   if (images.length === 1) {
     return (
       <Image
         src={`${process.env.PUBLIC_URL}/images/portfolio/${images[0]}`}
         alt={title}
         objectFit="contain"
-        borderRadius="md"
-        maxH="340px"
+        borderRadius="12px"
+        maxH="360px"
         width="100%"
-        bg={bg}
+        bg="#0b1326"
         mb={6}
-        boxShadow="sm"
+        border="1px solid #464554"
         cursor="zoom-in"
-        _hover={{ opacity: 0.92 }}
+        _hover={{ opacity: 0.9, borderColor: "#c0c1ff" }}
+        transition="all 0.2s"
         onClick={() => onZoom(images[0])}
-        {...border}
       />
     );
   }
 
   return (
-    <Tabs variant="soft-rounded" colorScheme={darkBg ? "teal" : "blue"} size="sm" mb={6}>
+    <Tabs
+      variant="soft-rounded"
+      size="sm"
+      mb={6}
+      sx={{
+        "& [role=tab]": {
+          fontFamily: "var(--font-label)", fontSize: "xs", fontWeight: 700,
+          color: "#908fa0", borderRadius: "full", border: "1px solid #464554",
+        },
+        "& [role=tab][aria-selected=true]": {
+          background: "rgba(192,193,255,0.15)",
+          color: "#c0c1ff",
+          borderColor: "rgba(192,193,255,0.3)",
+        },
+        "& [role=tablist]": { bg: "transparent", gap: "4px" },
+      }}
+    >
       <TabList mb={3} flexWrap="wrap" gap={1}>
         {images.map((img, i) => (
-          <Tab key={i} fontSize="xs" fontWeight="bold">{imgLabel(img)}</Tab>
+          <Tab key={i}>{imgLabel(img)}</Tab>
         ))}
       </TabList>
       <TabPanels>
@@ -77,15 +69,15 @@ const ImageGallery = ({ images, title, onZoom, darkBg = true }) => {
               src={`${process.env.PUBLIC_URL}/images/portfolio/${img}`}
               alt={`${title} — ${imgLabel(img)}`}
               objectFit="contain"
-              borderRadius="md"
-              maxH="340px"
+              borderRadius="12px"
+              maxH="360px"
               width="100%"
-              bg={bg}
-              boxShadow="sm"
+              bg="#0b1326"
+              border="1px solid #464554"
               cursor="zoom-in"
-              _hover={{ opacity: 0.92 }}
+              _hover={{ opacity: 0.9, borderColor: "#c0c1ff" }}
+              transition="all 0.2s"
               onClick={() => onZoom(img)}
-              {...border}
             />
           </TabPanel>
         ))}
@@ -104,7 +96,6 @@ const DetailTemplate = ({
 
   const openZoom = (img) => { setModalImg(img); setIsModalOpen(true); };
 
-  // Normalise: prefer new `images[]`, fall back to legacy `image` string
   const gallery   = images   && images.length   > 0 ? images   : image ? [image] : [];
   const uiGallery = uiImages && uiImages.length > 0 ? uiImages : [];
 
@@ -113,33 +104,27 @@ const DetailTemplate = ({
       return repo.map((item, i) =>
         Object.entries(item).map(([key, value], idx) => (
           <ChakraLink
-            key={`${i}-${idx}`}
-            href={value}
-            isExternal
-            color="blue.500"
-            fontWeight="bold"
-            display="flex"
-            alignItems="center"
-            gap={2}
-            _hover={{ textDecoration: "underline", color: "blue.700" }}
+            key={`${i}-${idx}`} href={value} isExternal
+            display="inline-flex" alignItems="center" gap={2}
+            fontFamily="var(--font-headline)" fontWeight={700} fontSize="sm"
+            style={{ color: "#5de6ff", textDecoration: "none" }}
+            _hover={{ color: "#c0c1ff", textDecoration: "none" }}
           >
-            <Icon as={FaExternalLinkAlt} /> {key}
+            <Icon as={FaExternalLinkAlt} boxSize={3} /> {key}
           </ChakraLink>
         ))
       );
-    } else if (typeof repo === "string") {
+    }
+    if (typeof repo === "string") {
       return (
         <ChakraLink
-          href={repo}
-          isExternal
-          color="blue.500"
-          fontWeight="bold"
-          display="flex"
-          alignItems="center"
-          gap={2}
-          _hover={{ textDecoration: "underline", color: "blue.700" }}
+          href={repo} isExternal
+          display="inline-flex" alignItems="center" gap={2}
+          fontFamily="var(--font-headline)" fontWeight={700} fontSize="sm"
+          style={{ color: "#5de6ff", textDecoration: "none" }}
+          _hover={{ color: "#c0c1ff", textDecoration: "none" }}
         >
-          <Icon as={FaExternalLinkAlt} /> View Repository
+          <Icon as={FaExternalLinkAlt} boxSize={3} /> View Repository
         </ChakraLink>
       );
     }
@@ -147,126 +132,132 @@ const DetailTemplate = ({
   };
 
   return (
-    <Box bg="#f8fafc" minH="100vh" pt="80px" pb={16} px={{ base: 4, md: 8 }}>
-      <Box maxW="800px" mx="auto">
-        {/* Back link at the TOP */}
+    <Box bg="#0b1326" minH="100vh" pt="90px" pb={16} px={{ base: 4, md: 8 }}>
+      <Box maxW="860px" mx="auto">
+
+        {/* Back link */}
         <ChakraLink
-          as={Link}
-          to={backLink || "/"}
-          color="teal.600"
-          fontWeight="bold"
-          display="inline-flex"
-          alignItems="center"
-          gap={2}
-          mb={6}
-          _hover={{ textDecoration: "none", color: "teal.800" }}
+          as={Link} to={backLink || "/"}
+          display="inline-flex" alignItems="center" gap={2} mb={8}
+          fontFamily="var(--font-headline)" fontWeight={700} fontSize="sm"
+          style={{ color: "#5de6ff", textDecoration: "none" }}
+          _hover={{ color: "#c0c1ff", textDecoration: "none" }}
         >
-          <Icon as={FaArrowLeft} /> Back to {backLabel || "List"}
+          <Icon as={FaArrowLeft} boxSize={3} /> Back to {backLabel || "List"}
         </ChakraLink>
 
-        <Box
-          p={8}
-          backgroundColor="white"
-          borderRadius="16px"
-          boxShadow="0 4px 24px rgba(0,0,0,0.08)"
-          border="1px solid"
-          borderColor="gray.100"
-        >
-          {/* Title */}
-          <Heading as="h1" id={`details-${index}`} mb={4} fontSize="2xl" color="teal.600">
+        {/* Main card */}
+        <Box bg="#131b2e" borderRadius="20px" border="1px solid #464554" p={{ base: 6, md: 8 }}>
+
+          {category && (
+            <Text
+              fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
+              textTransform="uppercase" mb={3} style={{ color: "#5de6ff" }}
+            >
+              {category}
+            </Text>
+          )}
+
+          <Heading
+            as="h1" id={`details-${index}`}
+            fontFamily="var(--font-headline)" fontWeight="800"
+            fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
+            mb={5} style={{ color: "#c0c1ff" }}
+          >
             {title}
           </Heading>
 
-          {/* Tags */}
           {tags && tags.length > 0 && (
             <Stack direction="row" spacing={2} mb={6} flexWrap="wrap">
-              {tags.map((tag, tagIndex) => (
-                <Tag key={tagIndex} colorScheme="teal" size="md" borderRadius="full">
+              {tags.map((tag, i) => (
+                <Tag
+                  key={i} size="sm" borderRadius="full" px={3}
+                  bg="#222a3d" color="#c7c4d7" border="1px solid #464554"
+                  fontSize="xs" fontFamily="var(--font-label)"
+                >
                   <TagLabel>{tag}</TagLabel>
                 </Tag>
               ))}
             </Stack>
           )}
 
-          {/* ── Technical Diagrams (arch / flow / pipeline) ── */}
           {gallery.length > 0 && (
-            <ImageGallery images={gallery} title={title} onZoom={openZoom} darkBg={true} />
+            <ImageGallery images={gallery} title={title} onZoom={openZoom} />
           )}
 
-          {/* Description */}
           {description ? (
             Array.isArray(description) ? (
-              <UnorderedList spacing={3} color="gray.800" fontSize="md" mb={6}>
+              <UnorderedList
+                spacing={3} fontSize="sm" mb={6}
+                sx={{ "& li": { color: "#c7c4d7", lineHeight: "1.8", fontFamily: "var(--font-body)" } }}
+              >
                 {description.map((item, i) => (
-                  <ListItem key={i} lineHeight="1.8">{stripMd(item)}</ListItem>
+                  <ListItem key={i}>{stripMd(item)}</ListItem>
                 ))}
               </UnorderedList>
             ) : (
               Object.entries(description).map(([key, value], i) => (
-                <div key={i}>
-                  <Text as="h2" fontSize="xl" fontWeight="bold" mt={6} mb={3} color="blue.500">
-                    {key.replace(/_/g, " ").toUpperCase()}
+                <Box key={i} mb={6}>
+                  <Text
+                    as="h2" fontSize="xs" fontFamily="var(--font-label)" fontWeight={700}
+                    letterSpacing="widest" textTransform="uppercase" mt={6} mb={3}
+                    style={{ color: "#5de6ff" }}
+                  >
+                    {key.replace(/_/g, " ")}
                   </Text>
-                  <UnorderedList spacing={3} color="gray.800" fontSize="md" mb={6}>
+                  <UnorderedList
+                    spacing={2}
+                    sx={{ "& li": { color: "#c7c4d7", lineHeight: "1.8", fontSize: "sm", fontFamily: "var(--font-body)" } }}
+                  >
                     {Array.isArray(value)
                       ? value.map((item, idx) => (
-                          <ListItem key={idx} lineHeight="1.8">{stripMd(String(item))}</ListItem>
+                          <ListItem key={idx}>{stripMd(String(item))}</ListItem>
                         ))
                       : String(value).split("。").map((item, idx) =>
-                          item.trim() && (
-                            <ListItem key={idx} lineHeight="1.8">{item.trim()}</ListItem>
-                          )
+                          item.trim() && <ListItem key={idx}>{item.trim()}</ListItem>
                         )
                     }
                   </UnorderedList>
-                </div>
+                </Box>
               ))
             )
           ) : (
-            <Text fontSize="md" color="gray.600" textAlign="center">
+            <Text fontSize="sm" textAlign="center" style={{ color: "#908fa0" }}>
               No description available.
             </Text>
           )}
 
-          {/* ── UI Screenshots section (only when uiImages provided) ── */}
           {uiGallery.length > 0 && (
             <>
-              <Divider my={6} />
+              <Divider my={6} borderColor="#464554" />
               <Stack direction="row" align="center" spacing={2} mb={4}>
-                <Icon as={FaDesktop} color="purple.500" />
-                <Heading as="h2" fontSize="lg" fontWeight="bold" color="purple.600">
+                <Icon as={FaDesktop} style={{ color: "#c0c1ff" }} />
+                <Text
+                  fontSize="xs" fontFamily="var(--font-label)" fontWeight={700}
+                  letterSpacing="widest" textTransform="uppercase" style={{ color: "#c0c1ff" }}
+                >
                   User Interface
-                </Heading>
+                </Text>
               </Stack>
-              <Box
-                bg="purple.50"
-                borderRadius="12px"
-                p={4}
-                border="1px solid"
-                borderColor="purple.100"
-              >
-                <ImageGallery images={uiGallery} title={title} onZoom={openZoom} darkBg={false} />
+              <Box bg="#171f33" borderRadius="12px" p={4} border="1px solid #464554">
+                <ImageGallery images={uiGallery} title={title} onZoom={openZoom} />
               </Box>
             </>
           )}
 
-          {/* Reference / Repo links */}
           {(reference || repo) && (
             <>
-              <Divider my={6} />
-              <Stack direction="column" spacing={4} mb={2}>
+              <Divider my={6} borderColor="#464554" />
+              <Stack direction="column" spacing={3}>
                 {reference && (
                   <ChakraLink
-                    href={reference}
-                    isExternal
-                    color="blue.500"
-                    fontWeight="bold"
-                    display="flex"
-                    alignItems="center"
-                    gap={2}
-                    _hover={{ textDecoration: "underline", color: "blue.700" }}
+                    href={reference} isExternal
+                    display="inline-flex" alignItems="center" gap={2}
+                    fontFamily="var(--font-headline)" fontWeight={700} fontSize="sm"
+                    style={{ color: "#5de6ff", textDecoration: "none" }}
+                    _hover={{ color: "#c0c1ff", textDecoration: "none" }}
                   >
-                    <Icon as={FaExternalLinkAlt} /> Reference Link
+                    <Icon as={FaExternalLinkAlt} boxSize={3} /> Reference Link
                   </ChakraLink>
                 )}
                 {renderRepoLinks(repo)}
@@ -276,11 +267,11 @@ const DetailTemplate = ({
         </Box>
       </Box>
 
-      {/* ── Shared full-screen lightbox (handles both gallery & uiGallery) ── */}
+      {/* Lightbox */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="full">
-        <ModalOverlay />
-        <ModalContent bg="blackAlpha.900">
-          <ModalCloseButton color="white" zIndex={1} />
+        <ModalOverlay bg="rgba(6,14,32,0.95)" />
+        <ModalContent bg="transparent" boxShadow="none">
+          <ModalCloseButton color="white" zIndex={1} size="lg" />
           <ModalBody p={0} display="flex" alignItems="center" justifyContent="center">
             {modalImg && (
               <Image
