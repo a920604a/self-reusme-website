@@ -1,0 +1,58 @@
+[
+    {
+        "id": "oomii-02",
+        "company": "Oomii Inc.",
+        "position": "Senior Software Engineer",
+        "years": "2024/05-Now",
+        "description": [
+            "與 Python 工程師合作，解決跨領域技術挑戰，並與設計部門和 PM 密切協作，確保專案順利推進。",
+            "利用 Prometheus、Grafana 和 AlertManager 建構了監控系統，確保系統健康狀況的即時可見性，並能主動回應突發事件。",
+            "使用 Unity 和 C# 開發了適用於 PCVR 環境的 VR 應用和分子模擬工具，並以 Meta Quest 3 為例進行了展示，顯著提升了研究視覺化效果和互動式使用者體驗。",
+            "主導即時 AI 語音助理的雲端架構設計與系統整合，建立 GCP VPC 隔離環境、整合 WebRTC + FastAPI Token Service + AI Agent 後端，並以 Ansible 實現多環境自動化部署，顯著提升基礎設施一致性與安全性。"
+        ]
+    },
+    {
+        "id": "oomii-01",
+        "company": "Oomii Inc.",
+        "position": "Software Engineer",
+        "years": "2022/05-2024/05",
+        "description": [
+            "使用 Unity 框架和 C# 開發復健平台及遠端會議原型，確保無縫整合與穩健效能，並設計會議室系統提升協作體驗。",
+            "與 ML 工程師合作，並與各部門協調克服挑戰並確保專案按時完成。",
+            "使用 Ansible 實現跨多環境自動化部署，優化部署流程，減少部署時間和錯誤。",
+            "與 UI/UX 設計師密切合作，將 Figma 設計轉化為功能性應用，提升用戶體驗。"
+        ]
+    },
+    {
+        "id": "aics",
+        "company": "Asus Inc. AICS department",
+        "position": "System Engineer",
+        "years": "2021/11-2022/02",
+        "description": [
+            "負責維護並優化 ETL 流程，使用 Airflow 管理數百萬條記錄的同步與數據轉換，提升數據處理效率，並保證數據準確性與一致性。"
+        ]
+    },
+    {
+        "id": "aie",
+        "company": "安智聯科技有限公司",
+        "position": "Algorithm Development Engineer",
+        "years": "2020/04-2021/03",
+        "description": [
+            "整合物件檢測和影像分類演算法，開發智能檢測平台，提升自動化檢測的準確性。",
+            "負責建立高效的 Flask 網站後端，確保服務穩定。",
+            "整合 MySQL 與 Redis 作為數據庫和快取系統，優化數據存儲與存取速度。",
+            "利用 Docker Compose 進行容器化部署，簡化部署過程並確保系統可擴展性。"
+        ]
+    },
+    {
+        "id": "foxconn",
+        "company": "FOXCONN",
+        "position": "Software Engineer Intern",
+        "years": "2018/07-2018/10",
+        "description": [
+            "應用 Python 語言，使用 TensorFlow 和 Keras 框架開發深度學習演算法。",
+            "成功提升檢測系統效能，通過深度學習模型分析圖像數據，顯著提高了檢測準確率。",
+            "參與數據預處理與模型訓練，對大量影像數據進行分類與檢測，達成項目目標。"
+        ]
+    }
+]

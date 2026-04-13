@@ -1,0 +1,54 @@
+{
+    "skills": [
+        {
+            "name": "Python",
+            "level": "75%"
+        },
+        {
+            "name": "C#",
+            "level": "80%"
+        },
+        {
+            "name": "SQL",
+            "level": "60%"
+        },
+        {
+            "name": "JavaScript",
+            "level": "45%"
+        },
+        {
+            "name": "C++",
+            "level": "40%"
+        },
+        {
+            "name": "Shell Script",
+            "level": "40%"
+        }
+    ],
+    "tools": [
+        "Git",
+        "Docker",
+        "Ansible",
+        "Airflow",
+        "PostgreSQL",
+        "Redis",
+        "MongoDB",
+        "Prometheus",
+        "Grafana",
+        "GCP",
+        "MLflow",
+        "Ubuntu"
+    ],
+    "frameworks": [
+        "FastAPI",
+        "PyTorch",
+        "Flask",
+        "React"
+    ],
+    "tryLearn": [
+        "K8s",
+        "Kafka",
+        "LangChain",
+        "Terraform"
+    ]
+}
