@@ -28,21 +28,24 @@ class App extends Component {
 
 
   loadData = () => {
-    axios
-      .get("./propData.json")
-      .then((response) => {
-        console.log("Received data:", response.data);
-
-
-        const works = response.data.works.map((work, index) => ({
+    Promise.all([
+      axios.get("./data/profile.json"),
+      axios.get("./data/projects.json"),
+      axios.get("./data/works.json"),
+      axios.get("./data/skills.json"),
+      axios.get("./data/education.json"),
+    ])
+      .then(([profile, projectsRes, worksRes, skillsRes, educationRes]) => {
+        const works = worksRes.data.map((work, index) => ({
           ...work,
           id: work.id || `${(work.position || "unknown").toLowerCase().replace(/\s+/g, "-")}-${index}`,
         }));
 
-        const projects = response.data.projects.map((project, index) => ({
+        const projects = projectsRes.data.map((project, index) => ({
           ...project,
           id: project.id || `${project.title.toLowerCase().replace(/\s+/g, "-")}-${index}`,
         }));
+
         const recommendedProjects = projects
           .filter(
             (project) => project.category === "Work" || project.category === "Side Project",
@@ -66,17 +69,18 @@ class App extends Component {
 
         this.setState({
           data: {
-            ...response.data,
-            recommendedProjects,
+            ...profile.data,
+            projects,
             works,
+            recommendedProjects,
+            ...skillsRes.data,
+            educationData: educationRes.data,
           },
         });
       })
-
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-
   };
 
 
