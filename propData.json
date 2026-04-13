@@ -22,9 +22,9 @@
                 "core_contributions": [
                     "以 **livekit-agent-app** 建置 **FastAPI 後端**，提供 token 簽發、agent lifecycle 管理與健康監控（含 Prometheus/Grafana）。",
                     "以 **androidusbcamera/usbstreamer** 實作前端串流流程，整合 **Google Sign-In + Firebase Authentication**、後端換 token、以及 LiveKit 房間連線與音視頻 track 發布。",
-                    "在 **self-host-livekit** 維護自架 LiveKit（LiveKit Server + Caddy + Redis）部署配置，支援即時通訊服務上線。",
-                    "使用 **Ansible**（`livekit-ansible`）自動化主機基礎設定與部署流程，包含 Docker/Docker Compose 安裝與 UFW 防火牆規則配置（TCP 80/443/7880/7881/8000、UDP 3478、50000-60000）。"
-                ],
+                    "以 Terraform 定義 GCP 基礎設施（GCE VM、VPC、防火牆、靜態 IP），建立可重複執行的雲端環境配置",
+		    "以 Ansible 撰寫自動化部署 Playbook，涵蓋 Docker 安裝、LiveKit Server（Caddy + Redis）與應用程式（FastAPI + PostgreSQL）部署，設定檔透過 Jinja2 template 動態產生，敏感值不寫入程式碼"
+		],
                 "outcome": "建立可端到端運作的即時 AI 語音助理平台，完成前端裝置、後端服務與雲端部署整合，提升部署一致性與系統穩定度。"
             },
             "reference": "",
