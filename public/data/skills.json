@@ -6,7 +6,7 @@
         },
         {
             "name": "C#",
-            "level": "80%"
+            "level": "70%"
         },
         {
             "name": "SQL",
@@ -37,7 +37,11 @@
         "Grafana",
         "GCP",
         "MLflow",
-        "Ubuntu"
+        "Ubuntu",
+        "Android",
+        "Kotlin",
+        "Claude",
+        "Terraform"
     ],
     "frameworks": [
         "FastAPI",
