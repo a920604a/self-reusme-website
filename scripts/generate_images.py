@@ -13,7 +13,7 @@ Output layout
 Usage
 -----
   python scripts/generate_images.py              # regenerate all
-  python scripts/generate_images.py ebook daodao # regenerate specific projects
+  python scripts/generate_images.py daodao       # regenerate specific projects
   python scripts/generate_images.py --list       # show available project IDs
 
 Requirements
@@ -234,51 +234,6 @@ def group_rect(ax, x, y, w, h, label, color=BLUE):
 
 
 # ── Project Diagrams ───────────────────────────────────────────────────────────
-
-def draw_ebook():
-    fig, ax = fig_setup()
-    title_bar(ax, "Ebook Reader  —  System Architecture",
-              "React 19 · Chakra UI · Supabase · React PDF Viewer · IndexedDB")
-
-    box(ax, 0.5, 7.0, 2.2, 0.9, "GitHub OAuth", "Identity Provider",
-        color=GREEN, bg="#14291a")
-    box(ax, 3.5, 7.0, 2.5, 0.9, "Login Page", "/ (route)", color=TEAL, bg=CARD)
-    arrow(ax, 2.72, 7.45, 3.48, 7.45, "OAuth callback", TEAL2)
-
-    box(ax, 3.0, 5.0, 10.0, 1.6, "", color=BLUE, bg="#0d1f3a")
-    ax.text(8.0, 6.3, "Dashboard  (/dashboard)",
-            ha="center", va="center", color=BLUE, fontsize=12, fontweight="bold")
-    for i, it in enumerate(["Book Library (Grid)", "Upload PDF", "Search & Filter",
-                             "Statistics (Chart.js)", "Category / Status badges"]):
-        ax.text(3.3 + i * 2.0, 5.55, f"• {it}", ha="left", va="center",
-                color=GRAY, fontsize=7.5)
-    arrow(ax, 6.0, 6.95, 6.0, 6.62, color=BLUE)
-
-    box(ax, 3.0, 3.0, 10.0, 1.6, "", color=PURPLE, bg="#160d2a")
-    ax.text(8.0, 4.3, "PDF Reader  (/reader/:bookId)",
-            ha="center", va="center", color=PURPLE, fontsize=12, fontweight="bold")
-    for i, it in enumerate(["Page Navigation", "Progress Auto-save", "Resume Last Page",
-                             "Dark Mode Toggle", "React PDF Viewer"]):
-        ax.text(3.3 + i * 2.0, 3.55, f"• {it}", ha="left", va="center",
-                color=GRAY, fontsize=7.5)
-    arrow(ax, 8.0, 4.98, 8.0, 4.62, color=PURPLE)
-
-    box(ax, 0.5, 0.8, 4.5, 1.8, "Supabase (Cloud)",
-        "Auth · Storage · PostgreSQL", color=TEAL, bg=CARD)
-    box(ax, 6.2, 0.8, 4.5, 1.8, "IndexedDB (Local)",
-        "Offline Cache · PDF Blob · Metadata", color=ORANGE, bg="#2a1a0a")
-    arrow_lr(ax, 5.02, 1.7, 6.18, 1.7, "sync", TEAL)
-    arrow(ax, 2.75, 2.62, 2.75, 2.98, color=TEAL)
-    arrow(ax, 8.45, 2.62, 8.45, 2.98, color=ORANGE)
-
-    box(ax, 11.5, 0.8, 4.0, 1.8, "BookManager.js",
-        "Upload · CRUD · Progress", color=GRAY, bg=PANEL)
-    ax.text(13.5, 0.5, "Framer Motion · Chart.js",
-            ha="center", va="center", color=GRAY, fontsize=8)
-
-    plt.tight_layout(pad=0.5)
-    _save(fig, "ebook")
-
 
 def draw_daodao():
     fig, ax = fig_setup()
@@ -1270,30 +1225,6 @@ def sidebar(ax, cy, label, sub, color):
 # FLOW DIAGRAMS  (flow.png per project)
 # ══════════════════════════════════════════════════════════════════════════════
 
-def draw_ebook_flow():
-    fig, ax = fig_setup()
-    title_bar(ax, "Ebook Reader  —  User Journey",
-              "Open · Login · Browse · Read · Sync")
-    phase_bar(ax, Y6[0] + FH/2, Y6[1] - FH/2, "AUTH",    GREEN)
-    phase_bar(ax, Y6[1] + FH/2, Y6[3] - FH/2, "LIBRARY", BLUE)
-    phase_bar(ax, Y6[3] + FH/2, Y6[6] - FH/2, "READ",    PURPLE)
-    steps = [
-        (Y6[0], "Open App",                  "github.io/ebook-reader",          TEAL),
-        (Y6[1], "GitHub OAuth Login",         "Supabase Auth · JWT session",     GREEN),
-        (Y6[2], "View Book Library",          "Dashboard · stats · filters",     BLUE),
-        (Y6[3], "Browse & Select Book",       "Grid view · search · tags",       BLUE),
-        (Y6[4], "Open PDF in Reader",         "React PDF Viewer · dark mode",    PURPLE),
-        (Y6[5], "Reading Session",            "Page nav · progress tracking",    PURPLE),
-        (Y6[6], "Sync Progress to Supabase",  "IndexedDB ↔ Cloud · auto-save",   TEAL),
-    ]
-    for cy, lbl, sub, c in steps:
-        fbox(ax, 8.0, cy, FW, FH, lbl, sub, color=c)
-    for i in range(len(steps) - 1):
-        fconnect(ax, steps[i][0], steps[i + 1][0], color=steps[i][3])
-    ax.text(8.0, 0.55, "React 19 · Supabase · GitHub OAuth · React PDF Viewer · IndexedDB",
-            ha="center", va="center", color=GRAY, fontsize=8)
-    _save(fig, "ebook", "flow.png")
-
 
 def draw_daodao_flow():
     fig, ax = fig_setup()
@@ -1668,52 +1599,6 @@ def draw_remote_meeting_system_flow():
 # ══════════════════════════════════════════════════════════════════════════════
 # UI MOCKUPS  (ui.png per project)   — light theme for web, dark for Unity/VR
 # ══════════════════════════════════════════════════════════════════════════════
-
-def draw_ebook_ui():
-    fig, ax = fig_setup_light()
-    browser_chrome(ax, "github.io/ebook-reader", "My Library")
-
-    # App navbar
-    ax.add_patch(FancyBboxPatch((0.3, 7.72), 15.4, 0.62,
-                                boxstyle="square,pad=0", lw=0, facecolor=UIPANEL))
-    ax.text(1.0, 8.03, "EbookReader", ha="left", va="center",
-            color=TEAL, fontsize=12, fontweight="bold")
-    lbox(ax, 4.5, 7.82, 6.5, 0.38, color=UIBORD, bg=UILIGHT)
-    ax.text(5.0, 8.01, "Search titles, authors...",
-            ha="left", va="center", color=UIGRAY, fontsize=9)
-    ax.plot([0.3, 15.7], [7.72, 7.72], color=UIBORD, lw=0.8)
-    for i, (lbl, c) in enumerate([("Library", TEAL), ("Reading", UIGRAY), ("Stats", UIGRAY)]):
-        ax.text(1.0 + i * 2.5, 7.52, lbl, ha="left", va="center",
-                color=c, fontsize=9, fontweight="bold" if i == 0 else "normal")
-    ax.plot([0.92, 2.62], [7.36, 7.36], color=TEAL, lw=2.5)
-
-    # Book grid (2 rows × 4 cols)
-    titles  = ["Clean\nCode",  "DDIA",      "Python\nML", "SRE Book",
-               "Design\nAPIs", "K8s",        "TypeScript", "Redis"]
-    bcolors = [TEAL, BLUE, ORANGE, GREEN, PURPLE, "#e11d48", TEAL2, YELLOW]
-    progs   = [0.75, 0.30, 1.00, 0.50, 0.15, 0.60, 0.00, 0.88]
-    for i in range(8):
-        bx = 0.55 + (i % 4) * 3.65
-        by = 4.0  - (i // 4) * 3.15
-        c  = bcolors[i]
-        p  = progs[i]
-        ax.add_patch(FancyBboxPatch((bx, by), 3.1, 2.75,
-                                    boxstyle="round,pad=0.05,rounding_size=0.1",
-                                    linewidth=1, edgecolor=UIBORD, facecolor=c, alpha=0.85, zorder=2))
-        ax.text(bx + 1.55, by + 1.65, titles[i], ha="center", va="center",
-                color=WHITE, fontsize=9, fontweight="bold", zorder=3)
-        ax.add_patch(FancyBboxPatch((bx + 0.15, by + 0.22), 2.8, 0.2,
-                                    boxstyle="square,pad=0", lw=0, facecolor="#ffffff33", zorder=3))
-        ax.add_patch(FancyBboxPatch((bx + 0.15, by + 0.22), 2.8 * p, 0.2,
-                                    boxstyle="square,pad=0", lw=0, facecolor=WHITE, alpha=0.75, zorder=4))
-        ax.text(bx + 1.55, by + 0.5, f"{int(p * 100)}%", ha="center", va="center",
-                color=WHITE, fontsize=7.5, alpha=0.9, zorder=4)
-
-    ax.text(8.0, 0.22, "React 19  ·  Supabase Auth  ·  IndexedDB  ·  React PDF Viewer  ·  Chart.js",
-            ha="center", va="center", color=UIGRAY, fontsize=8)
-    plt.tight_layout(pad=0.5)
-    _save(fig, "ebook", "ui.png")
-
 
 def draw_stock_mlops_ui():
     fig, ax = fig_setup_light()
@@ -2761,7 +2646,6 @@ def draw_remote_meeting_system_ui():
 # ══════════════════════════════════════════════════════════════════════════════
 
 DIAGRAMS = {
-    "ebook":                 {"arch": draw_ebook,                 "flow": draw_ebook_flow,                 "ui": draw_ebook_ui},
     "daodao":                {"arch": draw_daodao,                "flow": draw_daodao_flow,                "ui": draw_daodao_ui},
     "gcp-livekit-infra":     {"arch": draw_gcp_livekit_infra,     "flow": draw_gcp_livekit_infra_flow,     "ui": draw_gcp_livekit_infra_ui},
     "stock-mlops":           {"arch": draw_stock_mlops,           "flow": draw_stock_mlops_flow,           "ui": draw_stock_mlops_ui},
