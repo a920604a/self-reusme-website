@@ -8,7 +8,7 @@
             "與 Python 工程師合作，解決跨領域技術挑戰，並與設計部門和 PM 密切協作，確保專案順利推進。",
             "利用 Prometheus、Grafana 和 AlertManager 建構了監控系統，確保系統健康狀況的即時可見性，並能主動回應突發事件。",
             "使用 Unity 和 C# 開發了適用於 PCVR 環境的 VR 應用和分子模擬工具，並以 Meta Quest 3 為例進行了展示，顯著提升了研究視覺化效果和互動式使用者體驗。",
-            "主導即時 AI 語音助理的雲端架構設計與系統整合，建立 GCP VPC 隔離環境、整合 WebRTC + FastAPI Token Service + AI Agent 後端，並以 Ansible 實現多環境自動化部署，顯著提升基礎設施一致性與安全性。"
+            "主導即時 AI 語音助理平台 GCP 雲端架構設計與落地，建置 VPC 隔離網路環境"
         ]
     },
     {

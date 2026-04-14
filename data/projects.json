@@ -8,7 +8,10 @@
             "GCP",
             "Ansible",
             "Cloud Architecture",
-            "FastAPI"
+            "FastAPI",
+            "Terraform",
+            "Kotlin",
+            "Docker"
         ],
         "description": {
             "background": "設計並實作安全且可擴展的 GCP 雲端架構，以支援低視力眼鏡的即時 AI 語音助理服務。",
@@ -370,28 +373,6 @@
         "images": [
             "remote-meeting-system/flow.png",
             "remote-meeting-system/arch.png"
-        ]
-    },
-    {
-        "id": "ebook",
-        "title": "Ebook Reader",
-        "date": "2025/04-Now",
-        "category": "Side Project",
-        "tags": [
-            "React",
-            "Supabase"
-        ],
-        "description": {
-            "background": "為了提供一個簡單且現代化的電子書閱讀體驗，開發了一個基於 React 的電子書閱讀器。",
-            "challenge": "在無後端伺服器的情況下，實現電子書的上傳、儲存與管理功能。",
-            "solution": "利用 Supabase 提供的後端即服務（BaaS）功能，實現使用者認證與資料儲存，並結合 React 建立前端介面。",
-            "outcome": "成功開發出一個支援電子書上傳與閱讀的應用程式，並部署至 GitHub Pages，供使用者閱讀。"
-        },
-        "reference": "https://a920604a.github.io/ebook-reader/",
-        "repo": "https://github.com/a920604a/ebook-reader",
-        "images": [
-            "ebook/flow.png",
-            "ebook/arch.png"
         ]
     }
 ]
