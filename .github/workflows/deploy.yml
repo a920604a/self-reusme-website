@@ -26,6 +26,8 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          REACT_APP_WORKER_URL: ${{ secrets.REACT_APP_WORKER_URL }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
