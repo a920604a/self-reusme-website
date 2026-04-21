@@ -1,0 +1,11 @@
+name = "portfolio-rag"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "portfolio-index"
+
+[ai]
+binding = "AI"

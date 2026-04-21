@@ -13,6 +13,7 @@ import WorksSummary from "./components/WorksSummary";
 import WorkDetails from "./components/WorkDetails";
 import EducationSection from "./components/EducationSection";
 import Footer from "./components/Footer";
+import FloatingChatWidget from "./components/FloatingChatWidget";
 import axios from "axios";
 import { AlertProvider } from "./context/alertContext";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
@@ -102,6 +103,7 @@ class App extends Component {
         <AlertProvider>
           <main>
             <Router>
+              <FloatingChatWidget projectIds={(data?.projects || []).map(p => p.id)} />
               <Header />
               <Routes>
                 <Route
