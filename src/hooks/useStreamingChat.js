@@ -1,15 +1,20 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 const WORKER_URL = process.env.REACT_APP_WORKER_URL || 'http://localhost:8787';
 
 function useStreamingChat() {
   const [messages, setMessages] = useState([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const abortRef = useRef(null);
 
   const sendMessage = useCallback(async (text) => {
+    // Cancel any in-flight request before starting a new one
+    if (abortRef.current) abortRef.current.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     const userMessage = { role: 'user', content: text };
     const assistantPlaceholder = { role: 'assistant', content: '' };
-
     setMessages((prev) => [...prev, userMessage, assistantPlaceholder]);
     setIsStreaming(true);
 
@@ -18,6 +23,7 @@ function useStreamingChat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: text }),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
@@ -62,6 +68,7 @@ function useStreamingChat() {
         }
       }
     } catch (err) {
+      if (err.name === 'AbortError') return; // User cancelled — no error message
       setMessages((prev) => {
         const next = [...prev];
         next[next.length - 1] = {
@@ -72,12 +79,30 @@ function useStreamingChat() {
       });
     } finally {
       setIsStreaming(false);
+      abortRef.current = null;
     }
   }, []);
 
-  const clearMessages = useCallback(() => setMessages([]), []);
+  const clearMessages = useCallback(() => {
+    if (abortRef.current) abortRef.current.abort();
+    setMessages([]);
+  }, []);
 
-  return { messages, isStreaming, sendMessage, clearMessages };
+  const cancelStreaming = useCallback(() => {
+    if (abortRef.current) abortRef.current.abort();
+  }, []);
+
+  // Persist messages to localStorage (skip empty assistant placeholder during streaming)
+  const stableMessages = messages.filter((m) => m.content || m.role === 'user');
+  useEffect(() => {
+    try {
+      localStorage.setItem('chat_history', JSON.stringify(stableMessages));
+    } catch {
+      // storage quota exceeded — ignore
+    }
+  }, [stableMessages]);
+
+  return { messages, isStreaming, sendMessage, clearMessages, cancelStreaming };
 }
 
 export default useStreamingChat;

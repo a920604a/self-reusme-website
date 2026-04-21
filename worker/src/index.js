@@ -38,7 +38,7 @@ User: ${query}
 Answer:`;
 }
 
-async function handleQuery(request, env) {
+async function handleQuery(request, env, origin) {
   const { query } = await request.json();
   if (!query || typeof query !== 'string' || query.trim().length === 0) {
     return new Response(JSON.stringify({ error: 'Missing or invalid query' }), {
@@ -46,6 +46,26 @@ async function handleQuery(request, env) {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+
+  // Query length guard
+  if (query.length > 1000) {
+    return new Response(JSON.stringify({ error: 'Query too long (max 1000 characters)' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Rate limiting: 20 requests per IP per minute
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rateLimitKey = `rl:${ip}:${Math.floor(Date.now() / 60000)}`;
+  const currentCount = parseInt((await env.RATE_LIMIT_KV.get(rateLimitKey)) || '0');
+  if (currentCount >= 20) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please wait a minute.' }), {
+      status: 429,
+      headers: { 'Content-Type': 'application/json', 'Retry-After': '60' },
+    });
+  }
+  await env.RATE_LIMIT_KV.put(rateLimitKey, String(currentCount + 1), { expirationTtl: 120 });
 
   analytics.track('query_sent', { query });
 
@@ -57,7 +77,9 @@ async function handleQuery(request, env) {
     return new Response(cached.body, {
       headers: {
         'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
         'X-Cache': 'HIT',
+        ...corsHeaders(origin),
       },
     });
   }
@@ -124,7 +146,7 @@ export default {
     }
 
     try {
-      const response = await handleQuery(request, env);
+      const response = await handleQuery(request, env, origin);
       Object.entries(headers).forEach(([k, v]) => response.headers.set(k, v));
       return response;
     } catch (err) {

@@ -11,3 +11,7 @@ metric = "cosine"
 
 [ai]
 binding = "AI"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "b411c929ee5a4076a24bb6b750d47ba1"

@@ -127,7 +127,7 @@ function ChatMessage({ message, isStreaming, isLast, projectIds }) {
 function FloatingChatWidget({ projectIds = [] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const { messages, isStreaming, sendMessage } = useStreamingChat();
+  const { messages, isStreaming, sendMessage, clearMessages, cancelStreaming } = useStreamingChat();
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -261,18 +261,56 @@ function FloatingChatWidget({ projectIds = [] }) {
                   About Yu-An's portfolio
                 </div>
               </div>
-              <div
-                style={{
-                  marginLeft: 'auto',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: isStreaming ? '#ffb783' : '#5de6ff',
-                  boxShadow: `0 0 6px ${isStreaming ? '#ffb783' : '#5de6ff'}`,
-                  transition: 'all 0.3s',
-                  flexShrink: 0,
-                }}
-              />
+              <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                {isStreaming && (
+                  <button
+                    onClick={cancelStreaming}
+                    title="Stop generating"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#ffb783',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-label)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                    }}
+                  >
+                    Stop
+                  </button>
+                )}
+                {messages.length > 0 && !isStreaming && (
+                  <button
+                    onClick={clearMessages}
+                    title="Clear chat"
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: '#908fa0',
+                      fontSize: '11px',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-label)',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#ff6b6b')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = '#908fa0')}
+                  >
+                    Clear
+                  </button>
+                )}
+                <div
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: isStreaming ? '#ffb783' : '#5de6ff',
+                    boxShadow: `0 0 6px ${isStreaming ? '#ffb783' : '#5de6ff'}`,
+                    transition: 'all 0.3s',
+                  }}
+                />
+              </div>
             </div>
 
             {/* Messages */}
