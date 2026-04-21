@@ -6,6 +6,8 @@ compatibility_flags = ["nodejs_compat"]
 [[vectorize]]
 binding = "VECTORIZE"
 index_name = "portfolio-index"
+dimensions = 1024
+metric = "cosine"
 
 [ai]
 binding = "AI"

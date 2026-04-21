@@ -20,7 +20,7 @@ graph TB
         VZ["Vectorize\nportfolio-index"]
 
         Worker -- "快取檢查" --> Cache
-        Worker -- "embed (@cf/baai/bge-base-en-v1.5)" --> AI
+        Worker -- "embed (@cf/baai/bge-m3)" --> AI
         Worker -- "query topK=5" --> VZ
         Worker -- "stream (@cf/meta/llama-3-8b-instruct)" --> AI
     end
@@ -99,7 +99,7 @@ flowchart TD
 
     CACHE -- "HIT" --> CACHED["直接回傳快取 SSE stream"]
 
-    CACHE -- "MISS" --> EMBED["1. 向量化 query\n@cf/baai/bge-base-en-v1.5\n→ float32[768]"]
+    CACHE -- "MISS" --> EMBED["1. 向量化 query\n@cf/baai/bge-m3\n→ float32[1024]"]
     EMBED --> SEARCH["2. 向量搜尋\nVectorize.query(topK=5)\n→ 前 5 筆相關 chunk"]
     SEARCH --> PROMPT["3. 組裝 prompt\nsystem + context + query"]
     PROMPT --> LLM["4. 串流 LLM\n@cf/meta/llama-3-8b-instruct\nstream: true"]
@@ -145,12 +145,12 @@ flowchart LR
 
     subgraph Script["worker/scripts/ingest.js"]
         CHUNK["產生文字 chunk\ntitle + tags + description"]
-        EMBED["透過 REST API 向量化\n@cf/baai/bge-base-en-v1.5"]
+        EMBED["透過 REST API 向量化\n@cf/baai/bge-m3"]
         UPSERT["以 NDJSON 格式 upsert\n至 Vectorize"]
     end
 
     subgraph VZ["Cloudflare Vectorize（向量資料庫）"]
-        IDX["portfolio-index\ndimensions: 768\nmetric: cosine"]
+        IDX["portfolio-index\ndimensions: 1024\nmetric: cosine"]
     end
 
     P & PR & W & S --> CHUNK --> EMBED --> UPSERT --> IDX

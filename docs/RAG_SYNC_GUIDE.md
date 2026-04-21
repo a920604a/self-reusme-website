@@ -31,7 +31,7 @@ npm install
 ### 2. 建立 Vectorize index
 
 ```bash
-npx wrangler vectorize create portfolio-index --dimensions=768 --metric=cosine
+npx wrangler vectorize create portfolio-index --dimensions=1024 --metric=cosine
 ```
 
 ### 3. 設定環境變數

@@ -63,7 +63,7 @@ async function handleQuery(request, env) {
   }
 
   // 1. Embed query
-  const embedResult = await env.AI.run('@cf/baai/bge-base-en-v1.5', {
+  const embedResult = await env.AI.run('@cf/baai/bge-m3', {
     text: query,
   });
   const queryVector = embedResult.data[0];

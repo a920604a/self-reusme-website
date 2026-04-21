@@ -18,7 +18,7 @@ const path = require('path');
 const API_TOKEN = process.env.CLOUDFLARE_API_TOKEN;
 const ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID;
 const INDEX_NAME = 'portfolio-index';
-const EMBED_MODEL = '@cf/baai/bge-base-en-v1.5';
+const EMBED_MODEL = '@cf/baai/bge-m3';
 
 if (!API_TOKEN || !ACCOUNT_ID) {
   console.error('Missing CLOUDFLARE_API_TOKEN or CLOUDFLARE_ACCOUNT_ID');
