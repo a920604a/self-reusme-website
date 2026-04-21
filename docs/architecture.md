@@ -2,91 +2,82 @@
 
 ## System Overview
 
-This portfolio website consists of two independently deployed components:
+Two independently deployed components: a React static site on GitHub Pages and a Cloudflare Worker handling RAG + LLM streaming at the edge.
 
-1. **React Frontend** — static site hosted on GitHub Pages
-2. **Cloudflare Worker** — edge API handling RAG + LLM streaming
+```mermaid
+graph TB
+    subgraph Browser["Browser"]
+        UI["React App\n(GitHub Pages)"]
+        Widget["FloatingChatWidget"]
+        Hook["useStreamingChat hook"]
+        UI --> Widget --> Hook
+    end
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  Browser                                                 │
-│                                                          │
-│  React App (GitHub Pages)                                │
-│  ├── Portfolio UI (projects, works, skills)              │
-│  └── FloatingChatWidget                                  │
-│       └── useStreamingChat hook                          │
-│            └─── fetch POST /query ──────────────────────►│
-└─────────────────────────────────────────────────────────┘
-                                                           │
-                                              ReadableStream (SSE)
-                                                           │
-                                                           ▼
-┌──────────────────────────────────────────────────────────┐
-│  Cloudflare Edge                                         │
-│                                                          │
-│  Worker: portfolio-rag                                   │
-│  ├── CORS + OPTIONS handler                              │
-│  ├── Cache check (caches.default, key = sha256(query))   │
-│  ├── Embed query   → Workers AI (@cf/baai/bge-base-en)   │
-│  ├── Vector search → Vectorize (topK=5)                  │
-│  ├── Assemble RAG prompt                                 │
-│  ├── Stream LLM    → Workers AI (@cf/meta/llama-3-8b)    │
-│  └── Return ReadableStream (SSE)                         │
-│                                                          │
-│  Bindings:                                               │
-│  ├── AI       → Cloudflare Workers AI                    │
-│  └── VECTORIZE → Cloudflare Vectorize (portfolio-index)  │
-└──────────────────────────────────────────────────────────┘
+    subgraph CF["Cloudflare Edge"]
+        Worker["Worker: portfolio-rag\nPOST /query"]
+        Cache["caches.default\nkey = sha256(query)"]
+        AI["Workers AI"]
+        VZ["Vectorize\nportfolio-index"]
+
+        Worker -- "cache check" --> Cache
+        Worker -- "embed (@cf/baai/bge-base-en-v1.5)" --> AI
+        Worker -- "query topK=5" --> VZ
+        Worker -- "stream (@cf/meta/llama-3-8b-instruct)" --> AI
+    end
+
+    Hook -- "POST /query" --> Worker
+    Worker -- "ReadableStream (SSE)" --> Hook
 ```
 
 ---
 
 ## Frontend Architecture
 
-```
-src/
-├── App.js                      # Root: loads JSON data, sets up Router
-├── theme.js                    # Chakra UI theme tokens
-├── index.css                   # CSS variables (colors, fonts)
-│
-├── components/
-│   ├── FloatingChatWidget.js   # AI chat UI (floating button + panel)
-│   ├── Header.js               # Navigation bar
-│   ├── LandingSection.js       # Hero section
-│   ├── ProjectsCarousel.js     # Recommended projects slider
-│   ├── ProjectsPage.js         # All projects grid
-│   ├── ProjectDetails.js       # Single project detail page
-│   ├── WorksSummary.js         # Work experience section
-│   ├── WorkDetails.js          # Single work detail page
-│   ├── SkillSection.js         # Skills / tools / frameworks
-│   ├── EducationSection.js     # Education timeline
-│   ├── ContactMeSection.js     # Contact form
-│   └── Footer.js               # Footer with social links
-│
-├── hooks/
-│   ├── useStreamingChat.js     # SSE stream reader + chat state
-│   └── useSubmit.js            # Contact form submit
-│
-└── context/
-    └── alertContext.js         # Global toast/alert state
+### Component Tree
+
+```mermaid
+graph TD
+    App["App.js\nloads data, sets up Router"]
+
+    App --> Router["HashRouter"]
+    Router --> Header
+    Router --> FloatingChatWidget
+    Router --> Routes
+
+    Routes --> Home["/ (Home)"]
+    Routes --> Projects["/projects"]
+    Routes --> ProjectDetail["/projects/:id"]
+    Routes --> WorkDetail["/works/:id"]
+
+    Home --> LandingSection
+    Home --> ProjectsCarousel
+    Home --> WorksSummary
+    Home --> SkillSection
+    Home --> EducationSection
+    Home --> ContactMeSection
+    Home --> Footer
+
+    FloatingChatWidget --> useStreamingChat["useStreamingChat (hook)"]
+    ContactMeSection --> useSubmit["useSubmit (hook)"]
 ```
 
-### Data Flow (Frontend)
+### Data Flow
 
-```
-App.js
-  └── componentDidMount → axios.get(public/data/*.json)
-        ├── profile.json    → greeting, bio, resume link
-        ├── projects.json   → projects[], recommendedProjects[]
-        ├── works.json      → works[]
-        ├── skills.json     → skills, tools, frameworks, tryLearn
-        └── education.json  → educationData[]
-              └── passed as props to child components
+```mermaid
+sequenceDiagram
+    participant App
+    participant JSON as public/data/*.json
+    participant Components
+
+    App->>JSON: axios.get (on mount, parallel)
+    JSON-->>App: profile, projects, works, skills, education
+    App->>App: normalize & merge state
+    App->>Components: pass as props
 ```
 
 ### Routing
 
-Uses `HashRouter` (`/#/`-based) for GitHub Pages compatibility — no server-side routing config required.
+Uses `HashRouter` (`/#/`-based) — works on GitHub Pages without server-side config.
 
 | Path | Component |
 |------|-----------|
@@ -99,127 +90,132 @@ Uses `HashRouter` (`/#/`-based) for GitHub Pages compatibility — no server-sid
 
 ## Backend Architecture (Cloudflare Worker)
 
-```
-worker/
-├── src/
-│   └── index.js        # Worker entry point
-├── scripts/
-│   └── ingest.js       # One-time data indexing script
-├── wrangler.toml       # Cloudflare Worker config
-└── package.json
-```
-
 ### RAG Pipeline
 
-```
-User query
-    │
-    ▼
-[1] Embed query
-    env.AI.run("@cf/baai/bge-base-en-v1.5", { text: query })
-    → float32[768]
-    │
-    ▼
-[2] Vector search
-    env.VECTORIZE.query(vector, { topK: 5, returnMetadata: "all" })
-    → top 5 matching chunks from portfolio data
-    │
-    ▼
-[3] Assemble prompt
-    system prompt + retrieved context + user query
-    │
-    ▼
-[4] Stream LLM
-    env.AI.run("@cf/meta/llama-3-8b-instruct", { messages, stream: true })
-    → ReadableStream (SSE format)
-    │
-    ▼
-[5] Return to client
-    Response(stream, { "Content-Type": "text/event-stream" })
+```mermaid
+flowchart TD
+    Q["User Query"] --> CORS["CORS + OPTIONS check"]
+    CORS --> CACHE{"Cache hit?\nsha256(query)"}
+
+    CACHE -- "HIT" --> CACHED["Return cached SSE stream"]
+
+    CACHE -- "MISS" --> EMBED["1. Embed query\n@cf/baai/bge-base-en-v1.5\n→ float32[768]"]
+    EMBED --> SEARCH["2. Vector search\nVectorize.query(topK=5)\n→ top 5 chunks"]
+    SEARCH --> PROMPT["3. Assemble prompt\nsystem + context + query"]
+    PROMPT --> LLM["4. Stream LLM\n@cf/meta/llama-3-8b-instruct\nstream: true"]
+    LLM --> TEE["5. Tee stream"]
+    TEE --> CLIENT["Return ReadableStream\nto client (SSE)"]
+    TEE --> STORE["Cache in background\nwaitUntil()"]
 ```
 
-### Caching Strategy
+### Streaming Protocol
 
-- **Key**: `sha256(query)` via `Web Crypto API`
-- **Store**: `caches.default` (Cloudflare edge cache)
-- **Hit**: return cached SSE stream immediately
-- **Miss**: stream LLM → tee stream → cache in background (`waitUntil`)
-- Does not block or delay the streaming response path
+```mermaid
+sequenceDiagram
+    participant FE as Frontend (useStreamingChat)
+    participant W as Worker
+    participant LLM as Workers AI (LLM)
 
-### SSE Format
-
-Each chunk from the LLM stream:
+    FE->>W: POST /query { query: "..." }
+    W->>LLM: run(llama-3-8b, { stream: true })
+    loop token-by-token
+        LLM-->>W: data: {"response":"token"}\n\n
+        W-->>FE: data: {"response":"token"}\n\n
+        FE->>FE: append token to message state
+    end
+    LLM-->>W: data: [DONE]
+    W-->>FE: data: [DONE]
+    FE->>FE: isStreaming = false
 ```
-data: {"response":"Hello"}\n\n
-data: {"response":" world"}\n\n
-data: [DONE]\n\n
-```
-
-Frontend `useStreamingChat` parses each `data:` line, extracts `response`, and appends token-by-token to the UI.
 
 ---
 
-## Data / Vectorize
+## Data & Vectorize
 
+### Ingest Pipeline (one-time / on data update)
+
+```mermaid
+flowchart LR
+    subgraph Source["public/data/"]
+        P["profile.json"]
+        PR["projects.json"]
+        W["works.json"]
+        S["skills.json"]
+    end
+
+    subgraph Script["worker/scripts/ingest.js"]
+        CHUNK["Build text chunks\n(title + tags + description)"]
+        EMBED["Embed via REST API\n@cf/baai/bge-base-en-v1.5"]
+        UPSERT["Upsert NDJSON\nto Vectorize"]
+    end
+
+    subgraph VZ["Cloudflare Vectorize"]
+        IDX["portfolio-index\ndimensions: 768\nmetric: cosine"]
+    end
+
+    P & PR & W & S --> CHUNK --> EMBED --> UPSERT --> IDX
 ```
-public/data/
-  ├── projects.json   → project-{id} vectors
-  ├── works.json      → work-{id} vectors
-  ├── skills.json     → skills vector
-  └── profile.json    → profile vector
-          │
-          ▼ (ingest.js — manual, run once per data update)
-  Cloudflare Vectorize
-  index: portfolio-index
-  dimensions: 768 (bge-base-en-v1.5)
-  metric: cosine
-```
 
-Each vector stores metadata `{ text, type }` so the Worker can extract context text at query time.
+### Vector ID Convention
 
-See [RAG_SYNC_GUIDE.md](./RAG_SYNC_GUIDE.md) for how to re-sync after data updates.
+| Source | Vector ID |
+|--------|-----------|
+| `projects.json` item | `project-{id}` |
+| `works.json` item | `work-{id}` |
+| `skills.json` | `skills` |
+| `profile.json` | `profile` |
+
+Each vector stores metadata `{ text, type }` for context extraction at query time.
+
+See [RAG_SYNC_GUIDE.md](./RAG_SYNC_GUIDE.md) for the full sync workflow.
 
 ---
 
 ## Deployment
 
-### Frontend (GitHub Pages)
+```mermaid
+flowchart LR
+    subgraph Dev["Local"]
+        CODE["Code changes"]
+        INGEST["node scripts/ingest.js\n(on data update)"]
+        WDEPLOY["wrangler deploy\n(on worker change)"]
+    end
 
-- **Trigger**: push to `main` → GitHub Actions (`deploy.yml`)
-- **Build**: `npm run build` with `REACT_APP_WORKER_URL` injected from GitHub Secrets
-- **Publish**: `peaceiris/actions-gh-pages` → `gh-pages` branch
-- **URL**: `https://a920604a.github.io/self-reusme-website`
+    subgraph CI["GitHub Actions"]
+        PUSH["push to main"]
+        BUILD["npm run build\n+ REACT_APP_WORKER_URL secret"]
+        GHPAGES["gh-pages branch"]
+    end
 
-### Worker (Cloudflare)
+    subgraph Prod["Production"]
+        GHP["GitHub Pages\na920604a.github.io/..."]
+        CFW["Cloudflare Worker\nportfolio-rag.*.workers.dev"]
+        VZI["Cloudflare Vectorize\nportfolio-index"]
+    end
 
-- **Trigger**: manual — `npx wrangler deploy` (from `worker/`)
-- **URL**: `https://portfolio-rag.<account>.workers.dev`
+    CODE --> PUSH --> BUILD --> GHPAGES --> GHP
+    WDEPLOY --> CFW
+    INGEST --> VZI
+```
 
-### Vectorize (one-time + on data update)
+### Environment Variables
 
-- **Trigger**: manual — `node worker/scripts/ingest.js`
-- **Requires**: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`
-
----
-
-## Environment Variables
-
-| Variable | Where | Purpose |
-|----------|-------|---------|
-| `REACT_APP_WORKER_URL` | GitHub Secret + `.env` | Worker endpoint baked into React build |
-| `CLOUDFLARE_API_TOKEN` | Local shell only | ingest.js: embed + upsert to Vectorize |
-| `CLOUDFLARE_ACCOUNT_ID` | Local shell only | ingest.js: API calls |
+| Variable | Used By | Purpose |
+|----------|---------|---------|
+| `REACT_APP_WORKER_URL` | GitHub Secret + `.env` | Worker URL baked into React build |
+| `CLOUDFLARE_API_TOKEN` | Local shell | ingest.js — embed + upsert to Vectorize |
+| `CLOUDFLARE_ACCOUNT_ID` | Local shell | ingest.js — REST API calls |
 
 ---
 
 ## Key Design Decisions
 
-**HashRouter over BrowserRouter** — GitHub Pages serves only one HTML file; hash-based routing avoids 404s on direct URL access.
+**HashRouter over BrowserRouter** — GitHub Pages serves a single HTML file; hash-based routing avoids 404s on direct URL access without server config.
 
-**Cloudflare Workers over a traditional server** — Zero cold-start latency, globally distributed, free tier covers personal portfolio usage. Vectorize and Workers AI are co-located, minimizing embed + search latency.
+**Cloudflare Workers over a traditional server** — Zero cold-start latency, globally distributed edge execution, co-located with Vectorize and Workers AI to minimize embed + search roundtrip.
 
-**SSE (Server-Sent Events) over WebSocket** — One-way streaming from server to client is sufficient for chat responses; SSE is simpler, HTTP-native, and works through standard `fetch()`.
+**SSE over WebSocket** — One-way LLM token streaming only needs server→client push; SSE is HTTP-native and works with standard `fetch()` + `ReadableStream` without extra protocol overhead.
 
-**Stream tee for caching** — The LLM stream is tee'd so the response reaches the client immediately while the Worker caches the full response in the background without adding latency.
+**Stream tee for caching** — The LLM stream is tee'd so the client receives tokens immediately while the full response is stored in `caches.default` in the background — no added latency on cache miss.
 
-**Data-driven UI** — All portfolio content lives in `public/data/*.json`, requiring no code changes for content updates. The same JSON files are the source of truth for both the UI and the RAG knowledge base.
+**`public/data/*.json` as single source of truth** — The same JSON files drive both the portfolio UI and the RAG knowledge base, eliminating any content duplication or sync drift between UI and AI.
