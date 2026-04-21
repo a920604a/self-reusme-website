@@ -115,7 +115,10 @@ async function handleQuery(request, env, origin) {
 
   // Store cache in background (non-blocking)
   const cacheResponse = new Response(cacheStream, {
-    headers: { 'Content-Type': 'text/event-stream' },
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'public, max-age=86400',
+    },
   });
   env.ctx?.waitUntil(cache.put(cacheKey, cacheResponse));
 
