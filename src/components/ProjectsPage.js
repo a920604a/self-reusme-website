@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import {
-  Box, Heading, Text, Flex, Button, Select, Stack,
+  Box, Heading, Text, Flex, Button, Select, Stack, useColorModeValue,
 } from "@chakra-ui/react";
 import ProjectsSummary from "./ProjectsSummary";
 
@@ -11,6 +11,15 @@ const parseDate = (dateStr) => {
 };
 
 const ProjectsPage = ({ projects }) => {
+  const bgCanvas     = useColorModeValue("#FFFFFF", "#000000");
+  const labelPrimary = useColorModeValue("#000000", "#FFFFFF");
+  const labelSecond  = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
+  const labelTertiary = useColorModeValue("rgba(60,60,67,0.3)", "rgba(235,235,245,0.3)");
+  const accent       = useColorModeValue("#007AFF", "#0A84FF");
+  const accentSoft   = useColorModeValue("rgba(0,122,255,0.12)", "rgba(10,132,255,0.2)");
+  const bgFill       = useColorModeValue("rgba(120,120,128,0.2)", "rgba(120,120,128,0.36)");
+  const borderColor  = useColorModeValue("#C6C6C8", "#38383A");
+
   const [categoryFilter, setCategoryFilter] = useState("");
   const [tagsFilter,     setTagsFilter]     = useState("");
   const [sort,           setSort]           = useState("date DESC");
@@ -35,31 +44,32 @@ const ProjectsPage = ({ projects }) => {
     });
 
   const selectStyles = {
-    bg: "#222a3d",
-    border: "1px solid #464554",
-    color: "#dae2fd",
+    bg: bgFill,
+    border: "1px solid",
+    borderColor: borderColor,
+    color: labelPrimary,
     borderRadius: "8px",
     fontSize: "sm",
-    _hover: { borderColor: "#c0c1ff" },
-    _focus: { borderColor: "#c0c1ff", boxShadow: "none" },
+    _hover: { borderColor: accent },
+    _focus: { borderColor: accent, boxShadow: "none" },
   };
 
   return (
-    <Box bg="#0b1326" minH="100vh" pt="90px" pb={20} px={{ base: 4, md: 8 }}>
+    <Box bg={bgCanvas} minH="100vh" pt="90px" pb={20} px={{ base: 4, md: 8 }}>
       <Box maxW="1200px" mx="auto">
 
         {/* Header */}
         <Box mb={10} textAlign="center">
           <Text
             fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
-            textTransform="uppercase" mb={3} style={{ color: "#5de6ff" }}
+            textTransform="uppercase" mb={3} style={{ color: accent }}
           >
             Portfolio Archive
           </Text>
           <Heading
             fontFamily="var(--font-headline)" fontWeight="800"
             fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
-            style={{ color: "#dae2fd" }}
+            style={{ color: labelPrimary }}
           >
             All Projects
           </Heading>
@@ -71,10 +81,10 @@ const ProjectsPage = ({ projects }) => {
             size="sm" borderRadius="full" px={5}
             fontFamily="var(--font-label)" fontWeight={600} fontSize="xs"
             letterSpacing="wide"
-            bg={categoryFilter === "" ? "#c0c1ff" : "#222a3d"}
-            color={categoryFilter === "" ? "#1000a9" : "#c7c4d7"}
-            border={categoryFilter === "" ? "none" : "1px solid #464554"}
-            _hover={{ bg: categoryFilter === "" ? "#c0c1ff" : "#2d3449" }}
+            bg={categoryFilter === "" ? accentSoft : bgFill}
+            color={categoryFilter === "" ? accent : labelSecond}
+            border={categoryFilter === "" ? `1px solid ${accent}` : `1px solid ${borderColor}`}
+            _hover={{ bg: categoryFilter === "" ? accentSoft : bgFill, opacity: 0.8 }}
             onClick={() => setCategoryFilter("")}
           >
             All
@@ -84,10 +94,10 @@ const ProjectsPage = ({ projects }) => {
               key={cat} size="sm" borderRadius="full" px={5}
               fontFamily="var(--font-label)" fontWeight={600} fontSize="xs"
               letterSpacing="wide"
-              bg={categoryFilter === cat ? "#c0c1ff" : "#222a3d"}
-              color={categoryFilter === cat ? "#1000a9" : "#c7c4d7"}
-              border={categoryFilter === cat ? "none" : "1px solid #464554"}
-              _hover={{ bg: categoryFilter === cat ? "#c0c1ff" : "#2d3449" }}
+              bg={categoryFilter === cat ? accentSoft : bgFill}
+              color={categoryFilter === cat ? accent : labelSecond}
+              border={categoryFilter === cat ? `1px solid ${accent}` : `1px solid ${borderColor}`}
+              _hover={{ bg: categoryFilter === cat ? accentSoft : bgFill, opacity: 0.8 }}
               onClick={() => setCategoryFilter(cat)}
             >
               {cat}
@@ -105,7 +115,7 @@ const ProjectsPage = ({ projects }) => {
             {...selectStyles}
           >
             {allTags.map((tag) => (
-              <option key={tag} value={tag} style={{ background: "#222a3d" }}>{tag}</option>
+              <option key={tag} value={tag} style={{ background: "var(--color-elevated)" }}>{tag}</option>
             ))}
           </Select>
 
@@ -115,9 +125,9 @@ const ProjectsPage = ({ projects }) => {
             maxW="200px"
             {...selectStyles}
           >
-            <option value="date DESC" style={{ background: "#222a3d" }}>Newest First</option>
-            <option value="date ASC"  style={{ background: "#222a3d" }}>Oldest First</option>
-            <option value="title"     style={{ background: "#222a3d" }}>By Title</option>
+            <option value="date DESC" style={{ background: "var(--color-elevated)" }}>Newest First</option>
+            <option value="date ASC"  style={{ background: "var(--color-elevated)" }}>Oldest First</option>
+            <option value="title"     style={{ background: "var(--color-elevated)" }}>By Title</option>
           </Select>
         </Flex>
 
@@ -125,14 +135,14 @@ const ProjectsPage = ({ projects }) => {
         <Text
           textAlign="center" mb={8}
           fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
-          textTransform="uppercase" style={{ color: "#908fa0" }}
+          textTransform="uppercase" style={{ color: labelSecond }}
         >
           {filtered.length} Project{filtered.length !== 1 ? "s" : ""}
         </Text>
 
         {/* Grid */}
         {filtered.length === 0 ? (
-          <Text textAlign="center" style={{ color: "#908fa0" }}>No projects found.</Text>
+          <Text textAlign="center" style={{ color: labelSecond }}>No projects found.</Text>
         ) : (
           <ProjectsSummary projects={filtered} />
         )}
@@ -142,7 +152,7 @@ const ProjectsPage = ({ projects }) => {
           <Button
             size="sm" variant="ghost"
             fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
-            textTransform="uppercase" style={{ color: "#c0c1ff" }}
+            textTransform="uppercase" style={{ color: accent }}
             _hover={{ bg: "rgba(192,193,255,0.06)" }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >

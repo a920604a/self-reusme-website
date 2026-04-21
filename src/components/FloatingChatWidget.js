@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
+import { useColorModeValue } from '@chakra-ui/react';
 import useStreamingChat from '../hooks/useStreamingChat';
 
 const SUGGESTED_QUESTIONS = [
@@ -13,7 +14,13 @@ const SUGGESTED_QUESTIONS = [
 ];
 
 function ChatMessage({ message, isStreaming, isLast, projectIds }) {
-  const isUser = message.role === 'user';
+  const isUser      = message.role === 'user';
+  const msgUserBg   = useColorModeValue('linear-gradient(135deg,#007AFF,#34AADC)', 'linear-gradient(135deg,#0A84FF,#409CFF)');
+  const msgAiBg     = useColorModeValue('rgba(0,0,0,0.04)', 'rgba(255,255,255,0.06)');
+  const msgAiColor  = useColorModeValue('#000000', '#dae2fd');
+  const msgAiBorder = useColorModeValue('rgba(60,60,67,0.12)', 'rgba(192,193,255,0.12)');
+  const accent      = useColorModeValue('#007AFF', '#0A84FF');
+  const labelSecond = useColorModeValue('rgba(60,60,67,0.6)', 'rgba(235,235,245,0.6)');
 
   // Highlight project section if assistant mentions a known project id
   useEffect(() => {
@@ -45,14 +52,12 @@ function ChatMessage({ message, isStreaming, isLast, projectIds }) {
           maxWidth: '85%',
           padding: '10px 14px',
           borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
-          background: isUser
-            ? 'linear-gradient(135deg, #8083ff, #c0c1ff)'
-            : 'rgba(255,255,255,0.06)',
-          color: isUser ? '#0b1326' : '#dae2fd',
+          background: isUser ? msgUserBg : msgAiBg,
+          color: isUser ? '#FFFFFF' : msgAiColor,
           fontSize: '14px',
           lineHeight: '1.6',
           fontFamily: 'var(--font-body)',
-          border: isUser ? 'none' : '1px solid rgba(192,193,255,0.12)',
+          border: isUser ? 'none' : `1px solid ${msgAiBorder}`,
           wordBreak: 'break-word',
         }}
       >
@@ -68,7 +73,7 @@ function ChatMessage({ message, isStreaming, isLast, projectIds }) {
                   return inline ? (
                     <code
                       style={{
-                        background: 'rgba(192,193,255,0.15)',
+                        background: msgAiBorder,
                         padding: '1px 6px',
                         borderRadius: '4px',
                         fontFamily: 'var(--font-mono)',
@@ -86,7 +91,7 @@ function ChatMessage({ message, isStreaming, isLast, projectIds }) {
                 },
                 a({ href, children }) {
                   return (
-                    <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: '#5de6ff' }}>
+                    <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: accent }}>
                       {children}
                     </a>
                   );
@@ -101,7 +106,7 @@ function ChatMessage({ message, isStreaming, isLast, projectIds }) {
                   display: 'inline-block',
                   width: '2px',
                   height: '14px',
-                  background: '#c0c1ff',
+                  background: accent,
                   marginLeft: '2px',
                   verticalAlign: 'middle',
                   animation: 'cursor-blink 0.8s step-end infinite',
@@ -109,10 +114,10 @@ function ChatMessage({ message, isStreaming, isLast, projectIds }) {
               />
             )}
             {!message.content && !isStreaming && isLast && (
-              <span style={{ color: '#908fa0', fontStyle: 'italic' }}>Thinking...</span>
+              <span style={{ color: labelSecond, fontStyle: 'italic' }}>Thinking...</span>
             )}
             {!message.content && isStreaming && isLast && (
-              <span style={{ color: '#908fa0', fontStyle: 'italic' }}>
+              <span style={{ color: labelSecond, fontStyle: 'italic' }}>
                 Thinking
                 <span style={{ animation: 'cursor-blink 1s infinite' }}>...</span>
               </span>
@@ -130,6 +135,20 @@ function FloatingChatWidget({ projectIds = [] }) {
   const { messages, isStreaming, sendMessage, clearMessages, cancelStreaming } = useStreamingChat();
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  const bgElevated   = useColorModeValue('#FFFFFF', '#1C1C1E');
+  const bgHeader     = useColorModeValue('rgba(0,0,0,0.03)', 'rgba(255,255,255,0.04)');
+  const bgInput      = useColorModeValue('rgba(120,120,128,0.1)', 'rgba(255,255,255,0.05)');
+  const bgFab        = useColorModeValue('linear-gradient(135deg,#F2F2F7,#FFFFFF)', 'linear-gradient(135deg,#1a1f35,#222a3d)');
+  const labelPrimary = useColorModeValue('#000000', '#FFFFFF');
+  const labelSecond  = useColorModeValue('rgba(60,60,67,0.6)', 'rgba(235,235,245,0.6)');
+  const accent       = useColorModeValue('#007AFF', '#0A84FF');
+  const borderColor  = useColorModeValue('rgba(60,60,67,0.2)', 'rgba(192,193,255,0.15)');
+  const fabShadow    = useColorModeValue('0 4px 20px rgba(0,0,0,0.12)', '0 4px 20px rgba(192,193,255,0.2)');
+  const panelShadow  = useColorModeValue('0 24px 60px rgba(0,0,0,0.15)', '0 24px 60px rgba(0,0,0,0.5)');
+  const suggestBg    = useColorModeValue('rgba(0,122,255,0.06)', 'rgba(192,193,255,0.07)');
+  const suggestBorder = useColorModeValue('rgba(0,122,255,0.2)', 'rgba(192,193,255,0.15)');
+  const inputColor   = useColorModeValue('#000000', '#dae2fd');
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
@@ -160,17 +179,9 @@ function FloatingChatWidget({ projectIds = [] }) {
   return (
     <>
       <style>{`
-        @keyframes cursor-blink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0; }
-        }
-        .rag-glow {
-          box-shadow: 0 0 0 3px rgba(192, 193, 255, 0.6), 0 0 24px rgba(192, 193, 255, 0.3) !important;
-          transition: box-shadow 0.3s ease !important;
-        }
         .chat-messages::-webkit-scrollbar { width: 4px; }
         .chat-messages::-webkit-scrollbar-thumb {
-          background: rgba(192,193,255,0.2);
+          background: rgba(120,120,128,0.3);
           border-radius: 4px;
         }
       `}</style>
@@ -188,9 +199,9 @@ function FloatingChatWidget({ projectIds = [] }) {
           width: '52px',
           height: '52px',
           borderRadius: '50%',
-          border: '1px solid rgba(192,193,255,0.25)',
-          background: 'linear-gradient(135deg, #1a1f35, #222a3d)',
-          boxShadow: '0 4px 20px rgba(192,193,255,0.2)',
+          border: `1px solid ${borderColor}`,
+          background: bgFab,
+          boxShadow: fabShadow,
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
@@ -219,10 +230,10 @@ function FloatingChatWidget({ projectIds = [] }) {
               maxHeight: 'min(560px, calc(100vh - 120px))',
               display: 'flex',
               flexDirection: 'column',
-              background: '#131b2e',
-              border: '1px solid rgba(192,193,255,0.15)',
+              background: bgElevated,
+              border: `1px solid ${borderColor}`,
               borderRadius: '16px',
-              boxShadow: '0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(192,193,255,0.05)',
+              boxShadow: panelShadow,
               overflow: 'hidden',
             }}
           >
@@ -230,11 +241,11 @@ function FloatingChatWidget({ projectIds = [] }) {
             <div
               style={{
                 padding: '14px 16px',
-                borderBottom: '1px solid rgba(192,193,255,0.1)',
+                borderBottom: `1px solid ${borderColor}`,
                 display: 'flex',
                 alignItems: 'center',
                 gap: '10px',
-                background: 'rgba(192,193,255,0.04)',
+                background: bgHeader,
                 flexShrink: 0,
               }}
             >
@@ -243,7 +254,7 @@ function FloatingChatWidget({ projectIds = [] }) {
                   width: '28px',
                   height: '28px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #8083ff, #c0c1ff)',
+                  background: `linear-gradient(135deg, ${accent}, ${accent}cc)`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -254,10 +265,10 @@ function FloatingChatWidget({ projectIds = [] }) {
                 🤖
               </div>
               <div>
-                <div style={{ color: '#dae2fd', fontSize: '14px', fontWeight: 600, fontFamily: 'var(--font-headline)' }}>
+                <div style={{ color: labelPrimary, fontSize: '14px', fontWeight: 600, fontFamily: 'var(--font-headline)' }}>
                   Ask me anything
                 </div>
-                <div style={{ color: '#908fa0', fontSize: '11px', fontFamily: 'var(--font-label)' }}>
+                <div style={{ color: labelSecond, fontSize: '11px', fontFamily: 'var(--font-label)' }}>
                   About Yu-An's portfolio
                 </div>
               </div>
@@ -269,7 +280,7 @@ function FloatingChatWidget({ projectIds = [] }) {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#ffb783',
+                      color: accent,
                       fontSize: '11px',
                       cursor: 'pointer',
                       fontFamily: 'var(--font-label)',
@@ -287,7 +298,7 @@ function FloatingChatWidget({ projectIds = [] }) {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#908fa0',
+                      color: labelSecond,
                       fontSize: '11px',
                       cursor: 'pointer',
                       fontFamily: 'var(--font-label)',
@@ -295,7 +306,7 @@ function FloatingChatWidget({ projectIds = [] }) {
                       borderRadius: '4px',
                     }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = '#ff6b6b')}
-                    onMouseLeave={(e) => (e.currentTarget.style.color = '#908fa0')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = labelSecond)}
                   >
                     Clear
                   </button>
@@ -305,8 +316,8 @@ function FloatingChatWidget({ projectIds = [] }) {
                     width: '8px',
                     height: '8px',
                     borderRadius: '50%',
-                    background: isStreaming ? '#ffb783' : '#5de6ff',
-                    boxShadow: `0 0 6px ${isStreaming ? '#ffb783' : '#5de6ff'}`,
+                    background: isStreaming ? '#ffb783' : accent,
+                    boxShadow: `0 0 6px ${isStreaming ? '#ffb783' : accent}`,
                     transition: 'all 0.3s',
                   }}
                 />
@@ -326,7 +337,7 @@ function FloatingChatWidget({ projectIds = [] }) {
               {messages.length === 0 && (
                 <div style={{ textAlign: 'center', paddingTop: '16px' }}>
                   <div style={{ fontSize: '28px', marginBottom: '8px' }}>👋</div>
-                  <div style={{ color: '#c7c4d7', fontSize: '13px', marginBottom: '16px', fontFamily: 'var(--font-body)' }}>
+                  <div style={{ color: labelSecond, fontSize: '13px', marginBottom: '16px', fontFamily: 'var(--font-body)' }}>
                     Hi! I can answer questions about Yu-An's experience, projects, and skills.
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -335,10 +346,10 @@ function FloatingChatWidget({ projectIds = [] }) {
                         key={q}
                         onClick={() => sendMessage(q)}
                         style={{
-                          background: 'rgba(192,193,255,0.07)',
-                          border: '1px solid rgba(192,193,255,0.15)',
+                          background: suggestBg,
+                          border: `1px solid ${suggestBorder}`,
                           borderRadius: '8px',
-                          color: '#c0c1ff',
+                          color: accent,
                           fontSize: '12px',
                           padding: '8px 12px',
                           cursor: 'pointer',
@@ -346,8 +357,8 @@ function FloatingChatWidget({ projectIds = [] }) {
                           fontFamily: 'var(--font-body)',
                           transition: 'background 0.15s',
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(192,193,255,0.12)')}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(192,193,255,0.07)')}
+                        onMouseEnter={(e) => (e.currentTarget.style.background = suggestBorder)}
+                        onMouseLeave={(e) => (e.currentTarget.style.background = suggestBg)}
                       >
                         {q}
                       </button>
@@ -372,12 +383,12 @@ function FloatingChatWidget({ projectIds = [] }) {
             <div
               style={{
                 padding: '12px',
-                borderTop: '1px solid rgba(192,193,255,0.1)',
+                borderTop: `1px solid ${borderColor}`,
                 display: 'flex',
                 gap: '8px',
                 alignItems: 'flex-end',
                 flexShrink: 0,
-                background: 'rgba(192,193,255,0.02)',
+                background: bgHeader,
               }}
             >
               <textarea
@@ -391,10 +402,10 @@ function FloatingChatWidget({ projectIds = [] }) {
                 style={{
                   flex: 1,
                   resize: 'none',
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(192,193,255,0.15)',
+                  background: bgInput,
+                  border: `1px solid ${borderColor}`,
                   borderRadius: '10px',
-                  color: '#dae2fd',
+                  color: inputColor,
                   padding: '9px 12px',
                   fontSize: '13px',
                   fontFamily: 'var(--font-body)',
@@ -419,9 +430,9 @@ function FloatingChatWidget({ projectIds = [] }) {
                   border: 'none',
                   background:
                     isStreaming || !input.trim()
-                      ? 'rgba(192,193,255,0.15)'
-                      : 'linear-gradient(135deg, #8083ff, #c0c1ff)',
-                  color: isStreaming || !input.trim() ? '#908fa0' : '#0b1326',
+                      ? bgInput
+                      : `linear-gradient(135deg, ${accent}, ${accent})`,
+                  color: isStreaming || !input.trim() ? labelSecond : '#FFFFFF',
                   cursor: isStreaming || !input.trim() ? 'not-allowed' : 'pointer',
                   fontSize: '16px',
                   display: 'flex',

@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Box, Heading, Text, VStack, Flex, Progress, SimpleGrid,
-  HStack, Image as ChakraImage,
+  HStack, Image as ChakraImage, useColorModeValue,
 } from "@chakra-ui/react";
 
 const Icons = {
@@ -37,31 +37,22 @@ const Icons = {
   },
 };
 
-const SectionCard = ({ title, accentColor = "#c0c1ff", children }) => (
-  <Box
-    bg="#171f33"
-    borderRadius="16px"
-    p={6}
-    border="1px solid #464554"
-    h="100%"
-  >
-    <Heading
-      as="h3"
-      fontSize="xs"
-      fontFamily="var(--font-label)"
-      fontWeight={700}
-      letterSpacing="widest"
-      textTransform="uppercase"
-      mb={5}
-      style={{ color: accentColor }}
-    >
-      {title}
-    </Heading>
-    {children}
-  </Box>
-);
+const SectionCard = ({ title, children }) => {
+  const bg          = useColorModeValue("#FFFFFF", "#2C2C2E");
+  const borderColor = useColorModeValue("#C6C6C8", "#38383A");
+  const accent      = useColorModeValue("#007AFF", "#0A84FF");
+  return (
+    <Box bg={bg} borderRadius="16px" p={6} border="1px solid" borderColor={borderColor} h="100%">
+      <Heading as="h3" fontSize="xs" fontFamily="var(--font-label)" fontWeight={700}
+        letterSpacing="widest" textTransform="uppercase" mb={5} style={{ color: accent }}>
+        {title}
+      </Heading>
+      {children}
+    </Box>
+  );
+};
 
-const ToolIcon = ({ src, name }) => (
+const ToolIcon = ({ src, name, bgFill, labelSecond }) => (
   <VStack spacing={1} align="center" w="56px">
     <ChakraImage
       src={src}
@@ -69,7 +60,7 @@ const ToolIcon = ({ src, name }) => (
       w="26px"
       h="26px"
       objectFit="contain"
-      fallback={<Box w="26px" h="26px" bg="#222a3d" borderRadius="4px" />}
+      fallback={<Box w="26px" h="26px" bg={bgFill} borderRadius="4px" />}
     />
     <Text
       fontSize="9px"
@@ -77,18 +68,30 @@ const ToolIcon = ({ src, name }) => (
       lineHeight="1.2"
       noOfLines={2}
       fontFamily="var(--font-label)"
-      style={{ color: "#908fa0" }}
+      style={{ color: labelSecond }}
     >
       {name}
     </Text>
   </VStack>
 );
 
-const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
+const SkillSection = ({ skills, tools, frameworks, tryLearn }) => {
+  const bgSection    = useColorModeValue("#F2F2F7", "#1C1C1E");
+  const labelPrimary = useColorModeValue("#000000", "#FFFFFF");
+  const labelSecond  = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
+  const accent       = useColorModeValue("#007AFF", "#0A84FF");
+  const bgFill       = useColorModeValue("rgba(120,120,128,0.2)", "rgba(120,120,128,0.36)");
+  const borderColor  = useColorModeValue("#C6C6C8", "#38383A");
+  const progressGrad = useColorModeValue(
+    "linear-gradient(90deg, #007AFF, #34AADC)",
+    "linear-gradient(90deg, #0A84FF, #64D2FF)"
+  );
+
+  return (
   <Box
     as="section"
     id="skills-section"
-    bg="#131b2e"
+    bg={bgSection}
     py={{ base: 16, md: 24 }}
     px={{ base: 4, md: 8 }}
   >
@@ -98,14 +101,14 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
       <Box mb={{ base: 10, md: 14 }} textAlign="center">
         <Text
           fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
-          textTransform="uppercase" mb={3} style={{ color: "#5de6ff" }}
+          textTransform="uppercase" mb={3} style={{ color: accent }}
         >
           Technical
         </Text>
         <Heading
           fontFamily="var(--font-headline)" fontWeight="800"
           fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
-          style={{ color: "#dae2fd" }}
+          style={{ color: labelPrimary }}
         >
           Skills & Tools
         </Heading>
@@ -114,15 +117,15 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
       <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
 
         {/* Languages */}
-        <SectionCard title="Languages" accentColor="#c0c1ff">
+        <SectionCard title="Languages">
           <VStack spacing={4} align="stretch">
             {skills.map((skill) => (
               <Box key={skill.name}>
                 <Flex justify="space-between" mb={1}>
-                  <Text fontSize="sm" fontFamily="var(--font-body)" style={{ color: "#dae2fd" }}>
+                  <Text fontSize="sm" fontFamily="var(--font-body)" style={{ color: labelPrimary }}>
                     {skill.name}
                   </Text>
-                  <Text fontSize="xs" fontFamily="var(--font-label)" style={{ color: "#c0c1ff" }}>
+                  <Text fontSize="xs" fontFamily="var(--font-label)" style={{ color: accent }}>
                     {skill.level}
                   </Text>
                 </Flex>
@@ -130,10 +133,10 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
                   value={parseInt(skill.level)}
                   size="xs"
                   borderRadius="full"
-                  bg="#222a3d"
+                  bg={bgFill}
                   sx={{
                     "& > div": {
-                      background: "linear-gradient(90deg, #c0c1ff, #8083ff)",
+                      background: progressGrad,
                     },
                   }}
                 />
@@ -143,20 +146,20 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
         </SectionCard>
 
         {/* Tools */}
-        <SectionCard title="Tools & Infrastructure" accentColor="#5de6ff">
+        <SectionCard title="Tools & Infrastructure">
           <Flex wrap="wrap" gap={3}>
             {tools.map((tool) => (
-              <ToolIcon key={tool} src={Icons.tools[tool]} name={tool} />
+              <ToolIcon key={tool} src={Icons.tools[tool]} name={tool} bgFill={bgFill} labelSecond={labelSecond} />
             ))}
           </Flex>
         </SectionCard>
 
         {/* Frameworks + Learning */}
         <VStack spacing={6} align="stretch">
-          <SectionCard title="Frameworks" accentColor="#ffb783">
+          <SectionCard title="Frameworks">
             <Flex wrap="wrap" gap={3}>
               {frameworks.map((fw) => (
-                <ToolIcon key={fw} src={Icons.frameworks[fw]} name={fw} />
+                <ToolIcon key={fw} src={Icons.frameworks[fw]} name={fw} bgFill={bgFill} labelSecond={labelSecond} />
               ))}
             </Flex>
           </SectionCard>
@@ -166,7 +169,7 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
               bg="#131b2e"
               borderRadius="16px"
               p={5}
-              border="1px solid #464554"
+              border="1px solid" borderColor={borderColor}
               borderStyle="dashed"
             >
               <Text
@@ -176,7 +179,7 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
                 letterSpacing="widest"
                 textTransform="uppercase"
                 mb={3}
-                style={{ color: "#908fa0" }}
+                style={{ color: labelSecond }}
               >
                 Exploring
               </Text>
@@ -188,9 +191,9 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
                     borderRadius="full"
                     fontSize="xs"
                     fontFamily="var(--font-label)"
-                    bg="#222a3d"
-                    style={{ color: "#c7c4d7" }}
-                    border="1px solid #464554"
+                    bg={bgFill}
+                    style={{ color: labelSecond }}
+                    border="1px solid" borderColor={borderColor}
                   >
                     {item}
                   </Box>
@@ -202,6 +205,7 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => (
       </SimpleGrid>
     </Box>
   </Box>
-);
+  );
+};
 
 export default SkillSection;

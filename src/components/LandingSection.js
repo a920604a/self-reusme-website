@@ -1,8 +1,17 @@
 import React from "react";
-import { Avatar, Heading, Text, Button, VStack, Box, Badge } from "@chakra-ui/react";
+import { Avatar, Heading, Text, Button, VStack, Box, Badge, useColorModeValue } from "@chakra-ui/react";
 import { FaDownload } from "react-icons/fa";
 
-const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
+const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => {
+  const bgCanvas    = useColorModeValue("#FFFFFF", "#000000");
+  const labelPrimary = useColorModeValue("#000000", "#FFFFFF");
+  const labelSecond  = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
+  const accent       = useColorModeValue("#007AFF", "#0A84FF");
+  const accentSoft   = useColorModeValue("rgba(0,122,255,0.12)", "rgba(10,132,255,0.2)");
+  const blob1        = useColorModeValue("#007AFF", "#0A84FF");
+  const blob2        = useColorModeValue("#34AADC", "#64D2FF");
+
+  return (
   <Box
     as="section"
     id="main-content"
@@ -10,7 +19,7 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
     display="flex"
     alignItems="center"
     justifyContent="center"
-    bg="#0b1326"
+    bg={bgCanvas}
     pt="70px"
     px={4}
     position="relative"
@@ -18,11 +27,11 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
   >
     {/* Gradient blobs */}
     <Box position="absolute" top="-80px" right="-60px" w="500px" h="500px"
-      borderRadius="full" bg="#c0c1ff" opacity={0.04} filter="blur(100px)" pointerEvents="none" />
+      borderRadius="full" bg={blob1} opacity={0.06} filter="blur(100px)" pointerEvents="none" />
     <Box position="absolute" bottom="-60px" left="-60px" w="400px" h="400px"
-      borderRadius="full" bg="#5de6ff" opacity={0.04} filter="blur(80px)" pointerEvents="none" />
+      borderRadius="full" bg={blob2} opacity={0.06} filter="blur(80px)" pointerEvents="none" />
     <Box position="absolute" top="30%" left="20%" w="300px" h="300px"
-      borderRadius="full" bg="#8083ff" opacity={0.03} filter="blur(120px)" pointerEvents="none" />
+      borderRadius="full" bg={blob1} opacity={0.04} filter="blur(120px)" pointerEvents="none" />
 
     <VStack spacing={8} textAlign="center" maxW="680px" position="relative" zIndex={1}>
       {/* Avatar */}
@@ -51,9 +60,9 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
           letterSpacing="widest"
           textTransform="uppercase"
           style={{
-            background: "rgba(192,193,255,0.1)",
-            color: "#c0c1ff",
-            border: "1px solid rgba(192,193,255,0.2)",
+            background: accentSoft,
+            color: accent,
+            border: `1px solid ${accentSoft}`,
           }}
         >
           {bio1}
@@ -67,7 +76,7 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
           fontSize={{ base: "3xl", md: "5xl" }}
           lineHeight="1.1"
           letterSpacing="-0.02em"
-          style={{ color: "#dae2fd" }}
+          style={{ color: labelPrimary }}
         >
           {greeting}
         </Heading>
@@ -79,7 +88,7 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
           lineHeight="1.8"
           maxW="520px"
           pt={1}
-          style={{ color: "#c7c4d7" }}
+          style={{ color: labelSecond }}
         >
           {bio2}
         </Text>
@@ -98,12 +107,12 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
         fontWeight={700}
         fontSize="sm"
         letterSpacing="wide"
-        className="editorial-gradient"
-        style={{ color: "#1000a9" }}
+        className="accent-gradient"
+        style={{ color: "#FFFFFF" }}
         border="none"
         _hover={{
           transform: "translateY(-2px)",
-          boxShadow: "0 8px 30px rgba(192,193,255,0.25)",
+          boxShadow: "0 8px 30px rgba(0,122,255,0.3)",
           opacity: 0.92,
         }}
         transition="all 0.2s ease"
@@ -112,6 +121,7 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => (
       </Button>
     </VStack>
   </Box>
-);
+  );
+};
 
 export default LandingSection;

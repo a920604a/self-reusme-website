@@ -1,29 +1,38 @@
 import React from "react";
 import {
   Box, Heading, Text, VStack, Flex, Badge,
-  Link as ChakraLink,
+  Link as ChakraLink, useColorModeValue,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
 
 const WorksSummary = ({ works }) => {
   const navigate = useNavigate();
+  const bgCanvas    = useColorModeValue("#FFFFFF", "#000000");
+  const bgElevated  = useColorModeValue("#FFFFFF", "#2C2C2E");
+  const labelPrimary  = useColorModeValue("#000000", "#FFFFFF");
+  const labelSecond   = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
+  const labelTertiary = useColorModeValue("rgba(60,60,67,0.3)", "rgba(235,235,245,0.3)");
+  const accent        = useColorModeValue("#007AFF", "#0A84FF");
+  const accentSoft    = useColorModeValue("rgba(0,122,255,0.12)", "rgba(10,132,255,0.2)");
+  const borderColor   = useColorModeValue("#C6C6C8", "#38383A");
+  const bgFill        = useColorModeValue("rgba(120,120,128,0.2)", "rgba(120,120,128,0.36)");
 
   return (
-    <Box as="section" bg="#0b1326" py={{ base: 16, md: 24 }} px={{ base: 4, md: 8 }}>
+    <Box as="section" bg={bgCanvas} py={{ base: 16, md: 24 }} px={{ base: 4, md: 8 }}>
       <Box maxW="900px" mx="auto">
 
         {/* Section header */}
         <Box mb={{ base: 10, md: 14 }} textAlign="center">
           <Text
             fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
-            textTransform="uppercase" mb={3} style={{ color: "#5de6ff" }}
+            textTransform="uppercase" mb={3} style={{ color: accent }}
           >
             Career
           </Text>
           <Heading
             fontFamily="var(--font-headline)" fontWeight="800"
             fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
-            style={{ color: "#dae2fd" }} id="work-experience-section"
+            style={{ color: labelPrimary }} id="work-experience-section"
           >
             Work Experience
           </Heading>
@@ -57,15 +66,16 @@ const WorksSummary = ({ works }) => {
                 {/* Card */}
                 <Box
                   flex="1"
-                  bg="#171f33"
+                  bg={bgElevated}
                   borderRadius="16px"
-                  border="1px solid #464554"
-                  borderLeft={isCurrent ? "3px solid #c0c1ff" : "1px solid #464554"}
+                  border="1px solid"
+                  borderColor={borderColor}
+                  borderLeft={isCurrent ? `3px solid ${accent}` : `1px solid ${borderColor}`}
                   p={6}
                   cursor="pointer"
                   transition="border-color 0.25s, transform 0.25s"
                   _hover={{
-                    borderColor: "#c0c1ff",
+                    borderColor: accent,
                     transform: "translateY(-3px)",
                   }}
                   onClick={() => navigate(`/works/${work.id}`)}
@@ -76,7 +86,7 @@ const WorksSummary = ({ works }) => {
                         fontFamily="var(--font-headline)"
                         fontWeight="800"
                         fontSize="md"
-                        style={{ color: "#c0c1ff" }}
+                        style={{ color: accent }}
                       >
                         {work.company}
                       </Heading>
@@ -84,9 +94,9 @@ const WorksSummary = ({ works }) => {
                     <Badge
                       px={3} py={1} borderRadius="full" fontSize="xs"
                       fontFamily="var(--font-label)"
-                      bg={isCurrent ? "rgba(192,193,255,0.12)" : "#222a3d"}
-                      style={{ color: isCurrent ? "#c0c1ff" : "#908fa0" }}
-                      border={`1px solid ${isCurrent ? "rgba(192,193,255,0.3)" : "#464554"}`}
+                      bg={isCurrent ? accentSoft : bgFill}
+                      style={{ color: isCurrent ? accent : labelTertiary }}
+                      border={`1px solid ${isCurrent ? accent : borderColor}`}
                     >
                       {work.years}
                     </Badge>
@@ -97,7 +107,7 @@ const WorksSummary = ({ works }) => {
                     fontSize="sm"
                     fontStyle="italic"
                     mb={3}
-                    style={{ color: "#5de6ff" }}
+                    style={{ color: accent }}
                   >
                     {work.position}
                   </Text>
@@ -107,7 +117,7 @@ const WorksSummary = ({ works }) => {
                     fontSize="sm"
                     lineHeight="1.75"
                     mb={4}
-                    style={{ color: "#c7c4d7" }}
+                    style={{ color: labelSecond }}
                     noOfLines={3}
                   >
                     {work.description}
@@ -120,8 +130,8 @@ const WorksSummary = ({ works }) => {
                     fontWeight="700"
                     fontSize="xs"
                     letterSpacing="wide"
-                    style={{ color: "#5de6ff", textDecoration: "none" }}
-                    _hover={{ color: "#c0c1ff", textDecoration: "none" }}
+                    style={{ color: accent, textDecoration: "none" }}
+                    _hover={{ color: labelPrimary, textDecoration: "none" }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     View Details →

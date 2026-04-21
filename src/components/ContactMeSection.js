@@ -7,10 +7,19 @@ import {
 import * as Yup from "yup";
 import useSubmit from "../hooks/useSubmit";
 import { useAlertContext } from "../context/alertContext";
+import { useColorModeValue } from "@chakra-ui/react";
 
 const ContactMeSection = () => {
   const { isLoading, response, submit } = useSubmit();
   const { onOpen } = useAlertContext();
+  const bgCanvas    = useColorModeValue("#FFFFFF", "#000000");
+  const bgElevated  = useColorModeValue("#FFFFFF", "#2C2C2E");
+  const bgFill      = useColorModeValue("rgba(120,120,128,0.1)", "rgba(120,120,128,0.36)");
+  const labelPrimary = useColorModeValue("#000000", "#FFFFFF");
+  const labelSecond  = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
+  const accent       = useColorModeValue("#007AFF", "#0A84FF");
+  const accentSoft   = useColorModeValue("rgba(0,122,255,0.2)", "rgba(10,132,255,0.2)");
+  const borderColor  = useColorModeValue("#C6C6C8", "#38383A");
 
   const formik = useFormik({
     initialValues: { firstName: "", email: "", subject: "", comment: "" },
@@ -30,16 +39,16 @@ const ContactMeSection = () => {
   }, [response]);
 
   const inputStyle = {
-    bg: "#222a3d",
+    bg: bgFill,
     border: "1px solid",
-    borderColor: "#464554",
-    color: "#dae2fd",
-    borderRadius: "10px",
+    borderColor: borderColor,
+    color: labelPrimary,
+    borderRadius: "12px",
     fontFamily: "var(--font-body)",
     fontSize: "sm",
-    _placeholder: { color: "#908fa0" },
-    _hover: { borderColor: "#c0c1ff" },
-    _focus: { borderColor: "#c0c1ff", boxShadow: "0 0 0 1px #c0c1ff" },
+    _placeholder: { color: labelSecond },
+    _hover: { borderColor: accent },
+    _focus: { borderColor: accent, boxShadow: `0 0 0 3px ${accentSoft}` },
   };
 
   const labelStyle = {
@@ -55,7 +64,7 @@ const ContactMeSection = () => {
     <Box
       as="section"
       id="contactme-section"
-      bg="#0b1326"
+      bg={bgCanvas}
       py={{ base: 16, md: 24 }}
       px={{ base: 4, md: 8 }}
     >
@@ -65,7 +74,7 @@ const ContactMeSection = () => {
         <Box mb={10} textAlign="center">
           <Text
             fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
-            textTransform="uppercase" mb={3} style={{ color: "#5de6ff" }}
+            textTransform="uppercase" mb={3} style={{ color: accent }}
           >
             Get in Touch
           </Text>
@@ -73,13 +82,13 @@ const ContactMeSection = () => {
             as="h2"
             fontFamily="var(--font-headline)" fontWeight="800"
             fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
-            style={{ color: "#dae2fd" }}
+            style={{ color: labelPrimary }}
           >
             Contact Me
           </Heading>
           <Text
             mt={3} fontFamily="var(--font-body)" fontSize="sm"
-            style={{ color: "#908fa0" }}
+            style={{ color: labelSecond }}
           >
             Have a project in mind? Let's talk.
           </Text>
@@ -87,8 +96,9 @@ const ContactMeSection = () => {
 
         {/* Form card */}
         <Box
-          bg="#131b2e"
-          border="1px solid #464554"
+          bg={bgElevated}
+          border="1px solid"
+          borderColor={borderColor}
           borderRadius="20px"
           p={{ base: 6, md: 8 }}
         >
@@ -145,8 +155,8 @@ const ContactMeSection = () => {
                 width="full"
                 size="lg"
                 isLoading={isLoading}
-                className="editorial-gradient"
-                style={{ color: "#1000a9" }}
+                className="accent-gradient"
+                style={{ color: "#FFFFFF" }}
                 border="none"
                 borderRadius="10px"
                 fontFamily="var(--font-headline)"

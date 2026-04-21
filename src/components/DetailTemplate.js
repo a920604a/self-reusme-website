@@ -3,6 +3,7 @@ import {
   Box, Heading, Text, Tag, TagLabel, Stack, Link as ChakraLink, Image,
   Divider, UnorderedList, ListItem, Icon, Modal, ModalOverlay, ModalContent,
   ModalBody, ModalCloseButton, Tabs, TabList, Tab, TabPanels, TabPanel,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { FaExternalLinkAlt, FaArrowLeft, FaDesktop } from "react-icons/fa";
@@ -19,6 +20,11 @@ const imgLabel = (path) => {
 const stripMd = (text) => text.replace(/\*\*(.*?)\*\*/g, "$1");
 
 const ImageGallery = ({ images, title, onZoom }) => {
+  const bgImg      = useColorModeValue("#F2F2F7", "#1C1C1E");
+  const borderColor = useColorModeValue("#C6C6C8", "#38383A");
+  const accent      = useColorModeValue("#007AFF", "#0A84FF");
+  const accentSoft  = useColorModeValue("rgba(0,122,255,0.12)", "rgba(10,132,255,0.2)");
+  const labelSecond = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
   if (images.length === 1) {
     return (
       <Image
@@ -28,11 +34,12 @@ const ImageGallery = ({ images, title, onZoom }) => {
         borderRadius="12px"
         maxH="360px"
         width="100%"
-        bg="#0b1326"
+        bg={bgImg}
         mb={6}
-        border="1px solid #464554"
+        border="1px solid"
+        borderColor={borderColor}
         cursor="zoom-in"
-        _hover={{ opacity: 0.9, borderColor: "#c0c1ff" }}
+        _hover={{ opacity: 0.9, borderColor: accent }}
         transition="all 0.2s"
         onClick={() => onZoom(images[0])}
       />
@@ -47,12 +54,12 @@ const ImageGallery = ({ images, title, onZoom }) => {
       sx={{
         "& [role=tab]": {
           fontFamily: "var(--font-label)", fontSize: "xs", fontWeight: 700,
-          color: "#908fa0", borderRadius: "full", border: "1px solid #464554",
+          color: labelSecond, borderRadius: "full", border: "1px solid", borderColor: borderColor,
         },
         "& [role=tab][aria-selected=true]": {
-          background: "rgba(192,193,255,0.15)",
-          color: "#c0c1ff",
-          borderColor: "rgba(192,193,255,0.3)",
+          background: accentSoft,
+          color: accent,
+          borderColor: accent,
         },
         "& [role=tablist]": { bg: "transparent", gap: "4px" },
       }}
@@ -72,10 +79,11 @@ const ImageGallery = ({ images, title, onZoom }) => {
               borderRadius="12px"
               maxH="360px"
               width="100%"
-              bg="#0b1326"
-              border="1px solid #464554"
+              bg={bgImg}
+              border="1px solid"
+              borderColor={borderColor}
               cursor="zoom-in"
-              _hover={{ opacity: 0.9, borderColor: "#c0c1ff" }}
+              _hover={{ opacity: 0.9, borderColor: accent }}
               transition="all 0.2s"
               onClick={() => onZoom(img)}
             />
@@ -94,6 +102,17 @@ const DetailTemplate = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImg,    setModalImg]    = useState(null);
 
+  const bgCanvas    = useColorModeValue("#FFFFFF", "#000000");
+  const bgElevated  = useColorModeValue("#FFFFFF", "#2C2C2E");
+  const bgGrouped   = useColorModeValue("#F2F2F7", "#1C1C1E");
+  const labelPrimary  = useColorModeValue("#000000", "#FFFFFF");
+  const labelSecond   = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
+  const accent        = useColorModeValue("#007AFF", "#0A84FF");
+  const accentSoft    = useColorModeValue("rgba(0,122,255,0.12)", "rgba(10,132,255,0.2)");
+  const borderColor   = useColorModeValue("#C6C6C8", "#38383A");
+  const separatorColor = useColorModeValue("rgba(60,60,67,0.29)", "rgba(84,84,88,0.65)");
+  const bgFill        = useColorModeValue("rgba(120,120,128,0.2)", "rgba(120,120,128,0.36)");
+
   const openZoom = (img) => { setModalImg(img); setIsModalOpen(true); };
 
   const gallery   = images   && images.length   > 0 ? images   : image ? [image] : [];
@@ -107,8 +126,8 @@ const DetailTemplate = ({
             key={`${i}-${idx}`} href={value} isExternal
             display="inline-flex" alignItems="center" gap={2}
             fontFamily="var(--font-headline)" fontWeight={700} fontSize="sm"
-            style={{ color: "#5de6ff", textDecoration: "none" }}
-            _hover={{ color: "#c0c1ff", textDecoration: "none" }}
+            style={{ color: accent, textDecoration: "none" }}
+            _hover={{ color: labelPrimary, textDecoration: "none" }}
           >
             <Icon as={FaExternalLinkAlt} boxSize={3} /> {key}
           </ChakraLink>
@@ -132,7 +151,7 @@ const DetailTemplate = ({
   };
 
   return (
-    <Box bg="#0b1326" minH="100vh" pt="90px" pb={16} px={{ base: 4, md: 8 }}>
+    <Box bg={bgCanvas} minH="100vh" pt="90px" pb={16} px={{ base: 4, md: 8 }}>
       <Box maxW="860px" mx="auto">
 
         {/* Back link */}
@@ -147,12 +166,12 @@ const DetailTemplate = ({
         </ChakraLink>
 
         {/* Main card */}
-        <Box bg="#131b2e" borderRadius="20px" border="1px solid #464554" p={{ base: 6, md: 8 }}>
+        <Box bg={bgElevated} borderRadius="20px" border="1px solid" borderColor={borderColor} p={{ base: 6, md: 8 }}>
 
           {category && (
             <Text
               fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
-              textTransform="uppercase" mb={3} style={{ color: "#5de6ff" }}
+              textTransform="uppercase" mb={3} style={{ color: accent }}
             >
               {category}
             </Text>
@@ -162,7 +181,7 @@ const DetailTemplate = ({
             as="h1" id={`details-${index}`}
             fontFamily="var(--font-headline)" fontWeight="800"
             fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
-            mb={5} style={{ color: "#c0c1ff" }}
+            mb={5} style={{ color: accent }}
           >
             {title}
           </Heading>
@@ -172,7 +191,7 @@ const DetailTemplate = ({
               {tags.map((tag, i) => (
                 <Tag
                   key={i} size="sm" borderRadius="full" px={3}
-                  bg="#222a3d" color="#c7c4d7" border="1px solid #464554"
+                  bg={bgFill} color={labelSecond} border="1px solid" borderColor={borderColor}
                   fontSize="xs" fontFamily="var(--font-label)"
                 >
                   <TagLabel>{tag}</TagLabel>
@@ -189,7 +208,7 @@ const DetailTemplate = ({
             Array.isArray(description) ? (
               <UnorderedList
                 spacing={3} fontSize="sm" mb={6}
-                sx={{ "& li": { color: "#c7c4d7", lineHeight: "1.8", fontFamily: "var(--font-body)" } }}
+                sx={{ "& li": { color: labelSecond, lineHeight: "1.8", fontFamily: "var(--font-body)" } }}
               >
                 {description.map((item, i) => (
                   <ListItem key={i}>{stripMd(item)}</ListItem>
@@ -201,13 +220,13 @@ const DetailTemplate = ({
                   <Text
                     as="h2" fontSize="xs" fontFamily="var(--font-label)" fontWeight={700}
                     letterSpacing="widest" textTransform="uppercase" mt={6} mb={3}
-                    style={{ color: "#5de6ff" }}
+                    style={{ color: accent }}
                   >
                     {key.replace(/_/g, " ")}
                   </Text>
                   <UnorderedList
                     spacing={2}
-                    sx={{ "& li": { color: "#c7c4d7", lineHeight: "1.8", fontSize: "sm", fontFamily: "var(--font-body)" } }}
+                    sx={{ "& li": { color: labelSecond, lineHeight: "1.8", fontSize: "sm", fontFamily: "var(--font-body)" } }}
                   >
                     {Array.isArray(value)
                       ? value.map((item, idx) => (
@@ -222,24 +241,24 @@ const DetailTemplate = ({
               ))
             )
           ) : (
-            <Text fontSize="sm" textAlign="center" style={{ color: "#908fa0" }}>
+            <Text fontSize="sm" textAlign="center" style={{ color: labelSecond }}>
               No description available.
             </Text>
           )}
 
           {uiGallery.length > 0 && (
             <>
-              <Divider my={6} borderColor="#464554" />
+              <Divider my={6} borderColor={separatorColor} />
               <Stack direction="row" align="center" spacing={2} mb={4}>
-                <Icon as={FaDesktop} style={{ color: "#c0c1ff" }} />
+                <Icon as={FaDesktop} style={{ color: accent }} />
                 <Text
                   fontSize="xs" fontFamily="var(--font-label)" fontWeight={700}
-                  letterSpacing="widest" textTransform="uppercase" style={{ color: "#c0c1ff" }}
+                  letterSpacing="widest" textTransform="uppercase" style={{ color: accent }}
                 >
                   User Interface
                 </Text>
               </Stack>
-              <Box bg="#171f33" borderRadius="12px" p={4} border="1px solid #464554">
+              <Box bg={bgGrouped} borderRadius="12px" p={4} border="1px solid" borderColor={borderColor}>
                 <ImageGallery images={uiGallery} title={title} onZoom={openZoom} />
               </Box>
             </>
@@ -247,7 +266,7 @@ const DetailTemplate = ({
 
           {(reference || repo) && (
             <>
-              <Divider my={6} borderColor="#464554" />
+              <Divider my={6} borderColor={separatorColor} />
               <Stack direction="column" spacing={3}>
                 {reference && (
                   <ChakraLink
