@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ChakraProvider, Spinner, Center } from "@chakra-ui/react";
+import { ChakraProvider, Spinner, Center, Text } from "@chakra-ui/react";
 import theme from "./theme";
 import Header from "./components/Header";
 import LandingSection from "./components/LandingSection";
@@ -22,6 +22,7 @@ class App extends Component {
 
   state = {
     data: null,
+    loadError: false,
   };
   componentDidMount() {
     this.loadData();
@@ -81,6 +82,7 @@ class App extends Component {
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
+        this.setState({ loadError: true });
       });
   };
 
@@ -92,8 +94,19 @@ class App extends Component {
     if (!data) {
       return (
         <ChakraProvider theme={theme}>
-          <Center minH="100vh" bg="#0b1326">
-            <Spinner size="xl" color="#c0c1ff" thickness="4px" speed="0.65s" />
+          <Center minH="100vh" bg="#0b1326" flexDirection="column" gap={4}>
+            {this.state.loadError ? (
+              <>
+                <Text color="#ff6b6b" fontFamily="var(--font-headline)" fontSize="xl">
+                  Failed to load portfolio data
+                </Text>
+                <Text color="#908fa0" fontSize="sm">
+                  Please refresh the page or try again later.
+                </Text>
+              </>
+            ) : (
+              <Spinner size="xl" color="#c0c1ff" thickness="4px" speed="0.65s" />
+            )}
           </Center>
         </ChakraProvider>
       );

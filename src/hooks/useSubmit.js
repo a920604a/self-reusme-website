@@ -1,38 +1,40 @@
-import {useState} from "react";
+import { useState } from "react";
 
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const FORMSPREE_URL = "https://formspree.io/f/xdaylpgp";
 
-/**
- * This is a custom hook that can be used to submit a form and simulate an API call
- * It uses Math.random() to simulate a random success or failure, with 50% chance of each
- */
 const useSubmit = () => {
   const [isLoading, setLoading] = useState(false);
   const [response, setResponse] = useState(null);
 
-  const submit = async (url, data) => {
-    const random = Math.random();
+  const submit = async (_url, data) => {
     setLoading(true);
     try {
-      await wait(2000);
-      if (random < 0.5) {
-        throw new Error("Something went wrong");
-      }
+      const res = await fetch(FORMSPREE_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: data.firstName,
+          email: data.email,
+          subject: data.subject,
+          message: data.comment,
+        }),
+      });
+      if (!res.ok) throw new Error("Server error");
       setResponse({
-        type: 'success',
-        message: `Thanks for your submission ${data.firstName}, we will get back to you shortly!`,
-      })
-    } catch (error) {
+        type: "success",
+        message: `Thanks for your message, ${data.firstName}! I'll get back to you shortly.`,
+      });
+    } catch {
       setResponse({
-        type: 'error',
-        message: 'Something went wrong, please try again later!',
-      })
+        type: "error",
+        message: "Something went wrong. Please try again or email me directly.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return { isLoading, response, submit };
-}
+};
 
 export default useSubmit;
