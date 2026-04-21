@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ChakraProvider, Spinner, Center, Text } from "@chakra-ui/react";
+import { ChakraProvider, Spinner, Center, Text, Button, Heading, Box } from "@chakra-ui/react";
 import theme from "./theme";
 import Header from "./components/Header";
 import LandingSection from "./components/LandingSection";
@@ -117,7 +117,7 @@ class App extends Component {
           <main>
             <Router>
               <FloatingChatWidget projectIds={(data?.projects || []).map(p => p.id)} />
-              <Header />
+              <Header email={data?.email} />
               <Routes>
                 <Route
                   path="/"
@@ -158,6 +158,36 @@ class App extends Component {
                 <Route
                   path="/works/:id"
                   element={<WorkDetails works={data.works} />}
+                />
+                <Route
+                  path="*"
+                  element={
+                    <Box textAlign="center" mt="140px" px={8}>
+                      <Heading
+                        fontFamily="var(--font-headline)"
+                        fontWeight="800"
+                        fontSize="5xl"
+                        style={{ color: "#c0c1ff" }}
+                        mb={4}
+                      >
+                        404
+                      </Heading>
+                      <Text color="#908fa0" mb={6} fontFamily="var(--font-body)">
+                        Page not found.
+                      </Text>
+                      <Button
+                        as="a"
+                        href="#/"
+                        fontFamily="var(--font-headline)"
+                        fontWeight={700}
+                        className="editorial-gradient"
+                        style={{ color: "#1000a9" }}
+                        border="none"
+                      >
+                        Back to Home
+                      </Button>
+                    </Box>
+                  }
                 />
               </Routes>
             </Router>

@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
 
-const socials = [
-  { icon: faEnvelope, url: "mailto:a920604a@gmail.com",                        label: "Email" },
+const socials = (email) => [
+  { icon: faEnvelope, url: `mailto:${email || 'a920604a@gmail.com'}`,          label: "Email" },
   { icon: faGithub,   url: "https://github.com/a920604a",                      label: "GitHub" },
   { icon: faLinkedin, url: "https://www.linkedin.com/in/chen-yuan-2b4b7212b/", label: "LinkedIn" },
   { icon: faMedium,   url: "https://medium.com/@a920604a",                     label: "Medium" },
@@ -24,7 +24,7 @@ const navItems = [
   { label: "Skills",     to: "/#skills",          anchor: "skills" },
 ];
 
-const Header = () => {
+const Header = ({ email }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const headerRef = useRef(null);
@@ -93,7 +93,7 @@ const Header = () => {
           <HStack spacing={4}>
             {!isMobile && (
               <HStack spacing={4}>
-                {socials.map((s) => (
+                {socials(email).map((s) => (
                   <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.label}
                     style={{ color: "#908fa0", fontSize: "14px", transition: "color 0.2s" }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = "#c0c1ff")}
@@ -139,7 +139,7 @@ const Header = () => {
                   Connect
                 </Text>
                 <HStack spacing={5}>
-                  {socials.map((s) => (
+                  {socials(email).map((s) => (
                     <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer"
                       aria-label={s.label} style={{ color: "#908fa0", fontSize: "18px" }}>
                       <FontAwesomeIcon icon={s.icon} />
