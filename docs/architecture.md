@@ -6,28 +6,69 @@
 
 ```mermaid
 graph TB
-    subgraph Browser["瀏覽器"]
-        UI["React App\n(GitHub Pages)"]
+    subgraph Browser["瀏覽器 (GitHub Pages)"]
+        UI["React App"]
         Widget["FloatingChatWidget"]
-        Hook["useStreamingChat hook"]
+        Hook["useStreamingChat"]
         UI --> Widget --> Hook
     end
 
     subgraph CF["Cloudflare Edge"]
-        Worker["Worker: portfolio-rag\nPOST /query"]
-        Cache["caches.default\nkey = sha256(query)"]
-        AI["Workers AI"]
-        VZ["Vectorize\nportfolio-index"]
+        subgraph Runtime["Worker Runtime"]
+            Worker["Cloudflare Worker\nportfolio-rag"]
+            Cache["Cache API\ncaches.default\n(built-in)"]
+            Worker -- "③ 讀取 / 寫入快取" --> Cache
+        end
 
-        Worker -- "快取檢查" --> Cache
-        Worker -- "embed (@cf/baai/bge-m3)" --> AI
-        Worker -- "query topK=5" --> VZ
-        Worker -- "stream (@cf/meta/llama-3-8b-instruct)" --> AI
+        subgraph Bindings["Bindings"]
+            KV["KV\nRATE_LIMIT_KV"]
+            VZ["Vectorize\nportfolio-index"]
+        end
+
+        subgraph AIService["Workers AI"]
+            Embed["bge-m3\n(embedding)"]
+            LLM["llama-3-8b-instruct\n(generation)"]
+        end
+
+        Worker -- "② rate limit 計數" --> KV
+        Worker -- "⑤ 向量搜尋 topK=5" --> VZ
+        Worker -- "④ query → vector" --> Embed
+        Worker -- "⑥ context + query → 串流回答" --> LLM
     end
 
-    Hook -- "POST /query" --> Worker
-    Worker -- "ReadableStream (SSE)" --> Hook
+    Hook -- "① POST /query" --> Worker
+    Worker -- "⑦ SSE stream (逐 token)" --> Hook
 ```
+
+| # | 從 | 到 | 說明 |
+|---|----|----|------|
+| ① | useStreamingChat | Worker | 使用者問題以 POST /query 送出 |
+| ② | Worker | KV | 每次請求先計數，超過 20次/分鐘回傳 429 |
+| ③ | Worker | Cache API | cache hit 直接回傳；miss 時回應後背景寫入 |
+| ④ | Worker | bge-m3 | 將問題轉為 1024 維向量 |
+| ⑤ | Worker | Vectorize | 以向量搜尋最相關的 top-5 chunk |
+| ⑥ | Worker | llama-3-8b | 組合 context + query，串流生成回答 |
+| ⑦ | Worker | useStreamingChat | 逐 token 以 SSE 格式回傳前端 |
+
+---
+
+## 使用服務一覽
+
+### 前端（Frontend）
+
+| 服務 | 角色 | 說明 |
+|------|------|------|
+| **GitHub Pages** | 靜態網站托管 | 部署 React build 產物，透過 GitHub Actions 自動化 CI/CD；使用 HashRouter 相容靜態托管限制 |
+
+### 後端（Backend — Cloudflare Edge）
+
+| 服務 | 角色 | 說明 |
+|------|------|------|
+| **Cloudflare Worker** (`portfolio-rag`) | API 伺服器 | 處理 `POST /query` 請求；串接 RAG pipeline；管理 CORS、錯誤處理、串流回傳 |
+| **Cloudflare Workers AI** | AI 推論 | 提供兩個模型：(1) `@cf/baai/bge-m3` 將文字轉為 1024 維向量；(2) `@cf/meta/llama-3-8b-instruct` 產生 LLM 回答並串流輸出 |
+| **Cloudflare Vectorize** (`portfolio-index`) | 向量資料庫 | 儲存履歷資料的 embedding（1024 維、cosine 相似度）；RAG query 時取回最相關的 top-5 chunk |
+| **Cloudflare KV** (`RATE_LIMIT_KV`) | Rate Limiting 儲存 | 以 `IP + 分鐘時間戳` 為 key，限制每個 IP 每分鐘最多 20 次請求，TTL 120 秒自動過期 |
+| **Cloudflare Cache API** (`caches.default`) | 回應快取 | 以 `sha256(query)` 為 cache key，命中時直接回傳快取 SSE stream；miss 時透過 stream tee + `waitUntil()` 在背景非同步存入，不影響首次回應延遲 |
 
 ---
 
