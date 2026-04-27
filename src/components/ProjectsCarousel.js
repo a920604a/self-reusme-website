@@ -4,8 +4,10 @@ import {
   Tag, TagLabel, Link as ChakraLink, useColorModeValue,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const ProjectsCarousel = ({ projects }) => {
+  const { t } = useLocaleContext();
   const bgSection    = useColorModeValue("#F2F2F7", "#1C1C1E");
   const bgElevated   = useColorModeValue("#FFFFFF", "#2C2C2E");
   const bgFill       = useColorModeValue("rgba(120,120,128,0.2)", "rgba(120,120,128,0.36)");
@@ -30,7 +32,7 @@ const ProjectsCarousel = ({ projects }) => {
             mb={3}
             style={{ color: accent }}
           >
-            Selected Work
+            {t('projects.eyebrow') || 'Selected Work'}
           </Text>
           <Heading
             fontFamily="var(--font-headline)"
@@ -40,7 +42,7 @@ const ProjectsCarousel = ({ projects }) => {
             style={{ color: labelPrimary }}
             id="projects-section"
           >
-            Featured Projects
+            {t('projects.title') || 'Featured Projects'}
           </Heading>
         </Box>
 
@@ -145,7 +147,7 @@ const ProjectsCarousel = ({ projects }) => {
                   style={{ color: accent, textDecoration: "none" }}
                   _hover={{ opacity: 0.7, textDecoration: "none" }}
                 >
-                  View Project →
+                  {t('projects.viewDetails') || 'View Project →'}
                 </ChakraLink>
               </Box>
             </Flex>
@@ -170,7 +172,7 @@ const ProjectsCarousel = ({ projects }) => {
             _hover={{ bg: accentSoft, textDecoration: "none" }}
             transition="background 0.2s"
           >
-            View All Projects →
+            {t('projects.viewAll') || 'View All Projects →'}
           </ChakraLink>
         </Box>
       </Box>

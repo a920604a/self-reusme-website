@@ -378,7 +378,7 @@ npm run deploy
 | **Vercel** | 連結 GitHub repo，Framework preset 選 `Create React App` |
 | **任意靜態主機** | 執行 `npm run build` 後，上傳 `build/` 目錄的所有內容 |
 
-> 此專案使用 `HashRouter`（URL 含 `#`），所有靜態主機均可正常使用，**不需要伺服器端 routing 設定**。
+> 此專案使用 `BrowserRouter`，所有現代靜態主機均可透過重新導向設定支援。
 
 ---
 

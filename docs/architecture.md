@@ -58,7 +58,7 @@ graph TB
 
 | 服務 | 角色 | 說明 |
 |------|------|------|
-| **GitHub Pages** | 靜態網站托管 | 部署 React build 產物，透過 GitHub Actions 自動化 CI/CD；使用 HashRouter 相容靜態托管限制 |
+| **GitHub Pages** | 靜態網站托管 | 部署 React build 產物，透過 GitHub Actions 自動化 CI/CD；使用 BrowserRouter 提供乾淨的 URL |
 
 ### 後端（Backend — Cloudflare Edge）
 
@@ -80,7 +80,7 @@ graph TB
 graph TD
     App["App.js\n載入資料、設定 Router"]
 
-    App --> Router["HashRouter"]
+    App --> Router["BrowserRouter"]
     Router --> Header
     Router --> FloatingChatWidget
     Router --> Routes
@@ -118,7 +118,7 @@ sequenceDiagram
 
 ### 路由規則
 
-使用 `HashRouter`（`/#/` 形式），無需伺服器端路由設定，完全相容 GitHub Pages 靜態托管。
+使用 `BrowserRouter`（乾淨的 URL 形式），現代靜態托管主機均可良好支援。
 
 | 路徑 | 元件 |
 |------|------|
@@ -251,7 +251,7 @@ flowchart LR
 
 ## 關鍵設計決策
 
-**HashRouter 而非 BrowserRouter** — GitHub Pages 只提供單一 HTML 檔；hash 路由避免直接訪問子路徑時出現 404，無需伺服器端設定。
+**BrowserRouter 而非 HashRouter** — 提供更自然的 URL 結構，透過伺服器端重新導向（如 `_redirects` 或 `vercel.json`）即可支援。
 
 **Cloudflare Workers 而非傳統伺服器** — 零冷啟動延遲、全球邊緣分散式執行，Vectorize 與 Workers AI 同在 Cloudflare 平台，向量化與搜尋的網路往返延遲極低。
 

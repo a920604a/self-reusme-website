@@ -15,7 +15,7 @@ A personal portfolio and resume website built with React and Chakra UI, featurin
 - Education section
 - Contact form
 - Smooth scroll animations (Framer Motion)
-- Client-side routing with GitHub Pages compatibility (HashRouter)
+- Client-side routing with modern URL structure (BrowserRouter)
 - **AI Chat Widget** — floating chat assistant with real-time streaming RAG responses
 - Deploy to GitHub Pages with a single command
 
@@ -251,6 +251,29 @@ See [docs/RAG_SYNC_GUIDE.md](docs/RAG_SYNC_GUIDE.md) for the full sync workflow 
 | Vectorize data | Cloudflare Vectorize | manual `node scripts/ingest.js` |
 
 See [docs/architecture.md](docs/architecture.md) for the full system architecture.
+
+---
+
+## AI-Powered Job Application Skills
+
+This repo includes [Claude Code](https://claude.ai/code) skills for job application automation. Run them from the project root with Claude Code.
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| JD 比對分析 | `/jd-match` | 分析職缺適配度，產出評分報告與客製化求職信 |
+| 履歷更新 | `/update-resume` | 引導式更新 `public/data/*.json`，自動同步 Vectorize 知識庫 |
+| 客製化履歷 | `/job-apply` | 針對目標職缺產出客製化履歷文件（不修改原始資料） |
+| 歸檔應徵包 | `/job-release` | 將 JD 分析、求職信、履歷草稿整理封存至 `output/releases/` |
+
+### 典型求職流程
+
+```
+/jd-match      → 貼上 JD，取得適配分析 + 求職信
+/job-apply     → 產出客製化履歷草稿
+/job-release   → 歸檔完整應徵資料包
+```
+
+所有輸出寫入 `output/`（已加入 `.gitignore`，個人應徵資料不會進 repo）。
 
 ---
 

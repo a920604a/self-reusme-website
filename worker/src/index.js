@@ -26,6 +26,90 @@ async function sha256(text) {
     .join('');
 }
 
+function assembleJDPrompt(docs, jdText) {
+  const profile = docs.length > 0 ? docs.join('\n\n') : 'No specific context found.';
+  return `You are analyzing job fit for a software engineer's portfolio. Given the job description and candidate profile below, produce a structured fit analysis in Markdown with exactly these four sections:
+## Key Requirements Match
+## Relevant Projects
+## Candidate Strengths for This Role
+## Potential Gaps
+
+Be specific, concise, and reference actual projects or skills from the candidate profile. Reply in the same language as the job description.
+
+Job Description:
+${jdText}
+
+Candidate Profile:
+${profile}
+
+Analysis:`;
+}
+
+async function handleJDAnalysis(request, env, origin) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const { jd } = body;
+  if (!jd || typeof jd !== 'string' || jd.trim().length === 0) {
+    return new Response(JSON.stringify({ error: 'JD text is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+  if (jd.length > 5000) {
+    return new Response(JSON.stringify({ error: 'JD text too long (max 5000 chars)' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  // Rate limiting: 5 requests per IP per hour
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rateLimitKey = `rl-jd:${ip}:${Math.floor(Date.now() / 3600000)}`;
+  const currentCount = parseInt((await env.RATE_LIMIT_KV.get(rateLimitKey)) || '0');
+  if (currentCount >= 5) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+      status: 429,
+      headers: { 'Content-Type': 'application/json', 'Retry-After': '3600', ...corsHeaders(origin) },
+    });
+  }
+  await env.RATE_LIMIT_KV.put(rateLimitKey, String(currentCount + 1), { expirationTtl: 7200 });
+
+  // 1. Embed JD
+  const embedResult = await env.AI.run('@cf/baai/bge-m3', { text: jd.slice(0, 2000) });
+  const queryVector = embedResult.data[0];
+
+  // 2. Vector search (topK=8)
+  const searchResult = await env.VECTORIZE.query(queryVector, { topK: 8, returnMetadata: 'all' });
+  const docs = (searchResult.matches || [])
+    .filter((m) => m.metadata?.text)
+    .map((m) => m.metadata.text);
+
+  // 3. Build prompt
+  const prompt = assembleJDPrompt(docs, jd);
+
+  // 4. Stream LLM
+  const aiStream = await env.AI.run('@cf/meta/llama-3-8b-instruct', {
+    messages: [{ role: 'user', content: prompt }],
+    stream: true,
+  });
+
+  return new Response(aiStream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      ...corsHeaders(origin),
+    },
+  });
+}
+
 function assemblePrompt(docs, query) {
   const context = docs.length > 0 ? docs.join('\n\n') : 'No specific context found.';
   return `You are an AI assistant for a software engineer's personal portfolio website. Answer questions about the engineer's projects, work experience, and skills based on the context below. Be concise, helpful, and professional. If the context doesn't cover the question, answer based on general knowledge. IMPORTANT: Always reply in the same language the user used.
@@ -148,9 +232,16 @@ export default {
       });
     }
 
+    const url = new URL(request.url);
+
     try {
-      const response = await handleQuery(request, env, origin);
-      Object.entries(headers).forEach(([k, v]) => response.headers.set(k, v));
+      let response;
+      if (url.pathname === '/analyze-jd') {
+        response = await handleJDAnalysis(request, env, origin);
+      } else {
+        response = await handleQuery(request, env, origin);
+        Object.entries(headers).forEach(([k, v]) => response.headers.set(k, v));
+      }
       return response;
     } catch (err) {
       console.error('[worker error]', err);

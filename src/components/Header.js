@@ -4,11 +4,12 @@ import { faEnvelope, faBars, faSun, faMoon } from "@fortawesome/free-solid-svg-i
 import { faGithub, faLinkedin, faMedium } from "@fortawesome/free-brands-svg-icons";
 import {
   Box, Flex, HStack, Text, VStack,
-  IconButton,
+  IconButton, Button,
   Drawer, DrawerBody, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton,
   useDisclosure, useBreakpointValue, useColorMode, useColorModeValue,
 } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const socials = (email) => [
   { icon: faEnvelope, url: `mailto:${email || 'a920604a@gmail.com'}`,          label: "Email" },
@@ -17,14 +18,8 @@ const socials = (email) => [
   { icon: faMedium,   url: "https://medium.com/@a920604a",                     label: "Medium" },
 ];
 
-const navItems = [
-  { label: "Home",       to: "/",                 anchor: "" },
-  { label: "Projects",   to: "/#projects",        anchor: "projects" },
-  { label: "Experience", to: "/#work-experience", anchor: "work-experience" },
-  { label: "Skills",     to: "/#skills",          anchor: "skills" },
-];
-
 const Header = ({ email }) => {
+  const { t, locale, setLocale } = useLocaleContext();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isMobile = useBreakpointValue({ base: true, md: false });
   const headerRef = useRef(null);
@@ -35,6 +30,14 @@ const Header = ({ email }) => {
   const navSubColor  = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
   const drawerBg     = useColorModeValue("#FFFFFF", "#1C1C1E");
   const drawerBorder = useColorModeValue("rgba(60,60,67,0.29)", "rgba(84,84,88,0.65)");
+
+  const navItems = [
+    { label: t('nav.home'),         to: "/",                 anchor: "" },
+    { label: t('nav.projects'),     to: "/#projects",        anchor: "projects" },
+    { label: t('nav.experience'),   to: "/#work-experience", anchor: "work-experience" },
+    { label: t('nav.skills'),       to: "/#skills",          anchor: "skills" },
+    { label: t('nav.jdAnalyzer'),  to: "/jd-analyzer",      anchor: "jd-analyzer" },
+  ];
 
   const scrollTo = (anchor) => {
     onClose();
@@ -99,6 +102,18 @@ const Header = ({ email }) => {
           <HStack spacing={4}>
             {!isMobile && (
               <HStack spacing={4}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')}
+                  color={navSubColor}
+                  _hover={{ color: accent, bg: "transparent" }}
+                  fontFamily="var(--font-label)"
+                  fontSize="xs"
+                  fontWeight="700"
+                >
+                  {locale === 'zh' ? 'EN' : '繁中'}
+                </Button>
                 {socials(email).map((s) => (
                   <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.label}
                     style={{ color: navSubColor, fontSize: "14px", transition: "color 0.2s" }}
@@ -120,6 +135,18 @@ const Header = ({ email }) => {
             )}
             {isMobile && (
               <HStack spacing={2}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLocale(locale === 'zh' ? 'en' : 'zh')}
+                  color={navSubColor}
+                  _hover={{ color: accent, bg: "transparent" }}
+                  fontFamily="var(--font-label)"
+                  fontSize="xs"
+                  fontWeight="700"
+                >
+                  {locale === 'zh' ? 'EN' : '繁中'}
+                </Button>
                 <IconButton
                   icon={<FontAwesomeIcon icon={colorMode === "dark" ? faSun : faMoon} />}
                   aria-label="Toggle color mode"

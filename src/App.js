@@ -14,9 +14,11 @@ import WorkDetails from "./components/WorkDetails";
 import EducationSection from "./components/EducationSection";
 import Footer from "./components/Footer";
 import FloatingChatWidget from "./components/FloatingChatWidget";
+import JDAnalyzer from "./components/JDAnalyzer";
 import axios from "axios";
 import { AlertProvider } from "./context/alertContext";
-import { HashRouter as Router, Route, Routes } from "react-router-dom";
+import { LocaleProvider } from "./context/LocaleContext";
+import { BrowserRouter as Router, Route, Routes, Link as RouterLink } from "react-router-dom";
 
 class App extends Component {
 
@@ -94,18 +96,18 @@ class App extends Component {
     if (!data) {
       return (
         <ChakraProvider theme={theme}>
-          <Center minH="100vh" bg="#0b1326" flexDirection="column" gap={4}>
+          <Center minH="100vh" bg="bg.canvas" flexDirection="column" gap={4}>
             {this.state.loadError ? (
               <>
-                <Text color="#ff6b6b" fontFamily="var(--font-headline)" fontSize="xl">
+                <Text color="red.400" fontFamily="var(--font-headline)" fontSize="xl">
                   Failed to load portfolio data
                 </Text>
-                <Text color="#908fa0" fontSize="sm">
+                <Text color="label.secondary" fontSize="sm">
                   Please refresh the page or try again later.
                 </Text>
               </>
             ) : (
-              <Spinner size="xl" color="#c0c1ff" thickness="4px" speed="0.65s" />
+              <Spinner size="xl" color="accent" thickness="4px" speed="0.65s" />
             )}
           </Center>
         </ChakraProvider>
@@ -113,6 +115,7 @@ class App extends Component {
     }
     return (
       <ChakraProvider theme={theme}>
+        <LocaleProvider>
         <AlertProvider>
           <main>
             <Router>
@@ -160,6 +163,10 @@ class App extends Component {
                   element={<WorkDetails works={data.works} />}
                 />
                 <Route
+                  path="/jd-analyzer"
+                  element={<JDAnalyzer projectIds={(data?.projects || []).map(p => p.id)} />}
+                />
+                <Route
                   path="*"
                   element={
                     <Box textAlign="center" mt="140px" px={8}>
@@ -172,16 +179,16 @@ class App extends Component {
                       >
                         404
                       </Heading>
-                      <Text color="#908fa0" mb={6} fontFamily="var(--font-body)">
+                      <Text color="label.secondary" mb={6} fontFamily="var(--font-body)">
                         Page not found.
                       </Text>
                       <Button
-                        as="a"
-                        href="#/"
+                        as={RouterLink}
+                        to="/"
                         fontFamily="var(--font-headline)"
                         fontWeight={700}
-                        className="editorial-gradient"
-                        style={{ color: "#1000a9" }}
+                        className="accent-gradient"
+                        style={{ color: "#FFFFFF" }}
                         border="none"
                       >
                         Back to Home
@@ -193,6 +200,7 @@ class App extends Component {
             </Router>
           </main>
         </AlertProvider>
+        </LocaleProvider>
       </ChakraProvider>
     );
   }

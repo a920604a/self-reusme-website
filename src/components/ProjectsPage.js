@@ -3,6 +3,7 @@ import {
   Box, Heading, Text, Flex, Button, Select, Stack, useColorModeValue,
 } from "@chakra-ui/react";
 import ProjectsSummary from "./ProjectsSummary";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const parseDate = (dateStr) => {
   if (!dateStr) return new Date(0);
@@ -11,6 +12,7 @@ const parseDate = (dateStr) => {
 };
 
 const ProjectsPage = ({ projects }) => {
+  const { t } = useLocaleContext();
   const bgCanvas     = useColorModeValue("#FFFFFF", "#000000");
   const labelPrimary = useColorModeValue("#000000", "#FFFFFF");
   const labelSecond  = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
@@ -64,14 +66,14 @@ const ProjectsPage = ({ projects }) => {
             fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
             textTransform="uppercase" mb={3} style={{ color: accent }}
           >
-            Portfolio Archive
+            {t('projects.archiveEyebrow') || 'Portfolio Archive'}
           </Text>
           <Heading
             fontFamily="var(--font-headline)" fontWeight="800"
             fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
             style={{ color: labelPrimary }}
           >
-            All Projects
+            {t('projects.archiveTitle') || 'All Projects'}
           </Heading>
         </Box>
 
@@ -87,7 +89,7 @@ const ProjectsPage = ({ projects }) => {
             _hover={{ bg: categoryFilter === "" ? accentSoft : bgFill, opacity: 0.8 }}
             onClick={() => setCategoryFilter("")}
           >
-            All
+            {t('projects.filterAll') || 'All'}
           </Button>
           {categories.map((cat) => (
             <Button
@@ -108,7 +110,7 @@ const ProjectsPage = ({ projects }) => {
         {/* Tag + Sort filters */}
         <Flex gap={4} justify="center" mb={8} wrap="wrap">
           <Select
-            placeholder="Filter by tag"
+            placeholder={t('projects.filterByTag') || "Filter by tag"}
             value={tagsFilter}
             onChange={(e) => setTagsFilter(e.target.value)}
             maxW="220px"
@@ -125,9 +127,9 @@ const ProjectsPage = ({ projects }) => {
             maxW="200px"
             {...selectStyles}
           >
-            <option value="date DESC" style={{ background: "var(--color-elevated)" }}>Newest First</option>
-            <option value="date ASC"  style={{ background: "var(--color-elevated)" }}>Oldest First</option>
-            <option value="title"     style={{ background: "var(--color-elevated)" }}>By Title</option>
+            <option value="date DESC" style={{ background: "var(--color-elevated)" }}>{t('projects.sortNewest') || 'Newest First'}</option>
+            <option value="date ASC"  style={{ background: "var(--color-elevated)" }}>{t('projects.sortOldest') || 'Oldest First'}</option>
+            <option value="title"     style={{ background: "var(--color-elevated)" }}>{t('projects.sortTitle') || 'By Title'}</option>
           </Select>
         </Flex>
 
@@ -137,12 +139,12 @@ const ProjectsPage = ({ projects }) => {
           fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
           textTransform="uppercase" style={{ color: labelSecond }}
         >
-          {filtered.length} Project{filtered.length !== 1 ? "s" : ""}
+          {filtered.length} {t('projects.countLabel') || (filtered.length !== 1 ? "Projects" : "Project")}
         </Text>
 
         {/* Grid */}
         {filtered.length === 0 ? (
-          <Text textAlign="center" style={{ color: labelSecond }}>No projects found.</Text>
+          <Text textAlign="center" style={{ color: labelSecond }}>{t('projects.noFound') || 'No projects found.'}</Text>
         ) : (
           <ProjectsSummary projects={filtered} />
         )}
@@ -156,7 +158,7 @@ const ProjectsPage = ({ projects }) => {
             _hover={{ bg: "rgba(192,193,255,0.06)" }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
-            ↑ Back to Top
+            ↑ {t('projects.backToTop') || 'Back to Top'}
           </Button>
         </Box>
       </Box>
