@@ -1,0 +1,68 @@
+評估一下，給出您的建議
+
+   ✦ 這是一個非常紮實的規劃！將這些功能整合進一個 "AI Lab" 選單，不僅能維持導航欄的簡潔，還能讓使用者感受到這是一個持續演進的「實驗室」環境。
+
+     在實作之前，讓我們先在 Explore Mode 下深入探討一下導航選單的結構與路由規劃。
+
+     1. 導航欄的視覺呈現
+     目前的導航欄是平鋪的連結。針對 "AI Lab"，我們有兩種常見的 Apple HIG 做法：
+
+     方案 A：下拉式選單 (Dropdown)
+      * 在導航欄顯示 "AI Lab" ↓。
+      * 懸停或點擊時，彈出一個毛玻璃效果的選單，列出：
+          * JD Analyzer
+          * Job Apply
+          * JD Match
+          * Job Release
+
+     方案 B：二級路由入口 (AI Lab Hub)
+      * 導航欄只增加一個 "AI Lab" 連結。
+      * 點擊後進入一個全新的「儀表板」頁面，使用大卡片展示這四個工具的入口（類似 iOS 的 App 圖示或系統設定介面）。
+
+     ---
+
+     2. 路由與整合點分析
+
+     根據你的想法，目前的架構會演變成：
+
+       1 Sitemap 預覽
+       2 ══════════════════════════════════════════════════════════
+       3 / (Home)
+       4 ├── #projects
+       5 ├── #experience
+       6 └── #skills
+       7
+       8 /projects (Archive)
+       9
+      10 /ai-lab (Hub Page - 新增)
+      11 ├── /ai-lab/jd-analyzer (現有的移動過來)
+      12 ├── /ai-lab/job-apply    (待開發)
+      13 ├── /ai-lab/jd-match     (待開發)
+      14 └── /ai-lab/job-release  (待開發)
+
+     ---
+
+     3. 需要調整的檔案
+
+      1. src/App.js:
+          * 新增 /ai-lab 的 Routes。
+          * 將原本的 /jd-analyzer 路由重定向或移動到 /ai-lab/jd-analyzer。
+      2. src/components/Header.js:
+          * 新增選單邏輯。如果是「下拉選單」，我們需要 Chakra UI 的 Menu 元件。
+      3. src/i18n/*.js:
+          * 新增 AI Lab 相關的翻譯字串。
+
+     ---
+
+     4. 延伸思考：工具間的資料流
+     既然這三個工具都跟職缺有關，我們是否該考慮一個 "Persistent Context"？
+      * 情境：使用者在 JD Analyzer 貼了一段 JD。
+      * 體驗：當他切換到 Job Apply 時，那段文字依然存在，不用重新貼上。
+
+     ---
+
+     你想採納哪種導航方式？
+      1. 下拉選單 (Dropdown)：直接在 Header 選。
+      2. 實驗室主頁 (Hub Page)：進入一個專屬頁面看所有工具。
+
+     如果你決定了，我會幫你整理出一份 OpenSpec Proposal 來正式開啟這個變更。
