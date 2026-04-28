@@ -13,7 +13,7 @@
 | 目標用戶 | 招募方 / HR | 求職者（私人） | 求職者（私人） |
 | 輸入 | JD 文字（最多 5,000 字） | JD 文字（最多 5,000 字） | 無 JD（快速）或 JD（比對） |
 | 資料來源 | Vectorize RAG（topK=8） | Step1 RAG + Step2 直接 fetch JSON | 直接 fetch GitHub Pages JSON |
-| Worker 端點 | `POST /analyze-jd` | `POST /match-jd` → `POST /apply-job` | `POST /health-check` |
+| Worker 端點 | `POST /analyze-jd` | `POST /match-jd` → `POST /apply-resume` + `POST /apply-cover` | `POST /health-check` |
 | LLM 模型 | llama-3.1-8b | llama-3.3-70b-fp8（兩步） | llama-3.1-8b（評分）+ llama-3.3-70b（建議）|
 | Rate Limit | 5 次/hr | match 10 次/hr，apply 10 次/hr | 5 次/hr |
 | 輸出 | 串流 Markdown（4 段） | 串流 Resume + Cover Letter，可打包 ZIP | JSON 評分面板 + 串流改寫建議 |
@@ -65,14 +65,14 @@
    - `## 落差`
    - `## 面試準備建議`
 
-#### Step 2 — Job Apply（`POST /apply-job`）
+#### Step 2 — Job Apply（`POST /apply-resume` + `POST /apply-cover`）
 
 1. 接收 Step 1 的 JD 文字 + JD Match 分析結果
 2. Worker 直接 fetch GitHub Pages 靜態 JSON（profile / works / projects / skills）組成完整 candidateData
-3. `llama-3.3-70b-instruct-fp8-fast` 串流生成，以 HTML 註解標記分割兩份文件：
-   - `<!-- RESUME_START -->` → 客製化履歷（含 Professional Summary / Skills / Work Experience / Projects / Education）
-   - `<!-- COVER_START -->` → 求職信（4 段結構）
-4. 前端 `useJobApply` 即時解析 marker，分別更新 Resume 和 Cover Letter 兩個 tab
+3. 前端以 `Promise.all` 並行發出兩個請求：
+   - `POST /apply-resume` → `llama-3.3-70b`，max_tokens=4096，prompt 限制 ≤700 字 → 客製化履歷（含 Professional Summary / Skills / Work Experience / Projects / Education）
+   - `POST /apply-cover` → `llama-3.3-70b`，max_tokens=2048，prompt 限制 ≤350 字 → 求職信（4 段結構）
+4. 兩個 stream 各自即時更新 Resume 和 Cover Letter 兩個 tab
 
 #### Step 3 — Release
 
@@ -82,7 +82,7 @@
 ### 關鍵設計
 
 - Step2 不用 RAG 而是直接 fetch 完整 JSON：避免向量搜尋取樣不完整，確保履歷涵蓋所有工作與專案
-- 以串流內嵌 marker（`<!-- RESUME_START -->`、`<!-- COVER_START -->`）分割兩份文件，不需兩次 LLM 呼叫，降低延遲
+- 拆成兩個獨立 endpoint（`/apply-resume` + `/apply-cover`）並行呼叫：各自有完整 token budget，避免單次呼叫 token 共享導致截斷；prompt 層加字數限制（履歷 ≤700 字、求職信 ≤350 字）確保輸出完整
 - 使用 70B 模型：文件生成品質要求高，值得用大模型
 
 ---

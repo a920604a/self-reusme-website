@@ -172,14 +172,14 @@ export function assembleXxxPrompt(...args) { return `...`; }
 
 ### 3.3 Endpoints 一覽
 
-| Endpoint | Model | max_tokens | Rate Limit |
-|----------|-------|-----------|------------|
-| `POST /query` | llama-3.2-3b-instruct | 1024 | 20次/IP/分鐘 |
-| `POST /analyze-jd` | llama-3.1-8b-instruct | 2048 | 5次/IP/小時 |
-| `POST /match-jd` | llama-3.3-70b-fp8-fast | 2048 | 10次/IP/小時 |
-| `POST /apply-resume` | llama-3.3-70b-fp8-fast | 4096 | 10次/IP/小時 |
-| `POST /apply-cover` | llama-3.3-70b-fp8-fast | 2048 | 10次/IP/小時 |
-| `POST /health-check` | 8B（評分）+ 70B（建議）| 4096 | 5次/IP/小時 |
+| Endpoint | Model | max_tokens | Prompt 字數限制 | Rate Limit |
+|----------|-------|-----------|----------------|------------|
+| `POST /query` | llama-3.2-3b-instruct | 1024 | ≤400 字 | 20次/IP/分鐘 |
+| `POST /analyze-jd` | llama-3.1-8b-instruct | 2048 | ≤600 字 | 5次/IP/小時 |
+| `POST /match-jd` | llama-3.3-70b-fp8-fast | 2048 | ≤700 字 | 10次/IP/小時 |
+| `POST /apply-resume` | llama-3.3-70b-fp8-fast | 4096 | ≤700 字 | 10次/IP/小時 |
+| `POST /apply-cover` | llama-3.3-70b-fp8-fast | 2048 | ≤350 字 | 10次/IP/小時 |
+| `POST /health-check` | 8B（評分）+ 70B（建議）| 4096 | 建議 ≤500 字 | 5次/IP/小時 |
 
 ---
 
@@ -236,19 +236,19 @@ HIT    MISS
 
 **Step2 拆分設計**（重要）：
 
-原本 `/apply-job` 用一次 LLM 呼叫同時生成履歷和求職信，以 HTML 註解 marker 分割。問題：8192 token 共享，長文件容易截斷。
+原本 `/apply-job` 用一次 LLM 呼叫同時生成履歷和求職信，以 HTML 註解 marker 分割。問題：token budget 共享，長文件容易截斷。
 
-現在拆成兩個獨立 endpoint：
+現在拆成兩個獨立 endpoint，並在 prompt 層加字數限制：
 
 ```
 前端 useJobApply
   │
-  ├── fetch /apply-resume  ──► llama-3.3-70b, max_tokens=4096 → resumeText
-  └── fetch /apply-cover   ──► llama-3.3-70b, max_tokens=2048 → coverText
+  ├── fetch /apply-resume  ──► llama-3.3-70b, max_tokens=4096, prompt ≤700 字 → resumeText
+  └── fetch /apply-cover   ──► llama-3.3-70b, max_tokens=2048, prompt ≤350 字 → coverText
       （Promise.all 並行）
 ```
 
-兩個 fetch 並行發出，各自有完整 token budget，前端分別 stream 進兩個 state。
+**雙層截斷保護**：prompt 字數限制讓 LLM 主動收斂輸出，max_tokens 作為最後的硬截斷保險，正常情況下不會觸發。
 
 **Step2 資料來源**：不用 RAG，直接 fetch GitHub Pages 靜態 JSON：
 

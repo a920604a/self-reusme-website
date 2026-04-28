@@ -31,14 +31,15 @@ graph TB
             Embed["bge-m3 (embedding)"]
             LLM_S["llama-3.2-3b (chat)"]
             LLM_M["llama-3.1-8b (analyze-jd / health-check scoring)"]
-            LLM_L["llama-3.3-70b-fp8 (match-jd / apply-job / health-check rewrite)"]
+            LLM_L["llama-3.3-70b-fp8 (match-jd / apply-resume / apply-cover / health-check rewrite)"]
         end
     end
 
     Widget -->|POST /query| Worker
     JDA -->|POST /analyze-jd| Worker
     WS -->|POST /match-jd| Worker
-    WS -->|POST /apply-job| Worker
+    WS -->|POST /apply-resume| Worker
+    WS -->|POST /apply-cover| Worker
     WS -->|POST /health-check| Worker
 
     Worker --> RL --> KV
@@ -56,7 +57,8 @@ graph TB
 | `POST /query` | llama-3.2-3b-instruct | Chat RAG，串流回答 | 20/IP/分鐘 |
 | `POST /analyze-jd` | llama-3.1-8b-instruct | JD 契合分析（招募方視角），串流 Markdown | 5/IP/小時 |
 | `POST /match-jd` | llama-3.3-70b-fp8-fast | JD 契合分析（求職者自用），串流 Markdown | 10/IP/小時 |
-| `POST /apply-job` | llama-3.3-70b-fp8-fast | 客製化履歷 + Cover Letter 生成，串流 | 10/IP/小時 |
+| `POST /apply-resume` | llama-3.3-70b-fp8-fast | 客製化履歷生成，串流（≤700 字） | 10/IP/小時 |
+| `POST /apply-cover` | llama-3.3-70b-fp8-fast | Cover Letter 生成，串流（≤350 字） | 10/IP/小時 |
 | `POST /health-check` | llama-3.1-8b (scoring) + llama-3.3-70b (rewrite) | 履歷量化評分 + 串流改寫建議（雙階段） | 5/IP/小時 |
 
 ### Rate Limiter
@@ -114,7 +116,7 @@ graph TD
 | `useStreamingChat` | `/query` | Chat 串流；history 存 localStorage |
 | `useJDAnalysis` | `/analyze-jd` | JD Analyzer 串流 |
 | `useJDMatch` | `/match-jd` | Workspace Step 1 串流 |
-| `useJobApply` | `/apply-job` | Step 2 串流；以 `<!-- RESUME_START -->` / `<!-- COVER_START -->` 分割兩份文件 |
+| `useJobApply` | `/apply-resume` + `/apply-cover` | Step 2 兩個並行 fetch，分別 stream resumeText 和 coverText |
 | `useHealthCheck` | `/health-check` | 雙階段 SSE：先解析 `{type:"scores"}` 事件更新分數面板，後續 token 為串流建議 |
 
 ### i18n
@@ -201,7 +203,7 @@ flowchart LR
     P & PR & W & S --> CHUNK --> EMBED --> UPSERT --> IDX["portfolio-index\n1024 dims / cosine"]
 ```
 
-> `/health-check` 與 `/apply-job` 不使用 Vectorize，而是直接 fetch GitHub Pages 的 JSON 組裝 candidateData（避免 RAG topK 取樣不完整的問題）。
+> `/health-check` 與 `/apply-resume` / `/apply-cover` 不使用 Vectorize，而是直接 fetch GitHub Pages 的 JSON 組裝 candidateData（避免 RAG topK 取樣不完整的問題）。
 
 ---
 
