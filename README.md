@@ -91,7 +91,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 │   └── wrangler.toml        # Cloudflare Worker config
 ├── docs/
 │   ├── architecture.md      # Full system architecture
-│   └── RAG_SYNC_GUIDE.md   # How to sync data updates to Vectorize
+│   ├── ai-features.md       # AI feature comparison (JD Analyzer / Job Wizard / Health Check)
+│   ├── RAG_SYNC_GUIDE.md   # How to sync data updates to Vectorize
+│   ├── contact-form.md      # Formspree setup guide
+│   └── data-schema.md       # JSON data field reference
 ├── .github/workflows/
 │   └── deploy.yml           # CI/CD: build + deploy to GitHub Pages
 └── package.json
@@ -135,7 +138,7 @@ All portfolio content lives in `public/data/`. Edit these JSON files:
 | `description.solution` | string | How it was solved |
 | `description.core_contributions` | string[] | (optional) Key contribution bullets |
 | `description.outcome` | string | Results / impact |
-| `images` | string[] | Diagram paths relative to `public/images/` |
+| `images` | string[] | Diagram paths relative to `public/images/portfolio/` |
 | `uiImages` | string[] | (optional) UI screenshot paths |
 | `repo` | string | (optional) GitHub repository URL |
 | `reference` | string | (optional) External reference link |
@@ -152,7 +155,7 @@ All portfolio content lives in `public/data/`. Edit these JSON files:
 
 ### Step 3 — Replace Images
 
-Project images live in `public/images/<project-id>/`:
+Project images live in `public/images/portfolio/<project-id>/`:
 
 - `flow.png` — workflow or system diagram
 - `arch.png` — architecture diagram

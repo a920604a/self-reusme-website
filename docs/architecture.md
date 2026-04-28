@@ -4,6 +4,8 @@
 
 本專案由兩個獨立部署的元件組成：部署在 GitHub Pages 的 React 靜態網站，以及在 Cloudflare Edge 執行多條 AI pipeline 的 Cloudflare Worker。
 
+> 各 AI 功能的使用流程、設計比較與串流協定細節，詳見 [ai-features.md](./ai-features.md)。
+
 ```mermaid
 graph TB
     subgraph Browser["瀏覽器 (GitHub Pages)"]
@@ -55,7 +57,7 @@ graph TB
 | `POST /analyze-jd` | llama-3.1-8b-instruct | JD 契合分析（招募方視角），串流 Markdown | 5/IP/小時 |
 | `POST /match-jd` | llama-3.3-70b-fp8-fast | JD 契合分析（求職者自用），串流 Markdown | 10/IP/小時 |
 | `POST /apply-job` | llama-3.3-70b-fp8-fast | 客製化履歷 + Cover Letter 生成，串流 | 10/IP/小時 |
-| `POST /health-check` | llama-3.1-8b (scoring) + llama-3.3-70b (rewrite) | 履歷量化評分 + 串流改寫建議（雙階段） | 50/IP/小時 |
+| `POST /health-check` | llama-3.1-8b (scoring) + llama-3.3-70b (rewrite) | 履歷量化評分 + 串流改寫建議（雙階段） | 5/IP/小時 |
 
 ### Rate Limiter
 
@@ -216,6 +218,7 @@ flowchart LR
 | 變數 | 使用位置 | 用途 |
 |------|---------|------|
 | `REACT_APP_WORKER_URL` | GitHub Secret + `.env` | Worker URL，build 時注入 React |
+| `REACT_APP_WORKSPACE_PIN` | GitHub Secret + `.env` | Workspace 存取 PIN，build 時注入 PinGate |
 | `CLOUDFLARE_API_TOKEN` | 本機 shell | ingest.js — 向量化 + upsert |
 | `CLOUDFLARE_ACCOUNT_ID` | 本機 shell | ingest.js — Cloudflare REST API |
 
