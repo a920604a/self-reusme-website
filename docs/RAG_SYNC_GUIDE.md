@@ -122,7 +122,7 @@ npm install --legacy-peer-deps
 cd worker && npm install && cd ..
 
 # 3. 建立 Vectorize index
-cd worker && npx wrangler vectorize create portfolio-index --dimensions=768 --metric=cosine && cd ..
+cd worker && npx wrangler vectorize create portfolio-index --dimensions=1024 --metric=cosine && cd ..
 
 # 4. Ingest 資料
 export CLOUDFLARE_API_TOKEN=...

@@ -4,7 +4,7 @@
  *
  * Prerequisites:
  *   1. Create Vectorize index:
- *      npx wrangler vectorize create portfolio-index --dimensions=768 --metric=cosine
+ *      npx wrangler vectorize create portfolio-index --dimensions=1024 --metric=cosine
  *   2. Set env vars:
  *      export CLOUDFLARE_API_TOKEN=...
  *      export CLOUDFLARE_ACCOUNT_ID=...

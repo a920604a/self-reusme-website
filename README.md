@@ -8,12 +8,12 @@ A personal portfolio and resume website built with React and Chakra UI, featurin
 
 ## Features
 
-- Dark-themed responsive UI (mobile, tablet, desktop)
+- Dark / light mode toggle (system-independent)
 - Projects showcase with image gallery and category filtering
 - Work experience timeline
 - Skills section (languages, tools, frameworks)
 - Education section
-- Contact form
+- Contact form (Formspree)
 - Smooth scroll animations (Framer Motion)
 - Client-side routing with modern URL structure (BrowserRouter)
 - Language toggle (English / 繁體中文)
@@ -71,7 +71,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 │   │   ├── works.json       # Work experience
 │   │   ├── skills.json      # Skills, tools, frameworks
 │   │   └── education.json   # Education history
-│   ├── images/              # Project images, organized by project ID
+│   ├── images/portfolio/    # Project images (<project-id>/) and profile pic (_profile/)
 │   └── index.html           # HTML entry point
 ├── src/
 │   ├── App.js               # Root component, fetches data on mount
@@ -160,13 +160,14 @@ Project images live in `public/images/<project-id>/`:
 
 ### Step 4 — Update Social Links
 
-Edit the `socials` array in `src/components/Header.js`:
+Edit the `socials` function in `src/components/Header.js`. The `email` value comes automatically from `public/data/profile.json`; update the other URLs directly:
 
 ```js
-const socials = [
-  { icon: faEnvelope, url: "mailto:your@email.com" },
-  { icon: faGithub,   url: "https://github.com/your-username" },
-  { icon: faLinkedin, url: "https://www.linkedin.com/in/..." },
+const socials = (email) => [
+  { icon: faEnvelope, url: `mailto:${email || 'your@email.com'}`, label: "Email" },
+  { icon: faGithub,   url: "https://github.com/your-username",    label: "GitHub" },
+  { icon: faLinkedin, url: "https://www.linkedin.com/in/...",      label: "LinkedIn" },
+  { icon: faMedium,   url: "https://medium.com/@your-username",    label: "Medium" },
 ];
 ```
 
@@ -198,7 +199,7 @@ The floating chat widget uses a **Streaming RAG pipeline** on Cloudflare. Follow
 ```bash
 cd worker
 npm install
-npx wrangler vectorize create portfolio-index --dimensions=768 --metric=cosine
+npx wrangler vectorize create portfolio-index --dimensions=1024 --metric=cosine
 ```
 
 ### Step 2 — Ingest data into Vectorize

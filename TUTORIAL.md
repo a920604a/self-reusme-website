@@ -7,14 +7,14 @@
 ## 目錄
 
 1. [快速開始](#1-快速開始)
-2. [填寫個人資料：`public/propData.json` 完整說明](#2-填寫個人資料propDatajson-完整說明)
+2. [填寫個人資料：`public/data/` 五個 JSON 檔說明](#2-填寫個人資料publicdata-五個-json-檔說明)
 3. [替換大頭照與專案圖片](#3-替換大頭照與專案圖片)
 4. [修改社群連結 (Header)](#4-修改社群連結-header)
 5. [自訂主題色彩（選填）](#5-自訂主題色彩選填)
 6. [設定 `package.json` 的 homepage](#6-設定-packagejson-的-homepage)
 7. [部署到 GitHub Pages](#7-部署到-github-pages)
 8. [其他部署方式](#8-其他部署方式)
-9. [完整 `propData.json` 最小範例](#9-完整-propdatajson-最小範例)
+9. [完整 JSON 最小範例](#9-完整-json-最小範例)
 10. [常見問題 FAQ](#10-常見問題-faq)
 
 ---
@@ -29,7 +29,7 @@
 ```bash
 git clone https://github.com/<你的帳號>/self-reusme-website.git
 cd self-reusme-website
-npm install
+npm install --legacy-peer-deps
 npm start
 ```
 
@@ -39,22 +39,31 @@ npm start
 
 ---
 
-## 2. 填寫個人資料：`propData.json` 完整說明
+## 2. 填寫個人資料：`public/data/` 五個 JSON 檔說明
 
-**唯一需要編輯的資料檔案**：`public/propData.json`
+所有個人資料分散在 `public/data/` 目錄下的五個 JSON 檔：
 
-此 JSON 檔控制整個網站顯示的所有內容，包含：首頁介紹、作品集、工作經歷、技能、學歷。
+| 檔案 | 內容 |
+|------|------|
+| `profile.json` | 首頁介紹、email |
+| `projects.json` | 作品集陣列 |
+| `works.json` | 工作經歷陣列 |
+| `skills.json` | 技能、工具、框架 |
+| `education.json` | 學歷陣列 |
+
+詳細欄位說明請參閱 [docs/data-schema.md](docs/data-schema.md)。
 
 ---
 
-### 2.1 首頁基本資訊（Landing Section）
+### 2.1 `profile.json` — 首頁基本資訊
 
 ```json
 {
   "greeting": "Hello, I am 你的名字!",
   "bio1": "你的職稱，例如：Frontend Developer",
   "bio2": "一段關於你自己的介紹，100 字以內為佳。",
-  "resumeDownload": "https://你的履歷連結（CakeResume、PDF 網址等）"
+  "resumeDownload": "https://你的履歷連結（CakeResume、PDF 網址等）",
+  "email": "your@email.com"
 }
 ```
 
@@ -64,40 +73,43 @@ npm start
 | `bio1` | 首頁角色標籤 | 簡短職稱，顯示在名字上方 |
 | `bio2` | 首頁副標文字 | 較完整的自我介紹段落 |
 | `resumeDownload` | Download Resume 按鈕 | 點擊後開啟的履歷連結 |
+| `email` | Header 社群圖示 | Email 連結，會自動填入 Header |
 
 ---
 
-### 2.2 `projects[]` — 作品集
+### 2.2 `projects.json` — 作品集
 
-每個專案為 `projects` 陣列中的一個物件：
+每個專案為陣列中的一個物件：
 
 ```json
-{
-  "id": "my-project",
-  "title": "我的專案名稱",
-  "date": "2024/01-2024/06",
-  "category": "Side Project",
-  "tags": ["Python", "FastAPI", "Docker"],
-  "description": {
-    "background": "為什麼做這個專案？背景說明。",
-    "challenge": "遇到什麼挑戰？",
-    "solution": "如何解決？",
-    "core_contributions": [
-      "**貢獻一**：做了什麼",
-      "**貢獻二**：做了什麼"
+[
+  {
+    "id": "my-project",
+    "title": "我的專案名稱",
+    "date": "2024/01-2024/06",
+    "category": "Side Project",
+    "tags": ["Python", "FastAPI", "Docker"],
+    "description": {
+      "background": "為什麼做這個專案？背景說明。",
+      "challenge": "遇到什麼挑戰？",
+      "solution": "如何解決？",
+      "core_contributions": [
+        "**貢獻一**：做了什麼",
+        "**貢獻二**：做了什麼"
+      ],
+      "outcome": "達成了什麼成果？量化指標更好。"
+    },
+    "images": [
+      "my-project/flow.png",
+      "my-project/arch.png"
     ],
-    "outcome": "達成了什麼成果？量化指標更好。"
-  },
-  "images": [
-    "my-project/flow.png",
-    "my-project/arch.png"
-  ],
-  "uiImages": [
-    "my-project/ui.png"
-  ],
-  "repo": "https://github.com/你的帳號/my-project",
-  "reference": "https://相關連結（選填）"
-}
+    "uiImages": [
+      "my-project/ui.png"
+    ],
+    "repo": "https://github.com/你的帳號/my-project",
+    "reference": "https://相關連結（選填）"
+  }
+]
 ```
 
 #### 欄位說明
@@ -110,7 +122,7 @@ npm start
 | `category` | ✅ | string | 分類：`"Work"`、`"Side Project"`、`"Misc"` 三選一 |
 | `tags` | ✅ | string[] | 技術標籤，顯示為 badge |
 | `description` | ✅ | object | 詳見下方 |
-| `images` | ✅ | string[] | 圖片路徑，相對於 `public/images/` 目錄 |
+| `images` | ✅ | string[] | 圖片路徑，相對於 `public/images/portfolio/` 目錄 |
 | `uiImages` | ❌ | string[] | UI 截圖路徑（可省略） |
 | `repo` | ❌ | string 或 object[] | GitHub 連結，可以是單一字串或多個 repo 的陣列（見下方） |
 | `reference` | ❌ | string | 外部參考連結 |
@@ -146,20 +158,22 @@ npm start
 
 ---
 
-### 2.3 `works[]` — 工作經歷
+### 2.3 `works.json` — 工作經歷
 
 ```json
-{
-  "id": "company-a-senior",
-  "company": "公司名稱",
-  "position": "資深工程師",
-  "years": "2022/05-Now",
-  "description": [
-    "負責 XX 系統的開發與維護，使用 Python / FastAPI",
-    "與 PM、設計師協作，確保功能如期交付",
-    "導入 Docker 容器化部署，縮短部署時間 50%"
-  ]
-}
+[
+  {
+    "id": "company-a-senior",
+    "company": "公司名稱",
+    "position": "資深工程師",
+    "years": "2022/05-Now",
+    "description": [
+      "負責 XX 系統的開發與維護，使用 Python / FastAPI",
+      "與 PM、設計師協作，確保功能如期交付",
+      "導入 Docker 容器化部署，縮短部署時間 50%"
+    ]
+  }
+]
 ```
 
 | 欄位 | 必填 | 說明 |
@@ -174,74 +188,56 @@ npm start
 
 ---
 
-### 2.4 `skills[]` — 程式語言能力
+### 2.4 `skills.json` — 技能、工具、框架
 
 ```json
-"skills": [
-  { "name": "Python",     "level": "75%" },
-  { "name": "JavaScript", "level": "60%" },
-  { "name": "Go",         "level": "40%" }
-]
+{
+  "skills": [
+    { "name": "Python",     "level": "75%" },
+    { "name": "JavaScript", "level": "60%" }
+  ],
+  "tools": ["Git", "Docker", "PostgreSQL"],
+  "frameworks": ["React", "FastAPI"],
+  "tryLearn": ["K8s", "Kafka"]
+}
 ```
+
+#### `skills[]` — 程式語言能力
 
 | 欄位 | 說明 |
 |------|------|
 | `name` | 語言名稱（需與 `SkillSection.js` 中的 icon 名稱對應，才能顯示 icon） |
 | `level` | 熟練度百分比字串，例如 `"75%"`，控制進度條長度 |
 
-#### 目前支援自動顯示 icon 的語言
+目前支援自動顯示 icon 的語言：`Python`、`C#`、`C++`、`JavaScript`、`SQL`、`Shell Script`
 
-`Python`、`C#`、`C++`、`JavaScript`、`SQL`、`Shell Script`
-
-> 填入不在清單中的語言，進度條仍會正常顯示，但不會有 icon 圖示。
-
----
-
-### 2.5 `tools[]` — 工具清單
-
-```json
-"tools": ["Git", "Docker", "PostgreSQL", "Redis", "GCP", "Ansible"]
-```
+#### `tools[]` — 工具清單
 
 純字串陣列。目前支援自動顯示 icon 的工具：
 
 `Git`, `PostgreSQL`, `MySQL`, `Redis`, `MongoDB`, `Docker`, `Ansible`, `Airflow`, `Ubuntu`, `Prometheus`, `Grafana`, `GCP`, `MLflow`, `Unity`
 
-> 填入不在清單中的工具名稱，仍會顯示文字標籤，但沒有 icon。
-
----
-
-### 2.6 `frameworks[]` — 框架清單
-
-```json
-"frameworks": ["React", "FastAPI", "Flask", "PyTorch"]
-```
+#### `frameworks[]` — 框架清單
 
 目前支援自動顯示 icon 的框架：`React`、`FastAPI`、`PyTorch`、`Flask`
 
----
-
-### 2.7 `tryLearn[]` — 正在學習的技術（選填）
-
-```json
-"tryLearn": ["K8s", "Kafka", "Terraform"]
-```
+#### `tryLearn[]` — 正在學習的技術（選填）
 
 顯示在 Skills 區塊的「Exploring」虛線卡片。可省略或設為空陣列 `[]`。
 
 ---
 
-### 2.8 `educationData[]` — 學歷
+### 2.5 `education.json` — 學歷
 
 ```json
-"educationData": [
+[
   {
-    "school": "National Taiwan University",
+    "school": "Master of National Taiwan University",
     "major": "Computer Science",
     "duration": "2018-2022"
   },
   {
-    "school": "National Taiwan University",
+    "school": "Bachelor of National Taiwan University",
     "major": "Mathematics",
     "duration": "2014-2018"
   }
@@ -278,7 +274,7 @@ public/images/portfolio/_profile/profilepic.jpeg
 public/images/portfolio/<project-id>/
 ```
 
-每個專案通常包含以下圖片（依你的 `propData.json` 中 `images` 和 `uiImages` 陣列決定）：
+每個專案通常包含以下圖片（依你的 `projects.json` 中 `images` 和 `uiImages` 陣列決定）：
 
 | 檔名 | 用途 | 建議尺寸 |
 |------|------|----------|
@@ -290,7 +286,7 @@ public/images/portfolio/<project-id>/
 
 1. 建立目錄 `public/images/portfolio/my-blog/`
 2. 放入 `flow.png`、`arch.png`（至少這兩張）
-3. 在 `propData.json` 中設定：
+3. 在 `projects.json` 中設定：
 
 ```json
 "images": ["my-blog/flow.png", "my-blog/arch.png"]
@@ -302,14 +298,14 @@ public/images/portfolio/<project-id>/
 
 ## 4. 修改社群連結 (Header)
 
-編輯 `src/components/Header.js` 第 13–18 行的 `socials` 陣列：
+編輯 `src/components/Header.js` 的 `socials` 函式。`email` 欄位會自動從 `public/data/profile.json` 讀取；其他連結直接修改 URL：
 
 ```js
-const socials = [
-  { icon: faEnvelope, url: "mailto:你的Email",                      label: "Email" },
-  { icon: faGithub,   url: "https://github.com/你的帳號",            label: "GitHub" },
+const socials = (email) => [
+  { icon: faEnvelope, url: `mailto:${email || 'your@email.com'}`, label: "Email" },
+  { icon: faGithub,   url: "https://github.com/你的帳號",          label: "GitHub" },
   { icon: faLinkedin, url: "https://www.linkedin.com/in/你的profile", label: "LinkedIn" },
-  { icon: faMedium,   url: "https://medium.com/@你的帳號",            label: "Medium" },
+  { icon: faMedium,   url: "https://medium.com/@你的帳號",          label: "Medium" },
 ];
 ```
 
@@ -319,18 +315,22 @@ const socials = [
 
 ## 5. 自訂主題色彩（選填）
 
-編輯 `src/theme.js` 即可調整顏色與字型。目前預設主題：
+編輯 `src/theme.js` 即可調整顏色與字型。目前主題採用 Apple HIG 風格，支援深色 / 淺色雙模式：
 
-| 用途 | 預設值 |
-|------|--------|
-| 背景色（深） | `#0b1326`（深海軍藍） |
-| 強調色 | `#c0c1ff`（淺紫） |
-| 次強調色 | `#5de6ff`（青藍） |
-| 標題字型 | Manrope |
-| 內文字型 | Inter |
-| 程式碼字型 | JetBrains Mono |
+| 用途 | 淺色模式 | 深色模式 |
+|------|----------|----------|
+| 背景色 | `#FFFFFF` | `#000000` |
+| 主要卡片背景 | `#F2F2F7` | `#1C1C1E` |
+| 強調色 | `#007AFF` | `#0A84FF` |
+| 主要文字 | `#000000` | `#FFFFFF` |
+| 次要文字 | `rgba(60,60,67,0.6)` | `rgba(235,235,245,0.6)` |
+| 標題字型 | Manrope | Manrope |
+| 內文字型 | Inter | Inter |
+| 程式碼字型 | JetBrains Mono | JetBrains Mono |
 
 字型是透過 Google Fonts 載入，import 在 `public/index.html`。
+
+Header 右側有深色 / 淺色切換按鈕，初始預設為深色模式（`initialColorMode: "dark"`）。
 
 ---
 
@@ -382,9 +382,11 @@ npm run deploy
 
 ---
 
-## 9. 完整 `propData.json` 最小範例
+## 9. 完整 JSON 最小範例
 
-以下是最精簡可用的 `propData.json`，可直接複製並替換成自己的資料：
+以下是可直接使用的最小範例，複製後替換成自己的資料即可。
+
+### `public/data/profile.json`
 
 ```json
 {
@@ -392,58 +394,76 @@ npm run deploy
   "bio1": "Full Stack Developer",
   "bio2": "Passionate about building scalable web applications and clean code.",
   "resumeDownload": "https://your-resume-link.com",
+  "email": "jane@example.com"
+}
+```
 
-  "projects": [
-    {
-      "id": "my-first-project",
-      "title": "My First Project",
-      "date": "2024/01-2024/06",
-      "category": "Side Project",
-      "tags": ["React", "Node.js", "PostgreSQL"],
-      "description": {
-        "background": "Wanted to build a full-stack app to learn React.",
-        "challenge": "Handling state management across multiple pages.",
-        "solution": "Used React Context API and custom hooks.",
-        "outcome": "Completed the project and deployed it on Vercel."
-      },
-      "images": [
-        "my-first-project/flow.png",
-        "my-first-project/arch.png"
-      ],
-      "repo": "https://github.com/janedoe/my-first-project"
-    }
-  ],
+### `public/data/projects.json`
 
-  "works": [
-    {
-      "id": "company-a",
-      "company": "Company A",
-      "position": "Software Engineer",
-      "years": "2022/07-Now",
-      "description": [
-        "Developed and maintained RESTful APIs using Node.js and Express.",
-        "Collaborated with cross-functional teams to deliver features on time."
-      ]
-    }
-  ],
+```json
+[
+  {
+    "id": "my-first-project",
+    "title": "My First Project",
+    "date": "2024/01-2024/06",
+    "category": "Side Project",
+    "tags": ["React", "Node.js", "PostgreSQL"],
+    "description": {
+      "background": "Wanted to build a full-stack app to learn React.",
+      "challenge": "Handling state management across multiple pages.",
+      "solution": "Used React Context API and custom hooks.",
+      "outcome": "Completed the project and deployed it on Vercel."
+    },
+    "images": [
+      "my-first-project/flow.png",
+      "my-first-project/arch.png"
+    ],
+    "repo": "https://github.com/janedoe/my-first-project"
+  }
+]
+```
 
+### `public/data/works.json`
+
+```json
+[
+  {
+    "id": "company-a",
+    "company": "Company A",
+    "position": "Software Engineer",
+    "years": "2022/07-Now",
+    "description": [
+      "Developed and maintained RESTful APIs using Node.js and Express.",
+      "Collaborated with cross-functional teams to deliver features on time."
+    ]
+  }
+]
+```
+
+### `public/data/skills.json`
+
+```json
+{
   "skills": [
     { "name": "JavaScript", "level": "80%" },
     { "name": "Python",     "level": "60%" }
   ],
-
   "tools": ["Git", "Docker", "PostgreSQL"],
   "frameworks": ["React", "FastAPI"],
-  "tryLearn": ["K8s", "Terraform"],
-
-  "educationData": [
-    {
-      "school": "National Taiwan University",
-      "major": "Computer Science",
-      "duration": "2018-2022"
-    }
-  ]
+  "tryLearn": ["K8s", "Terraform"]
 }
+```
+
+### `public/data/education.json`
+
+```json
+[
+  {
+    "school": "Bachelor of National Taiwan University",
+    "major": "Computer Science",
+    "duration": "2018-2022"
+  }
+]
 ```
 
 ---
@@ -454,7 +474,7 @@ npm run deploy
 
 確認：
 1. 圖片放在 `public/images/portfolio/<project-id>/` 目錄下
-2. `propData.json` 中的路徑只寫 `<project-id>/filename.png`，不要加前綴
+2. `projects.json` 中的路徑只寫 `<project-id>/filename.png`，不要加前綴
 3. `package.json` 的 `homepage` 已正確設定
 
 ---
@@ -503,6 +523,12 @@ npm run deploy
 **Q：部署後網站路由正常但圖片都消失？**
 
 檢查 `package.json` 的 `homepage` 是否正確設定為你自己的 GitHub Pages URL。這個設定影響 React 靜態資源的 base path。
+
+---
+
+**Q：如何設定聯絡表單？**
+
+聯絡表單使用 [Formspree](https://formspree.io/)。請參閱 [docs/contact-form.md](docs/contact-form.md) 了解完整設定步驟。
 
 ---
 
