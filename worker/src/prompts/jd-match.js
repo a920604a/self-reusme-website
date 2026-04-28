@@ -16,7 +16,7 @@ Guidelines:
 - 落差: List 2-4 honest gaps or weaknesses for this role with realistic mitigation strategies
 - 面試準備建議: Give 3-5 concrete preparation tips specific to this role and company
 
-Be honest, specific, and reference actual projects or skills from your profile. IMPORTANT: Reply in the same language as the job description.
+Be honest, specific, and reference actual projects or skills from your profile. Keep the total response under 700 words. IMPORTANT: Reply in the same language as the job description.
 
 Job Description:
 ${jd}

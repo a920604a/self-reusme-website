@@ -10,7 +10,7 @@ Requirements:
 - Paragraph 3: Highlight a relevant project or achievement
 - Paragraph 4: Call to action
 
-IMPORTANT: Reply in the same language as the job description. Output Markdown only, no extra commentary.
+IMPORTANT: Reply in the same language as the job description. Keep the cover letter under 350 words. Output Markdown only, no extra commentary.
 
 Job Description:
 ${jd}

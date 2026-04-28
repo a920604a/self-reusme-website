@@ -10,7 +10,7 @@ Requirements:
 - Use strong action verbs and quantified achievements
 - Highlight the most relevant projects from the candidate profile
 
-IMPORTANT: Reply in the same language as the job description. Output Markdown only, no extra commentary.
+IMPORTANT: Reply in the same language as the job description. Keep the total resume under 700 words. Output Markdown only, no extra commentary.
 
 Job Description:
 ${jd}

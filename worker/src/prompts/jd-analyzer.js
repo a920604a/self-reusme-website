@@ -8,7 +8,7 @@ export function assembleJDAnalyzerPrompt(docs, jdText) {
 ## Candidate Strengths for This Role
 ## Potential Gaps
 
-Be specific, concise, and reference actual projects or skills from the candidate profile. Reply in the same language as the job description.
+Be specific, concise, and reference actual projects or skills from the candidate profile. Keep the total response under 600 words. Reply in the same language as the job description.
 
 Job Description:
 ${jdText}

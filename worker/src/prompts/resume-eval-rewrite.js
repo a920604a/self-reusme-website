@@ -7,7 +7,7 @@ Focus only on dimensions with score below 7. For each weak dimension:
 1. Explain in one sentence what is lacking
 2. Provide a concrete rewrite example using content from the candidate's actual profile
 
-Format in Markdown with one ## section per weak dimension. Be direct — no generic advice.
+Format in Markdown with one ## section per weak dimension. Be direct — no generic advice. Keep the total response under 500 words.
 IMPORTANT: Reply in the same language as the job description if present in the scores, otherwise use English.
 
 Evaluation Scores:
