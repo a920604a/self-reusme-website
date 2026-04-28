@@ -1,7 +1,8 @@
 import { assembleQueryPrompt, MODEL as QUERY_MODEL } from './prompts/query.js';
 import { assembleJDAnalyzerPrompt, MODEL as JD_ANALYZER_MODEL } from './prompts/jd-analyzer.js';
 import { assembleJDMatchPrompt, MODEL as JD_MATCH_MODEL } from './prompts/jd-match.js';
-import { assembleJobApplyPrompt, MODEL as JOB_APPLY_MODEL } from './prompts/job-apply.js';
+import { assembleJobResumePrompt, MODEL as JOB_RESUME_MODEL } from './prompts/job-resume.js';
+import { assembleJobCoverPrompt, MODEL as JOB_COVER_MODEL } from './prompts/job-cover.js';
 import { assembleResumeEvalBasePrompt, MODEL as EVAL_BASE_MODEL } from './prompts/resume-eval-base.js';
 import { assembleResumeEvalJDPrompt, MODEL as EVAL_JD_MODEL } from './prompts/resume-eval-jd.js';
 import { assembleResumeEvalRewritePrompt, MODEL as EVAL_REWRITE_MODEL } from './prompts/resume-eval-rewrite.js';
@@ -233,7 +234,18 @@ async function handleJDMatch(request, env, origin) {
   });
 }
 
-async function handleJobApply(request, env, origin) {
+async function fetchCandidateProfile() {
+  const BASE = 'https://a920604a.github.io/self-reusme-website';
+  const [profile, works, projects, skills] = await Promise.all([
+    fetch(`${BASE}/data/profile.json`).then((r) => r.json()).catch(() => ({})),
+    fetch(`${BASE}/data/works.json`).then((r) => r.json()).catch(() => []),
+    fetch(`${BASE}/data/projects.json`).then((r) => r.json()).catch(() => []),
+    fetch(`${BASE}/data/skills.json`).then((r) => r.json()).catch(() => ({})),
+  ]);
+  return JSON.stringify({ profile, works, projects, skills }, null, 2);
+}
+
+async function handleJobResume(request, env, origin) {
   let body;
   try { body = await request.json(); } catch {
     return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
@@ -256,21 +268,48 @@ async function handleJobApply(request, env, origin) {
     });
   }
 
-  // Fetch candidate profile from static JSON files
-  const BASE = 'https://a920604a.github.io/self-reusme-website';
-  const [profile, works, projects, skills] = await Promise.all([
-    fetch(`${BASE}/data/profile.json`).then((r) => r.json()).catch(() => ({})),
-    fetch(`${BASE}/data/works.json`).then((r) => r.json()).catch(() => []),
-    fetch(`${BASE}/data/projects.json`).then((r) => r.json()).catch(() => []),
-    fetch(`${BASE}/data/skills.json`).then((r) => r.json()).catch(() => ({})),
-  ]);
-  const candidateProfile = JSON.stringify({ profile, works, projects, skills }, null, 2);
-
-  const prompt = assembleJobApplyPrompt(jd, matchSummary, candidateProfile);
-  const aiStream = await env.AI.run(JOB_APPLY_MODEL, {
+  const candidateProfile = await fetchCandidateProfile();
+  const prompt = assembleJobResumePrompt(jd, matchSummary, candidateProfile);
+  const aiStream = await env.AI.run(JOB_RESUME_MODEL, {
     messages: [{ role: 'user', content: prompt }],
     stream: true,
     max_tokens: 4096,
+  });
+
+  return new Response(aiStream, {
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', ...corsHeaders(origin) },
+  });
+}
+
+async function handleJobCover(request, env, origin) {
+  let body;
+  try { body = await request.json(); } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const { jd, matchSummary } = body;
+  if (!jd || !matchSummary || typeof jd !== 'string' || typeof matchSummary !== 'string') {
+    return new Response(JSON.stringify({ error: 'Missing required fields: jd, matchSummary' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env.RATE_LIMIT_KV, ip, RATE_LIMITS.applyJob);
+  if (rl.limited) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+      status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': String(rl.retryAfter), ...corsHeaders(origin) },
+    });
+  }
+
+  const candidateProfile = await fetchCandidateProfile();
+  const prompt = assembleJobCoverPrompt(jd, matchSummary, candidateProfile);
+  const aiStream = await env.AI.run(JOB_COVER_MODEL, {
+    messages: [{ role: 'user', content: prompt }],
+    stream: true,
+    max_tokens: 2048,
   });
 
   return new Response(aiStream, {
@@ -441,8 +480,10 @@ export default {
         response = await handleJDAnalysis(request, env, origin);
       } else if (url.pathname === '/match-jd') {
         response = await handleJDMatch(request, env, origin);
-      } else if (url.pathname === '/apply-job') {
-        response = await handleJobApply(request, env, origin);
+      } else if (url.pathname === '/apply-resume') {
+        response = await handleJobResume(request, env, origin);
+      } else if (url.pathname === '/apply-cover') {
+        response = await handleJobCover(request, env, origin);
       } else if (url.pathname === '/health-check') {
         response = await handleHealthCheck(request, env, origin);
       } else {
