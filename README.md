@@ -16,7 +16,12 @@ A personal portfolio and resume website built with React and Chakra UI, featurin
 - Contact form
 - Smooth scroll animations (Framer Motion)
 - Client-side routing with modern URL structure (BrowserRouter)
+- Language toggle (English / 繁體中文)
 - **AI Chat Widget** — floating chat assistant with real-time streaming RAG responses
+- **JD Analyzer** — public tool for recruiters to analyze candidate fit against a job description
+- **Private Workspace** (PIN-gated) — personal job application toolkit:
+  - *Job Wizard*: JD Match → customised Resume + Cover Letter → ZIP download
+  - *Resume Health Check*: quantified scoring (5 or 10 dimensions) + streaming improvement suggestions
 - Deploy to GitHub Pages with a single command
 
 ---
@@ -34,9 +39,10 @@ A personal portfolio and resume website built with React and Chakra UI, featurin
 | HTTP        | Axios                                                 |
 | Markdown    | react-markdown, remark-gfm, rehype-highlight          |
 | Deployment  | GitHub Pages (`gh-pages`)                             |
+| ZIP         | JSZip                                                 |
 | AI Backend  | Cloudflare Workers + Vectorize + Workers AI           |
-| LLM         | `@cf/meta/llama-3-8b-instruct` (streaming)            |
-| Embeddings  | `@cf/baai/bge-base-en-v1.5`                           |
+| LLM         | llama-3.2-3b / llama-3.1-8b / llama-3.3-70b-fp8      |
+| Embeddings  | `@cf/baai/bge-m3` (1024 dims)                         |
 
 ---
 
@@ -71,11 +77,16 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 │   ├── App.js               # Root component, fetches data on mount
 │   ├── theme.js             # Chakra UI theme (colors, fonts)
 │   ├── index.css            # CSS variables
-│   ├── components/          # UI components (including FloatingChatWidget)
-│   ├── hooks/               # useStreamingChat, useSubmit
-│   └── context/             # Alert/toast context
+│   ├── components/          # UI components (FloatingChatWidget, JDAnalyzer, PinGate, …)
+│   ├── pages/               # AILabPage, WorkspacePage
+│   ├── hooks/               # useStreamingChat, useJDMatch, useJobApply, useHealthCheck, …
+│   ├── context/             # LocaleContext (i18n)
+│   └── i18n/                # en.js, zh.js
 ├── worker/
-│   ├── src/index.js         # Cloudflare Worker — RAG pipeline + streaming
+│   ├── src/
+│   │   ├── index.js         # Worker entry — routes, CORS, error handling
+│   │   ├── rateLimiter.js   # Centralised rate limit config + checkRateLimit()
+│   │   └── prompts/         # One file per endpoint: model ID + prompt assembly
 │   ├── scripts/ingest.js    # One-time Vectorize indexing script
 │   └── wrangler.toml        # Cloudflare Worker config
 ├── docs/
