@@ -32,11 +32,11 @@ const Header = ({ email }) => {
   const drawerBorder = useColorModeValue("rgba(60,60,67,0.29)", "rgba(84,84,88,0.65)");
 
   const navItems = [
-    { label: t('nav.home'),         to: "/",                 anchor: "" },
-    { label: t('nav.projects'),     to: "/#projects",        anchor: "projects" },
-    { label: t('nav.experience'),   to: "/#work-experience", anchor: "work-experience" },
-    { label: t('nav.skills'),       to: "/#skills",          anchor: "skills" },
-    { label: t('nav.jdAnalyzer'),  to: "/jd-analyzer",      anchor: "jd-analyzer" },
+    { label: t('nav.home'),       to: "/",          anchor: "" },
+    { label: t('nav.projects'),   to: "/#projects", anchor: "projects" },
+    { label: t('nav.experience'), to: "/#work-experience", anchor: "work-experience" },
+    { label: t('nav.skills'),     to: "/#skills",   anchor: "skills" },
+    { label: t('nav.aiLab'),      to: "/ai-lab",    anchor: "ai-lab" },
   ];
 
   const scrollTo = (anchor) => {

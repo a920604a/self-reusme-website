@@ -15,6 +15,8 @@ import EducationSection from "./components/EducationSection";
 import Footer from "./components/Footer";
 import FloatingChatWidget from "./components/FloatingChatWidget";
 import JDAnalyzer from "./components/JDAnalyzer";
+import AILabPage from "./pages/AILabPage";
+import WorkspacePage from "./pages/WorkspacePage";
 import axios from "axios";
 import { AlertProvider } from "./context/alertContext";
 import { LocaleProvider } from "./context/LocaleContext";
@@ -32,12 +34,13 @@ class App extends Component {
 
 
   loadData = () => {
+    const base = process.env.PUBLIC_URL || '';
     Promise.all([
-      axios.get("./data/profile.json"),
-      axios.get("./data/projects.json"),
-      axios.get("./data/works.json"),
-      axios.get("./data/skills.json"),
-      axios.get("./data/education.json"),
+      axios.get(`${base}/data/profile.json`),
+      axios.get(`${base}/data/projects.json`),
+      axios.get(`${base}/data/works.json`),
+      axios.get(`${base}/data/skills.json`),
+      axios.get(`${base}/data/education.json`),
     ])
       .then(([profile, projectsRes, worksRes, skillsRes, educationRes]) => {
         const works = worksRes.data.map((work, index) => ({
@@ -165,6 +168,18 @@ class App extends Component {
                 <Route
                   path="/jd-analyzer"
                   element={<JDAnalyzer projectIds={(data?.projects || []).map(p => p.id)} />}
+                />
+                <Route
+                  path="/ai-lab"
+                  element={<AILabPage />}
+                />
+                <Route
+                  path="/ai-lab/workspace"
+                  element={<WorkspacePage />}
+                />
+                <Route
+                  path="/workspace"
+                  element={<WorkspacePage />}
                 />
                 <Route
                   path="*"

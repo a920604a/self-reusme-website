@@ -4,7 +4,7 @@ const en = {
     projects: 'Projects',
     experience: 'Experience',
     skills: 'Skills',
-    jdAnalyzer: 'JD Analyzer',
+    aiLab: 'AI Lab',
     connect: 'Connect',
   },
   landing: {
@@ -65,6 +65,15 @@ const en = {
     stop: 'Stop',
     clearTitle: 'Clear chat',
     clear: 'Clear',
+  },
+  aiLab: {
+    title: 'AI Lab',
+    subtitle: 'AI-powered tools built into this portfolio. Explore how my experience matches your needs.',
+    jdAnalyzerDesc: 'Paste a job description to instantly analyze how my experience, projects, and skills align with your requirements. Powered by Retrieval-Augmented Generation.',
+    openJDAnalyzer: 'Open JD Analyzer',
+    pinLabel: 'Enter PIN',
+    pinError: 'Incorrect PIN',
+    devMode: 'Developer Mode',
   },
   jdAnalyzer: {
     badge: 'AI-Powered Matching',

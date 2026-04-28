@@ -4,7 +4,7 @@ const zh = {
     projects: '專案',
     experience: '經歷',
     skills: '技能',
-    jdAnalyzer: 'JD 分析器',
+    aiLab: 'AI Lab',
     connect: '聯絡我',
   },
   landing: {
@@ -65,6 +65,15 @@ const zh = {
     stop: '停止',
     clearTitle: '清除對話',
     clear: '清除',
+  },
+  aiLab: {
+    title: 'AI Lab',
+    subtitle: 'AI 驅動的工具，內建於此作品集。探索我的經歷如何符合你的需求。',
+    jdAnalyzerDesc: '貼上職缺描述，立即分析我的經歷、專案與技能的契合程度。由檢索增強生成（RAG）技術驅動。',
+    openJDAnalyzer: '開啟 JD 分析器',
+    pinLabel: '輸入 PIN',
+    pinError: 'PIN 錯誤',
+    devMode: '開發者模式',
   },
   jdAnalyzer: {
     badge: 'AI 動態分析',
