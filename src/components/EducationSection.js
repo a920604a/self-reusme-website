@@ -1,7 +1,9 @@
 import React from "react";
 import { Box, VStack, Heading, Text, SimpleGrid, useColorModeValue } from "@chakra-ui/react";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const EducationSection = ({ educationData }) => {
+  const { t } = useLocaleContext();
   const bgSection    = useColorModeValue("#F2F2F7", "#1C1C1E");
   const bgElevated   = useColorModeValue("#FFFFFF", "#2C2C2E");
   const labelPrimary = useColorModeValue("#000000", "#FFFFFF");
@@ -24,7 +26,7 @@ const EducationSection = ({ educationData }) => {
             fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
             textTransform="uppercase" mb={3} style={{ color: accent }}
           >
-            Academic
+            {t('education.eyebrow') || 'Academic'}
           </Text>
           <Heading
             as="h2"
@@ -33,7 +35,7 @@ const EducationSection = ({ educationData }) => {
             style={{ color: labelPrimary }}
             id="education-section"
           >
-            Education
+            {t('education.title') || 'Education'}
           </Heading>
         </Box>
 

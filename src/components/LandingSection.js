@@ -1,8 +1,10 @@
 import React from "react";
 import { Avatar, Heading, Text, Button, VStack, Box, Badge, useColorModeValue } from "@chakra-ui/react";
 import { FaDownload } from "react-icons/fa";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => {
+  const { t } = useLocaleContext();
   const bgCanvas    = useColorModeValue("#FFFFFF", "#000000");
   const labelPrimary = useColorModeValue("#000000", "#FFFFFF");
   const labelSecond  = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
@@ -38,7 +40,7 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => {
       <Box
         borderRadius="full"
         p="3px"
-        className="editorial-gradient"
+        className="accent-gradient"
         display="inline-block"
       >
         <Avatar
@@ -117,7 +119,7 @@ const LandingSection = ({ greeting, bio1, bio2, resumeDownload }) => {
         }}
         transition="all 0.2s ease"
       >
-        Download Resume
+        {t('landing.downloadResume')}
       </Button>
     </VStack>
   </Box>

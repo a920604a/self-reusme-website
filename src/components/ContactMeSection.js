@@ -8,8 +8,10 @@ import * as Yup from "yup";
 import useSubmit from "../hooks/useSubmit";
 import { useAlertContext } from "../context/alertContext";
 import { useColorModeValue } from "@chakra-ui/react";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const ContactMeSection = () => {
+  const { t } = useLocaleContext();
   const { isLoading, response, submit } = useSubmit();
   const { onOpen } = useAlertContext();
   const bgCanvas    = useColorModeValue("#FFFFFF", "#000000");
@@ -76,7 +78,7 @@ const ContactMeSection = () => {
             fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
             textTransform="uppercase" mb={3} style={{ color: accent }}
           >
-            Get in Touch
+            {t('contact.eyebrow') || 'Get in Touch'}
           </Text>
           <Heading
             as="h2"
@@ -84,13 +86,13 @@ const ContactMeSection = () => {
             fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
             style={{ color: labelPrimary }}
           >
-            Contact Me
+            {t('contact.title') || 'Contact Me'}
           </Heading>
           <Text
             mt={3} fontFamily="var(--font-body)" fontSize="sm"
             style={{ color: labelSecond }}
           >
-            Have a project in mind? Let's talk.
+            {t('contact.subtitle') || "Have a project in mind? Let's talk."}
           </Text>
         </Box>
 
@@ -106,17 +108,17 @@ const ContactMeSection = () => {
             <VStack spacing={5}>
               <SimpleGrid columns={{ base: 1, md: 2 }} spacing={5} w="100%">
                 <FormControl isInvalid={!!formik.errors.firstName && formik.touched.firstName}>
-                  <FormLabel {...labelStyle}>Name</FormLabel>
+                  <FormLabel {...labelStyle}>{t('contact.nameLabel') || 'Name'}</FormLabel>
                   <Input
                     id="firstName" name="firstName"
-                    placeholder="Your name"
+                    placeholder={t('contact.namePlaceholder') || "Your name"}
                     {...formik.getFieldProps("firstName")}
                     {...inputStyle}
                   />
                   <FormErrorMessage fontSize="xs">{formik.errors.firstName}</FormErrorMessage>
                 </FormControl>
                 <FormControl isInvalid={!!formik.errors.email && formik.touched.email}>
-                  <FormLabel {...labelStyle}>Email</FormLabel>
+                  <FormLabel {...labelStyle}>{t('contact.emailLabel') || 'Email'}</FormLabel>
                   <Input
                     id="email" name="email" type="email"
                     placeholder="your@email.com"
@@ -128,20 +130,20 @@ const ContactMeSection = () => {
               </SimpleGrid>
 
               <FormControl w="100%">
-                <FormLabel {...labelStyle}>Subject</FormLabel>
+                <FormLabel {...labelStyle}>{t('contact.subjectLabel') || 'Subject'}</FormLabel>
                 <Input
                   id="subject" name="subject"
-                  placeholder="What's this about?"
+                  placeholder={t('contact.subjectPlaceholder') || "What's this about?"}
                   {...formik.getFieldProps("subject")}
                   {...inputStyle}
                 />
               </FormControl>
 
               <FormControl isInvalid={!!formik.errors.comment && formik.touched.comment} w="100%">
-                <FormLabel {...labelStyle}>Message</FormLabel>
+                <FormLabel {...labelStyle}>{t('contact.messageLabel') || 'Message'}</FormLabel>
                 <Textarea
                   id="comment" name="comment"
-                  placeholder="Tell me about your project..."
+                  placeholder={t('contact.messagePlaceholder') || "Tell me about your project..."}
                   rows={6}
                   resize="vertical"
                   {...formik.getFieldProps("comment")}
@@ -166,7 +168,7 @@ const ContactMeSection = () => {
                 _hover={{ opacity: 0.9, transform: "translateY(-1px)" }}
                 transition="all 0.2s"
               >
-                Send Message
+                {t('contact.submit') || 'Send Message'}
               </Button>
             </VStack>
           </form>

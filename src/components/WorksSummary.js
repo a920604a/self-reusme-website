@@ -4,8 +4,10 @@ import {
   Link as ChakraLink, useColorModeValue,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const WorksSummary = ({ works }) => {
+  const { t } = useLocaleContext();
   const navigate = useNavigate();
   const bgCanvas    = useColorModeValue("#FFFFFF", "#000000");
   const bgElevated  = useColorModeValue("#FFFFFF", "#2C2C2E");
@@ -27,14 +29,14 @@ const WorksSummary = ({ works }) => {
             fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
             textTransform="uppercase" mb={3} style={{ color: accent }}
           >
-            Career
+            {t('works.eyebrow') || 'Career'}
           </Text>
           <Heading
             fontFamily="var(--font-headline)" fontWeight="800"
             fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
             style={{ color: labelPrimary }} id="work-experience-section"
           >
-            Work Experience
+            {t('works.title') || 'Work Experience'}
           </Heading>
         </Box>
 
@@ -134,7 +136,7 @@ const WorksSummary = ({ works }) => {
                     _hover={{ color: labelPrimary, textDecoration: "none" }}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    View Details →
+                    {t('works.viewDetails') || 'View Details →'}
                   </ChakraLink>
                 </Box>
               </Flex>

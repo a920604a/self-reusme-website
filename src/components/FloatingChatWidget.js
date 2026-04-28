@@ -6,6 +6,7 @@ import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import { useColorModeValue } from '@chakra-ui/react';
 import useStreamingChat from '../hooks/useStreamingChat';
+import { useLocaleContext } from '../context/LocaleContext';
 
 const SUGGESTED_QUESTIONS = [
   'Tell me about your recent projects',
@@ -130,6 +131,7 @@ function ChatMessage({ message, isStreaming, isLast, projectIds }) {
 }
 
 function FloatingChatWidget({ projectIds = [] }) {
+  const { t } = useLocaleContext();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const { messages, isStreaming, sendMessage, clearMessages, cancelStreaming } = useStreamingChat();
@@ -266,17 +268,17 @@ function FloatingChatWidget({ projectIds = [] }) {
               </div>
               <div>
                 <div style={{ color: labelPrimary, fontSize: '14px', fontWeight: 600, fontFamily: 'var(--font-headline)' }}>
-                  Ask me anything
+                  {t('chat.title') || 'Ask me anything'}
                 </div>
                 <div style={{ color: labelSecond, fontSize: '11px', fontFamily: 'var(--font-label)' }}>
-                  About Yu-An's portfolio
+                  {t('chat.subtitle') || "About Yu-An's portfolio"}
                 </div>
               </div>
               <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                 {isStreaming && (
                   <button
                     onClick={cancelStreaming}
-                    title="Stop generating"
+                    title={t('chat.stopTitle') || "Stop generating"}
                     style={{
                       background: 'none',
                       border: 'none',
@@ -288,13 +290,13 @@ function FloatingChatWidget({ projectIds = [] }) {
                       borderRadius: '4px',
                     }}
                   >
-                    Stop
+                    {t('chat.stop') || 'Stop'}
                   </button>
                 )}
                 {messages.length > 0 && !isStreaming && (
                   <button
                     onClick={clearMessages}
-                    title="Clear chat"
+                    title={t('chat.clearTitle') || "Clear chat"}
                     style={{
                       background: 'none',
                       border: 'none',
@@ -308,7 +310,7 @@ function FloatingChatWidget({ projectIds = [] }) {
                     onMouseEnter={(e) => (e.currentTarget.style.color = '#ff6b6b')}
                     onMouseLeave={(e) => (e.currentTarget.style.color = labelSecond)}
                   >
-                    Clear
+                    {t('chat.clear') || 'Clear'}
                   </button>
                 )}
                 <div
@@ -338,7 +340,7 @@ function FloatingChatWidget({ projectIds = [] }) {
                 <div style={{ textAlign: 'center', paddingTop: '16px' }}>
                   <div style={{ fontSize: '28px', marginBottom: '8px' }}>👋</div>
                   <div style={{ color: labelSecond, fontSize: '13px', marginBottom: '16px', fontFamily: 'var(--font-body)' }}>
-                    Hi! I can answer questions about Yu-An's experience, projects, and skills.
+                    {t('chat.welcome') || "Hi! I can answer questions about Yu-An's experience, projects, and skills."}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {SUGGESTED_QUESTIONS.map((q) => (
@@ -396,7 +398,7 @@ function FloatingChatWidget({ projectIds = [] }) {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask a question... (Enter to send)"
+                placeholder={t('chat.placeholder') || "Ask a question... (Enter to send)"}
                 rows={1}
                 disabled={isStreaming}
                 style={{

@@ -3,7 +3,7 @@ import { extendTheme } from "@chakra-ui/react";
 const theme = extendTheme({
   config: {
     initialColorMode: "dark",
-    useSystemColorMode: false,
+    useSystemColorMode: true,
   },
   fonts: {
     heading: "'Manrope', ui-sans-serif, system-ui, sans-serif",

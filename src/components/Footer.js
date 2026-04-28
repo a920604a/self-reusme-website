@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Flex, Text, HStack, Link as ChakraLink, useColorModeValue } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedin, faMedium } from "@fortawesome/free-brands-svg-icons";
@@ -16,6 +17,7 @@ const Footer = () => {
   const borderColor   = useColorModeValue("rgba(60,60,67,0.29)", "rgba(84,84,88,0.65)");
   const accent        = useColorModeValue("#007AFF", "#0A84FF");
   const labelTertiary = useColorModeValue("rgba(60,60,67,0.3)", "rgba(235,235,245,0.3)");
+  const devModeColor  = useColorModeValue("rgba(60,60,67,0.55)", "rgba(235,235,245,0.5)");
 
   return (
     <Box as="footer" bg={bgFooter} borderTop="1px solid" borderColor={borderColor} py={10}>
@@ -87,6 +89,25 @@ const Footer = () => {
           </button>
         </HStack>
       </Flex>
+
+      {/* Developer Mode — bottom center, low-key */}
+      <Box textAlign="center" pt={6}>
+        <RouterLink
+          to="/ai-lab/workspace"
+          style={{
+            fontSize: "11px",
+            color: devModeColor,
+            fontFamily: "var(--font-label)",
+            letterSpacing: "0.15em",
+            textDecoration: "none",
+            textTransform: "uppercase",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = accent; }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = devModeColor; }}
+        >
+          Developer Mode
+        </RouterLink>
+      </Box>
     </Box>
   );
 };

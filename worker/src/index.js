@@ -1,3 +1,12 @@
+import { assembleQueryPrompt, MODEL as QUERY_MODEL } from './prompts/query.js';
+import { assembleJDAnalyzerPrompt, MODEL as JD_ANALYZER_MODEL } from './prompts/jd-analyzer.js';
+import { assembleJDMatchPrompt, MODEL as JD_MATCH_MODEL } from './prompts/jd-match.js';
+import { assembleJobApplyPrompt, MODEL as JOB_APPLY_MODEL } from './prompts/job-apply.js';
+import { assembleResumeEvalBasePrompt, MODEL as EVAL_BASE_MODEL } from './prompts/resume-eval-base.js';
+import { assembleResumeEvalJDPrompt, MODEL as EVAL_JD_MODEL } from './prompts/resume-eval-jd.js';
+import { assembleResumeEvalRewritePrompt, MODEL as EVAL_REWRITE_MODEL } from './prompts/resume-eval-rewrite.js';
+import { checkRateLimit, RATE_LIMITS } from './rateLimiter.js';
+
 const ALLOWED_ORIGINS = [
   'https://a920604a.github.io',
   'http://localhost:3000',
@@ -26,17 +35,68 @@ async function sha256(text) {
     .join('');
 }
 
-function assemblePrompt(docs, query) {
-  const context = docs.length > 0 ? docs.join('\n\n') : 'No specific context found.';
-  return `You are an AI assistant for a software engineer's personal portfolio website. Answer questions about the engineer's projects, work experience, and skills based on the context below. Be concise, helpful, and professional. If the context doesn't cover the question, answer based on general knowledge. IMPORTANT: Always reply in the same language the user used.
 
-Context:
-${context}
+async function handleJDAnalysis(request, env, origin) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
 
-User: ${query}
+  const { jd } = body;
+  if (!jd || typeof jd !== 'string' || jd.trim().length === 0) {
+    return new Response(JSON.stringify({ error: 'JD text is required' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+  if (jd.length > 5000) {
+    return new Response(JSON.stringify({ error: 'JD text too long (max 5000 chars)' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
 
-Answer:`;
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env.RATE_LIMIT_KV, ip, RATE_LIMITS.analyzeJD);
+  if (rl.limited) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+      status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': String(rl.retryAfter), ...corsHeaders(origin) },
+    });
+  }
+
+  // 1. Embed JD
+  const embedResult = await env.AI.run('@cf/baai/bge-m3', { text: jd.slice(0, 2000) });
+  const queryVector = embedResult.data[0];
+
+  // 2. Vector search (topK=8)
+  const searchResult = await env.VECTORIZE.query(queryVector, { topK: 8, returnMetadata: 'all' });
+  const docs = (searchResult.matches || [])
+    .filter((m) => m.metadata?.text)
+    .map((m) => m.metadata.text);
+
+  // 3. Build prompt
+  const prompt = assembleJDAnalyzerPrompt(docs, jd);
+
+  // 4. Stream LLM
+  const aiStream = await env.AI.run(JD_ANALYZER_MODEL, {
+    messages: [{ role: 'user', content: prompt }],
+    stream: true,
+  });
+
+  return new Response(aiStream, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      ...corsHeaders(origin),
+    },
+  });
 }
+
 
 async function handleQuery(request, env, origin) {
   const { query } = await request.json();
@@ -55,17 +115,13 @@ async function handleQuery(request, env, origin) {
     });
   }
 
-  // Rate limiting: 20 requests per IP per minute
   const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
-  const rateLimitKey = `rl:${ip}:${Math.floor(Date.now() / 60000)}`;
-  const currentCount = parseInt((await env.RATE_LIMIT_KV.get(rateLimitKey)) || '0');
-  if (currentCount >= 20) {
+  const rl = await checkRateLimit(env.RATE_LIMIT_KV, ip, RATE_LIMITS.query);
+  if (rl.limited) {
     return new Response(JSON.stringify({ error: 'Rate limit exceeded. Please wait a minute.' }), {
-      status: 429,
-      headers: { 'Content-Type': 'application/json', 'Retry-After': '60' },
+      status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': String(rl.retryAfter) },
     });
   }
-  await env.RATE_LIMIT_KV.put(rateLimitKey, String(currentCount + 1), { expirationTtl: 120 });
 
   analytics.track('query_sent', { query });
 
@@ -100,10 +156,10 @@ async function handleQuery(request, env, origin) {
     .map((m) => m.metadata.text);
 
   // 3. Build prompt
-  const prompt = assemblePrompt(docs, query);
+  const prompt = assembleQueryPrompt(docs, query);
 
   // 4. Stream LLM
-  const aiStream = await env.AI.run('@cf/meta/llama-3-8b-instruct', {
+  const aiStream = await env.AI.run(QUERY_MODEL, {
     messages: [{ role: 'user', content: prompt }],
     stream: true,
   });
@@ -131,6 +187,234 @@ async function handleQuery(request, env, origin) {
   });
 }
 
+async function handleJDMatch(request, env, origin) {
+  let body;
+  try { body = await request.json(); } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const { jd } = body;
+  if (!jd || typeof jd !== 'string' || jd.trim().length === 0) {
+    return new Response(JSON.stringify({ error: 'JD text is required' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+  if (jd.length > 5000) {
+    return new Response(JSON.stringify({ error: 'JD text too long (max 5000 chars)' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env.RATE_LIMIT_KV, ip, RATE_LIMITS.matchJD);
+  if (rl.limited) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+      status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': String(rl.retryAfter), ...corsHeaders(origin) },
+    });
+  }
+
+  const embedResult = await env.AI.run('@cf/baai/bge-m3', { text: jd.slice(0, 2000) });
+  const queryVector = embedResult.data[0];
+  const searchResult = await env.VECTORIZE.query(queryVector, { topK: 8, returnMetadata: 'all' });
+  const docs = (searchResult.matches || []).filter((m) => m.metadata?.text).map((m) => m.metadata.text);
+
+  const prompt = assembleJDMatchPrompt(docs, jd);
+  const aiStream = await env.AI.run(JD_MATCH_MODEL, {
+    messages: [{ role: 'user', content: prompt }],
+    stream: true,
+    max_tokens: 4096,
+  });
+
+  return new Response(aiStream, {
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', ...corsHeaders(origin) },
+  });
+}
+
+async function handleJobApply(request, env, origin) {
+  let body;
+  try { body = await request.json(); } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const { jd, matchSummary } = body;
+  if (!jd || !matchSummary || typeof jd !== 'string' || typeof matchSummary !== 'string') {
+    return new Response(JSON.stringify({ error: 'Missing required fields: jd, matchSummary' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env.RATE_LIMIT_KV, ip, RATE_LIMITS.applyJob);
+  if (rl.limited) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+      status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': String(rl.retryAfter), ...corsHeaders(origin) },
+    });
+  }
+
+  // Fetch candidate profile from static JSON files
+  const BASE = 'https://a920604a.github.io/self-reusme-website';
+  const [profile, works, projects, skills] = await Promise.all([
+    fetch(`${BASE}/data/profile.json`).then((r) => r.json()).catch(() => ({})),
+    fetch(`${BASE}/data/works.json`).then((r) => r.json()).catch(() => []),
+    fetch(`${BASE}/data/projects.json`).then((r) => r.json()).catch(() => []),
+    fetch(`${BASE}/data/skills.json`).then((r) => r.json()).catch(() => ({})),
+  ]);
+  const candidateProfile = JSON.stringify({ profile, works, projects, skills }, null, 2);
+
+  const prompt = assembleJobApplyPrompt(jd, matchSummary, candidateProfile);
+  const aiStream = await env.AI.run(JOB_APPLY_MODEL, {
+    messages: [{ role: 'user', content: prompt }],
+    stream: true,
+    max_tokens: 4096,
+  });
+
+  return new Response(aiStream, {
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', ...corsHeaders(origin) },
+  });
+}
+
+async function handleHealthCheck(request, env, origin) {
+  let body;
+  try { body = await request.json(); } catch {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const { mode, jd } = body;
+  if (!mode || !['base', 'jd'].includes(mode)) {
+    return new Response(JSON.stringify({ error: 'mode must be "base" or "jd"' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+  if (mode === 'jd' && (!jd || typeof jd !== 'string' || jd.trim().length === 0)) {
+    return new Response(JSON.stringify({ error: 'JD text required for jd mode' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+  if (mode === 'jd' && jd.length > 5000) {
+    return new Response(JSON.stringify({ error: 'JD text too long (max 5000 chars)' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rl = await checkRateLimit(env.RATE_LIMIT_KV, ip, RATE_LIMITS.healthCheck);
+  if (rl.limited) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded. Try again later.' }), {
+      status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': String(rl.retryAfter), ...corsHeaders(origin) },
+    });
+  }
+
+  const BASE = 'https://a920604a.github.io/self-reusme-website';
+  const [profile, works, projects, skills] = await Promise.all([
+    fetch(`${BASE}/data/profile.json`).then((r) => r.json()).catch(() => ({})),
+    fetch(`${BASE}/data/works.json`).then((r) => r.json()).catch(() => []),
+    fetch(`${BASE}/data/projects.json`).then((r) => r.json()).catch(() => []),
+    fetch(`${BASE}/data/skills.json`).then((r) => r.json()).catch(() => ({})),
+  ]);
+
+  // Compact summary to keep input tokens manageable for scoring calls
+  const candidateData = JSON.stringify({
+    name: profile.name,
+    bio: profile.bio,
+    skills: skills,
+    works: (works || []).map((w) => ({
+      company: w.company, role: w.role, period: w.period,
+      highlights: (w.highlights || w.bullets || []).slice(0, 3),
+    })),
+    projects: (projects || []).slice(0, 6).map((p) => ({
+      name: p.name, description: p.description,
+      tech: p.tech || p.techStack || [],
+    })),
+  });
+
+  function extractJSON(text) {
+    const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    // Direct parse
+    try { return JSON.parse(clean); } catch {}
+    // Extract first {...} block
+    const match = clean.match(/\{[\s\S]*\}/);
+    if (match) { try { return JSON.parse(match[0]); } catch {} }
+    throw new Error(`Cannot parse JSON from model output: ${text.slice(0, 300)}`);
+  }
+
+  async function scoringCall(prompt, model) {
+    const attempt = async () => {
+      const result = await env.AI.run(model, {
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: 2048,
+      });
+      const text = result.response ?? '';
+      return extractJSON(text);
+    };
+    try {
+      return await attempt();
+    } catch (e1) {
+      console.error('[health-check] scoring attempt 1 failed:', e1.message);
+      try {
+        return await attempt();
+      } catch (e2) {
+        console.error('[health-check] scoring attempt 2 failed:', e2.message);
+        throw e2;
+      }
+    }
+  }
+
+  let scores;
+  try {
+    const basePrompt = assembleResumeEvalBasePrompt(candidateData);
+    if (mode === 'base') {
+      scores = await scoringCall(basePrompt, EVAL_BASE_MODEL);
+    } else {
+      const jdPrompt = assembleResumeEvalJDPrompt(candidateData, jd);
+      const [baseScores, jdScores] = await Promise.all([
+        scoringCall(basePrompt, EVAL_BASE_MODEL),
+        scoringCall(jdPrompt, EVAL_JD_MODEL),
+      ]);
+      scores = { ...baseScores, ...jdScores };
+    }
+  } catch (err) {
+    console.error('[health-check] scoring failed:', err.message);
+    return new Response(JSON.stringify({ error: 'Scoring failed', detail: err.message }), {
+      status: 500, headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
+    });
+  }
+
+  const rewritePrompt = assembleResumeEvalRewritePrompt(JSON.stringify(scores, null, 2), candidateData);
+  const aiStream = await env.AI.run(EVAL_REWRITE_MODEL, {
+    messages: [{ role: 'user', content: rewritePrompt }],
+    stream: true,
+    max_tokens: 4096,
+  });
+
+  const { readable, writable } = new TransformStream();
+  const writer = writable.getWriter();
+  const encoder = new TextEncoder();
+
+  (async () => {
+    try {
+      await writer.write(encoder.encode(`data: ${JSON.stringify({ type: 'scores', data: scores })}\n\n`));
+      const reader = aiStream.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        await writer.write(value);
+      }
+    } finally {
+      await writer.close();
+    }
+  })();
+
+  return new Response(readable, {
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', ...corsHeaders(origin) },
+  });
+}
+
 export default {
   async fetch(request, env, ctx) {
     env.ctx = ctx;
@@ -148,9 +432,22 @@ export default {
       });
     }
 
+    const url = new URL(request.url);
+
     try {
-      const response = await handleQuery(request, env, origin);
-      Object.entries(headers).forEach(([k, v]) => response.headers.set(k, v));
+      let response;
+      if (url.pathname === '/analyze-jd') {
+        response = await handleJDAnalysis(request, env, origin);
+      } else if (url.pathname === '/match-jd') {
+        response = await handleJDMatch(request, env, origin);
+      } else if (url.pathname === '/apply-job') {
+        response = await handleJobApply(request, env, origin);
+      } else if (url.pathname === '/health-check') {
+        response = await handleHealthCheck(request, env, origin);
+      } else {
+        response = await handleQuery(request, env, origin);
+        Object.entries(headers).forEach(([k, v]) => response.headers.set(k, v));
+      }
       return response;
     } catch (err) {
       console.error('[worker error]', err);

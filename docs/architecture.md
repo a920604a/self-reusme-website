@@ -2,182 +2,188 @@
 
 ## 總覽
 
-本專案由兩個獨立部署的元件組成：部署在 GitHub Pages 的 React 靜態網站，以及在 Cloudflare Edge 執行 RAG + LLM 串流的 Cloudflare Worker。
+本專案由兩個獨立部署的元件組成：部署在 GitHub Pages 的 React 靜態網站，以及在 Cloudflare Edge 執行多條 AI pipeline 的 Cloudflare Worker。
 
 ```mermaid
 graph TB
     subgraph Browser["瀏覽器 (GitHub Pages)"]
         UI["React App"]
         Widget["FloatingChatWidget"]
-        Hook["useStreamingChat"]
-        UI --> Widget --> Hook
+        JDA["JDAnalyzer"]
+        WS["WorkspacePage\n(PIN-gated)"]
     end
 
     subgraph CF["Cloudflare Edge"]
         subgraph Runtime["Worker Runtime"]
             Worker["Cloudflare Worker\nportfolio-rag"]
-            Cache["Cache API\ncaches.default\n(built-in)"]
-            Worker -- "③ 讀取 / 寫入快取" --> Cache
+            Cache["Cache API\n(query 回應快取)"]
+            RL["rateLimiter.js\n集中管理各 endpoint 限流"]
         end
 
         subgraph Bindings["Bindings"]
-            KV["KV\nRATE_LIMIT_KV"]
-            VZ["Vectorize\nportfolio-index"]
+            KV["KV: RATE_LIMIT_KV"]
+            VZ["Vectorize: portfolio-index"]
         end
 
         subgraph AIService["Workers AI"]
-            Embed["bge-m3\n(embedding)"]
-            LLM["llama-3-8b-instruct\n(generation)"]
+            Embed["bge-m3 (embedding)"]
+            LLM_S["llama-3.2-3b (chat)"]
+            LLM_M["llama-3.1-8b (analyze-jd / health-check scoring)"]
+            LLM_L["llama-3.3-70b-fp8 (match-jd / apply-job / health-check rewrite)"]
         end
-
-        Worker -- "② rate limit 計數" --> KV
-        Worker -- "⑤ 向量搜尋 topK=5" --> VZ
-        Worker -- "④ query → vector" --> Embed
-        Worker -- "⑥ context + query → 串流回答" --> LLM
     end
 
-    Hook -- "① POST /query" --> Worker
-    Worker -- "⑦ SSE stream (逐 token)" --> Hook
-```
+    Widget -->|POST /query| Worker
+    JDA -->|POST /analyze-jd| Worker
+    WS -->|POST /match-jd| Worker
+    WS -->|POST /apply-job| Worker
+    WS -->|POST /health-check| Worker
 
-| # | 從 | 到 | 說明 |
-|---|----|----|------|
-| ① | useStreamingChat | Worker | 使用者問題以 POST /query 送出 |
-| ② | Worker | KV | 每次請求先計數，超過 20次/分鐘回傳 429 |
-| ③ | Worker | Cache API | cache hit 直接回傳；miss 時回應後背景寫入 |
-| ④ | Worker | bge-m3 | 將問題轉為 1024 維向量 |
-| ⑤ | Worker | Vectorize | 以向量搜尋最相關的 top-5 chunk |
-| ⑥ | Worker | llama-3-8b | 組合 context + query，串流生成回答 |
-| ⑦ | Worker | useStreamingChat | 逐 token 以 SSE 格式回傳前端 |
+    Worker --> RL --> KV
+    Worker --> Embed --> VZ
+    Worker --> LLM_S & LLM_M & LLM_L
+    Worker --> Cache
+```
 
 ---
 
-## 使用服務一覽
+## Worker Endpoints
 
-### 前端（Frontend）
+| Endpoint | Model | 用途 | Rate Limit |
+|----------|-------|------|------------|
+| `POST /query` | llama-3.2-3b-instruct | Chat RAG，串流回答 | 20/IP/分鐘 |
+| `POST /analyze-jd` | llama-3.1-8b-instruct | JD 契合分析（招募方視角），串流 Markdown | 5/IP/小時 |
+| `POST /match-jd` | llama-3.3-70b-fp8-fast | JD 契合分析（求職者自用），串流 Markdown | 10/IP/小時 |
+| `POST /apply-job` | llama-3.3-70b-fp8-fast | 客製化履歷 + Cover Letter 生成，串流 | 10/IP/小時 |
+| `POST /health-check` | llama-3.1-8b (scoring) + llama-3.3-70b (rewrite) | 履歷量化評分 + 串流改寫建議（雙階段） | 50/IP/小時 |
 
-| 服務 | 角色 | 說明 |
-|------|------|------|
-| **GitHub Pages** | 靜態網站托管 | 部署 React build 產物，透過 GitHub Actions 自動化 CI/CD；使用 HashRouter 相容靜態托管限制 |
+### Rate Limiter
 
-### 後端（Backend — Cloudflare Edge）
-
-| 服務 | 角色 | 說明 |
-|------|------|------|
-| **Cloudflare Worker** (`portfolio-rag`) | API 伺服器 | 處理 `POST /query` 請求；串接 RAG pipeline；管理 CORS、錯誤處理、串流回傳 |
-| **Cloudflare Workers AI** | AI 推論 | 提供兩個模型：(1) `@cf/baai/bge-m3` 將文字轉為 1024 維向量；(2) `@cf/meta/llama-3-8b-instruct` 產生 LLM 回答並串流輸出 |
-| **Cloudflare Vectorize** (`portfolio-index`) | 向量資料庫 | 儲存履歷資料的 embedding（1024 維、cosine 相似度）；RAG query 時取回最相關的 top-5 chunk |
-| **Cloudflare KV** (`RATE_LIMIT_KV`) | Rate Limiting 儲存 | 以 `IP + 分鐘時間戳` 為 key，限制每個 IP 每分鐘最多 20 次請求，TTL 120 秒自動過期 |
-| **Cloudflare Cache API** (`caches.default`) | 回應快取 | 以 `sha256(query)` 為 cache key，命中時直接回傳快取 SSE stream；miss 時透過 stream tee + `waitUntil()` 在背景非同步存入，不影響首次回應延遲 |
+所有限流邏輯集中於 `worker/src/rateLimiter.js`，各 handler 統一呼叫 `checkRateLimit(kv, ip, RATE_LIMITS.<name>)`。調整限制只需修改 `RATE_LIMITS` 物件，不需改動各 handler。
 
 ---
 
 ## 前端架構
 
+### 路由
+
+| 路徑 | 元件 | 存取 |
+|------|------|------|
+| `/` | 主頁（所有 section） | 公開 |
+| `/projects` | 專案格狀列表 | 公開 |
+| `/projects/:id` | 專案詳情 | 公開 |
+| `/works/:id` | 工作詳情 | 公開 |
+| `/ai-lab` | AILabPage（AI 工具入口） | 公開 |
+| `/jd-analyzer` | JDAnalyzer（招募方使用） | 公開 |
+| `/ai-lab/workspace` | WorkspacePage（求職工具箱） | PIN 驗證 |
+| `/workspace` | WorkspacePage（同上） | PIN 驗證 |
+
 ### 元件樹
 
 ```mermaid
 graph TD
-    App["App.js\n載入資料、設定 Router"]
+    App["App.js\n載入資料、Router、LocaleProvider"]
 
-    App --> Router["HashRouter"]
-    Router --> Header
-    Router --> FloatingChatWidget
-    Router --> Routes
+    App --> Header["Header\n語言切換、導覽"]
+    App --> FloatingChatWidget
+    App --> Routes
 
-    Routes --> Home["/ 首頁"]
-    Routes --> Projects["/projects 所有專案"]
-    Routes --> ProjectDetail["/projects/:id 專案詳情"]
-    Routes --> WorkDetail["/works/:id 工作詳情"]
+    Routes --> Home["/"]
+    Routes --> AILab["/ai-lab → AILabPage"]
+    Routes --> JDA["/jd-analyzer → JDAnalyzer"]
+    Routes --> WS["/ai-lab/workspace → WorkspacePage"]
 
-    Home --> LandingSection["Hero 區塊"]
-    Home --> ProjectsCarousel["精選專案輪播"]
-    Home --> WorksSummary["工作經歷"]
-    Home --> SkillSection["技能"]
-    Home --> EducationSection["學歷"]
-    Home --> ContactMeSection["聯絡表單"]
-    Home --> Footer
+    WS --> PinGate["PinGate\nPIN 驗證（sessionStorage）"]
+    PinGate --> WorkspaceContent["WorkspaceContent\n頂層 Tab：Job Wizard / Health Check"]
 
-    FloatingChatWidget --> useStreamingChat["useStreamingChat (hook)"]
-    ContactMeSection --> useSubmit["useSubmit (hook)"]
+    WorkspaceContent --> JobWizard["Job Wizard\nStep1 JD Match → Step2 Apply → Step3 Release ZIP"]
+    WorkspaceContent --> HealthCheck["Resume Health Check\nMode A: 5 維度 / Mode B: 10 維度 + JD 比對"]
+
+    FloatingChatWidget --> useStreamingChat
+    JDA --> useJDAnalysis
+    JobWizard --> useJDMatch & useJobApply
+    HealthCheck --> useHealthCheck
 ```
 
-### 資料流
+### Hooks
 
-```mermaid
-sequenceDiagram
-    participant App
-    participant JSON as public/data/*.json
-    participant Components as 子元件
+| Hook | 對應 Endpoint | 說明 |
+|------|-------------|------|
+| `useStreamingChat` | `/query` | Chat 串流；history 存 localStorage |
+| `useJDAnalysis` | `/analyze-jd` | JD Analyzer 串流 |
+| `useJDMatch` | `/match-jd` | Workspace Step 1 串流 |
+| `useJobApply` | `/apply-job` | Step 2 串流；以 `<!-- RESUME_START -->` / `<!-- COVER_START -->` 分割兩份文件 |
+| `useHealthCheck` | `/health-check` | 雙階段 SSE：先解析 `{type:"scores"}` 事件更新分數面板，後續 token 為串流建議 |
 
-    App->>JSON: axios.get（mount 時並行請求）
-    JSON-->>App: profile, projects, works, skills, education
-    App->>App: 正規化並合併至 state
-    App->>Components: 以 props 傳遞
-```
+### i18n
 
-### 路由規則
-
-使用 `HashRouter`（`/#/` 形式），無需伺服器端路由設定，完全相容 GitHub Pages 靜態托管。
-
-| 路徑 | 元件 |
-|------|------|
-| `/` | 主頁 |
-| `/projects` | 所有專案格狀列表 |
-| `/projects/:id` | 專案詳情頁 |
-| `/works/:id` | 工作經歷詳情頁 |
+`LocaleContext` 提供 `{ locale, setLocale, t }` 給所有元件。語言檔位於 `src/i18n/en.js` 與 `src/i18n/zh.js`。Header 有語言切換按鈕。
 
 ---
 
 ## 後端架構（Cloudflare Worker）
 
-### RAG Pipeline
+### /query — Chat RAG Pipeline
 
 ```mermaid
 flowchart TD
-    Q["使用者輸入 Query"] --> CORS["CORS + OPTIONS 檢查"]
-    CORS --> CACHE{"快取命中？\nsha256(query)"}
-
-    CACHE -- "HIT" --> CACHED["直接回傳快取 SSE stream"]
-
-    CACHE -- "MISS" --> EMBED["1. 向量化 query\n@cf/baai/bge-m3\n→ float32[1024]"]
-    EMBED --> SEARCH["2. 向量搜尋\nVectorize.query(topK=5)\n→ 前 5 筆相關 chunk"]
-    SEARCH --> PROMPT["3. 組裝 prompt\nsystem + context + query"]
-    PROMPT --> LLM["4. 串流 LLM\n@cf/meta/llama-3-8b-instruct\nstream: true"]
-    LLM --> TEE["5. Tee stream"]
-    TEE --> CLIENT["回傳 ReadableStream\n給前端（SSE 格式）"]
-    TEE --> STORE["背景快取\nwaitUntil()"]
+    Q["POST /query"] --> RL["Rate Limit 20/min"]
+    RL --> CACHE{"Cache hit?\nsha256(query)"}
+    CACHE -- HIT --> CACHED["回傳快取 SSE stream"]
+    CACHE -- MISS --> EMBED["bge-m3 embed"]
+    EMBED --> VZ["Vectorize topK=5"]
+    VZ --> PROMPT["組裝 prompt"]
+    PROMPT --> LLM["llama-3.2-3b stream"]
+    LLM --> TEE["Tee stream"]
+    TEE --> CLIENT["SSE → 前端"]
+    TEE --> STORE["Cache waitUntil()"]
 ```
 
-### 串流協定
+### /health-check — 雙階段 SSE
 
 ```mermaid
 sequenceDiagram
-    participant FE as 前端 (useStreamingChat)
+    participant FE as useHealthCheck
     participant W as Worker
-    participant LLM as Workers AI (LLM)
+    participant AI as Workers AI
 
-    FE->>W: POST /query { query: "..." }
-    W->>LLM: run(llama-3-8b, { stream: true })
-    loop 逐 token 串流
-        LLM-->>W: data: {"response":"token"}\n\n
-        W-->>FE: data: {"response":"token"}\n\n
-        FE->>FE: 將 token 附加至訊息 state
+    FE->>W: POST /health-check { mode, jd? }
+    W->>AI: scoring call(s) — non-streaming
+    AI-->>W: JSON scores
+    W-->>FE: data: {"type":"scores","data":{...}}
+    W->>AI: rewrite call — streaming
+    loop token 串流
+        AI-->>W: data: {"response":"token"}
+        W-->>FE: data: {"response":"token"}
     end
-    LLM-->>W: data: [DONE]
     W-->>FE: data: [DONE]
-    FE->>FE: isStreaming = false
 ```
+
+### Prompt 模組
+
+每個 `worker/src/prompts/*.js` 匯出：
+- `MODEL` — Cloudflare Workers AI model ID
+- `assemble*Prompt(...)` — 組裝完整 prompt 字串
+
+| 檔案 | Model | 用途 |
+|------|-------|------|
+| `query.js` | llama-3.2-3b-instruct | Chat 問答 |
+| `jd-analyzer.js` | llama-3.1-8b-instruct | JD 分析（招募方） |
+| `jd-match.js` | llama-3.3-70b-fp8-fast | JD 契合（求職者） |
+| `job-apply.js` | llama-3.3-70b-fp8-fast | 履歷 + Cover Letter |
+| `resume-eval-base.js` | llama-3.1-8b-instruct | 5 維度 JSON 評分 |
+| `resume-eval-jd.js` | llama-3.1-8b-instruct | JD 比對額外 5 維度 JSON 評分 |
+| `resume-eval-rewrite.js` | llama-3.3-70b-fp8-fast | 串流改寫建議 |
 
 ---
 
 ## 資料與 Vectorize
 
-### Ingest Pipeline（首次設定 / 資料更新時手動執行）
+### Ingest Pipeline
 
 ```mermaid
 flowchart LR
-    subgraph Source["public/data/（資料來源）"]
+    subgraph Source["public/data/"]
         P["profile.json"]
         PR["projects.json"]
         W["works.json"]
@@ -185,78 +191,46 @@ flowchart LR
     end
 
     subgraph Script["worker/scripts/ingest.js"]
-        CHUNK["產生文字 chunk\ntitle + tags + description"]
-        EMBED["透過 REST API 向量化\n@cf/baai/bge-m3"]
-        UPSERT["以 NDJSON 格式 upsert\n至 Vectorize"]
+        CHUNK["產生 text chunk"]
+        EMBED["bge-m3 向量化"]
+        UPSERT["upsert → Vectorize"]
     end
 
-    subgraph VZ["Cloudflare Vectorize（向量資料庫）"]
-        IDX["portfolio-index\ndimensions: 1024\nmetric: cosine"]
-    end
-
-    P & PR & W & S --> CHUNK --> EMBED --> UPSERT --> IDX
+    P & PR & W & S --> CHUNK --> EMBED --> UPSERT --> IDX["portfolio-index\n1024 dims / cosine"]
 ```
 
-### 向量 ID 命名規則
-
-| 來源 | Vector ID |
-|------|-----------|
-| `projects.json` 各項目 | `project-{id}` |
-| `works.json` 各項目 | `work-{id}` |
-| `skills.json` | `skills` |
-| `profile.json` | `profile` |
-
-每個向量的 metadata 儲存 `{ text, type }`，供 Worker 在查詢時取出原始文字作為 context。
-
-詳細同步流程請參閱 [RAG_SYNC_GUIDE.md](./RAG_SYNC_GUIDE.md)。
+> `/health-check` 與 `/apply-job` 不使用 Vectorize，而是直接 fetch GitHub Pages 的 JSON 組裝 candidateData（避免 RAG topK 取樣不完整的問題）。
 
 ---
 
 ## 部署流程
 
-```mermaid
-flowchart LR
-    subgraph Dev["本機開發"]
-        CODE["程式碼異動"]
-        INGEST["node scripts/ingest.js\n（資料更新時執行）"]
-        WDEPLOY["wrangler deploy\n（Worker 異動時執行）"]
-    end
-
-    subgraph CI["GitHub Actions 自動化"]
-        PUSH["push to main"]
-        BUILD["npm run build\n注入 REACT_APP_WORKER_URL secret"]
-        GHPAGES["gh-pages branch"]
-    end
-
-    subgraph Prod["正式環境"]
-        GHP["GitHub Pages\na920604a.github.io/..."]
-        CFW["Cloudflare Worker\nportfolio-rag.*.workers.dev"]
-        VZI["Cloudflare Vectorize\nportfolio-index"]
-    end
-
-    CODE --> PUSH --> BUILD --> GHPAGES --> GHP
-    WDEPLOY --> CFW
-    INGEST --> VZI
-```
+| 元件 | 平台 | 觸發 |
+|------|------|------|
+| Frontend | GitHub Pages | push to `main`（GitHub Actions 自動） |
+| Worker | Cloudflare Workers | 手動 `wrangler deploy` |
+| Vectorize 資料 | Cloudflare Vectorize | 手動 `node scripts/ingest.js` |
 
 ### 環境變數
 
 | 變數 | 使用位置 | 用途 |
 |------|---------|------|
-| `REACT_APP_WORKER_URL` | GitHub Secret + `.env` | Worker URL，在 build 時打包進 React |
-| `CLOUDFLARE_API_TOKEN` | 本機 shell | ingest.js — 向量化 + upsert 到 Vectorize |
-| `CLOUDFLARE_ACCOUNT_ID` | 本機 shell | ingest.js — Cloudflare REST API 呼叫 |
+| `REACT_APP_WORKER_URL` | GitHub Secret + `.env` | Worker URL，build 時注入 React |
+| `CLOUDFLARE_API_TOKEN` | 本機 shell | ingest.js — 向量化 + upsert |
+| `CLOUDFLARE_ACCOUNT_ID` | 本機 shell | ingest.js — Cloudflare REST API |
 
 ---
 
 ## 關鍵設計決策
 
-**HashRouter 而非 BrowserRouter** — GitHub Pages 只提供單一 HTML 檔；hash 路由避免直接訪問子路徑時出現 404，無需伺服器端設定。
+**多模型分層策略** — 依任務複雜度選用不同大小的模型：短對話用 3B 省成本、結構化分析用 8B、長文件生成用 70B 保品質。
 
-**Cloudflare Workers 而非傳統伺服器** — 零冷啟動延遲、全球邊緣分散式執行，Vectorize 與 Workers AI 同在 Cloudflare 平台，向量化與搜尋的網路往返延遲極低。
+**集中化 Rate Limiter** — 所有限流邏輯收斂至 `rateLimiter.js`，調整限制不需修改各 handler，也不容易遺漏。
 
-**SSE 而非 WebSocket** — LLM token 串流只需伺服器→客戶端單向推送；SSE 是 HTTP 原生協定，透過標準 `fetch()` + `ReadableStream` 即可使用，不需額外協定開銷。
+**健檢雙階段 SSE** — `/health-check` 先送一個 `{type:"scores"}` 事件讓前端立即渲染分數面板，再串流改寫建議；前端不需輪詢，體驗與純串流相同。
 
-**Stream tee 快取** — LLM stream 被 tee 成兩份：一份立即回傳給客戶端保持串流體驗，另一份在背景以 `waitUntil()` 存入 `caches.default`，cache miss 時不增加任何延遲。
+**PinGate** — Workspace 頁面以 PIN 保護，PIN 驗證後存 `sessionStorage`，不需後端 session；適合個人工具不引入額外基礎設施。
 
-**`public/data/*.json` 作為唯一資料來源** — 相同的 JSON 檔案同時驅動前端 UI 與 RAG 知識庫，不存在內容重複或 UI 與 AI 之間的同步落差。
+**SSE 而非 WebSocket** — LLM token 串流只需伺服器→客戶端單向推送，SSE 透過標準 `fetch()` + `ReadableStream` 即可使用。
+
+**Stream tee 快取（/query）** — LLM stream tee 成兩份：一份即時回傳，另一份 `waitUntil()` 背景寫入 Cache API，不增加首次回應延遲。

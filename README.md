@@ -15,8 +15,13 @@ A personal portfolio and resume website built with React and Chakra UI, featurin
 - Education section
 - Contact form
 - Smooth scroll animations (Framer Motion)
-- Client-side routing with GitHub Pages compatibility (HashRouter)
+- Client-side routing with modern URL structure (BrowserRouter)
+- Language toggle (English / 繁體中文)
 - **AI Chat Widget** — floating chat assistant with real-time streaming RAG responses
+- **JD Analyzer** — public tool for recruiters to analyze candidate fit against a job description
+- **Private Workspace** (PIN-gated) — personal job application toolkit:
+  - *Job Wizard*: JD Match → customised Resume + Cover Letter → ZIP download
+  - *Resume Health Check*: quantified scoring (5 or 10 dimensions) + streaming improvement suggestions
 - Deploy to GitHub Pages with a single command
 
 ---
@@ -34,9 +39,10 @@ A personal portfolio and resume website built with React and Chakra UI, featurin
 | HTTP        | Axios                                                 |
 | Markdown    | react-markdown, remark-gfm, rehype-highlight          |
 | Deployment  | GitHub Pages (`gh-pages`)                             |
+| ZIP         | JSZip                                                 |
 | AI Backend  | Cloudflare Workers + Vectorize + Workers AI           |
-| LLM         | `@cf/meta/llama-3-8b-instruct` (streaming)            |
-| Embeddings  | `@cf/baai/bge-base-en-v1.5`                           |
+| LLM         | llama-3.2-3b / llama-3.1-8b / llama-3.3-70b-fp8      |
+| Embeddings  | `@cf/baai/bge-m3` (1024 dims)                         |
 
 ---
 
@@ -71,11 +77,16 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 │   ├── App.js               # Root component, fetches data on mount
 │   ├── theme.js             # Chakra UI theme (colors, fonts)
 │   ├── index.css            # CSS variables
-│   ├── components/          # UI components (including FloatingChatWidget)
-│   ├── hooks/               # useStreamingChat, useSubmit
-│   └── context/             # Alert/toast context
+│   ├── components/          # UI components (FloatingChatWidget, JDAnalyzer, PinGate, …)
+│   ├── pages/               # AILabPage, WorkspacePage
+│   ├── hooks/               # useStreamingChat, useJDMatch, useJobApply, useHealthCheck, …
+│   ├── context/             # LocaleContext (i18n)
+│   └── i18n/                # en.js, zh.js
 ├── worker/
-│   ├── src/index.js         # Cloudflare Worker — RAG pipeline + streaming
+│   ├── src/
+│   │   ├── index.js         # Worker entry — routes, CORS, error handling
+│   │   ├── rateLimiter.js   # Centralised rate limit config + checkRateLimit()
+│   │   └── prompts/         # One file per endpoint: model ID + prompt assembly
 │   ├── scripts/ingest.js    # One-time Vectorize indexing script
 │   └── wrangler.toml        # Cloudflare Worker config
 ├── docs/
@@ -251,6 +262,29 @@ See [docs/RAG_SYNC_GUIDE.md](docs/RAG_SYNC_GUIDE.md) for the full sync workflow 
 | Vectorize data | Cloudflare Vectorize | manual `node scripts/ingest.js` |
 
 See [docs/architecture.md](docs/architecture.md) for the full system architecture.
+
+---
+
+## AI-Powered Job Application Skills
+
+This repo includes [Claude Code](https://claude.ai/code) skills for job application automation. Run them from the project root with Claude Code.
+
+| Skill | Command | Description |
+|-------|---------|-------------|
+| JD 比對分析 | `/jd-match` | 分析職缺適配度，產出評分報告與客製化求職信 |
+| 履歷更新 | `/update-resume` | 引導式更新 `public/data/*.json`，自動同步 Vectorize 知識庫 |
+| 客製化履歷 | `/job-apply` | 針對目標職缺產出客製化履歷文件（不修改原始資料） |
+| 歸檔應徵包 | `/job-release` | 將 JD 分析、求職信、履歷草稿整理封存至 `output/releases/` |
+
+### 典型求職流程
+
+```
+/jd-match      → 貼上 JD，取得適配分析 + 求職信
+/job-apply     → 產出客製化履歷草稿
+/job-release   → 歸檔完整應徵資料包
+```
+
+所有輸出寫入 `output/`（已加入 `.gitignore`，個人應徵資料不會進 repo）。
 
 ---
 

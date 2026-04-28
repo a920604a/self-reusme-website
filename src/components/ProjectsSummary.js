@@ -3,8 +3,10 @@ import {
   Box, Heading, Text, Tag, TagLabel, Stack, Image, SimpleGrid, useColorModeValue,
 } from "@chakra-ui/react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const ProjectsSummary = ({ projects }) => {
+  const { t } = useLocaleContext();
   const navigate = useNavigate();
   const bgElevated   = useColorModeValue("#FFFFFF", "#2C2C2E");
   const bgFill       = useColorModeValue("rgba(120,120,128,0.2)", "rgba(120,120,128,0.36)");
@@ -106,7 +108,7 @@ const ProjectsSummary = ({ projects }) => {
               onClick={(e) => e.stopPropagation()}
               _hover={{ opacity: 0.7 }}
             >
-              View Details →
+              {t('projects.viewDetails') || 'View Details →'}
             </Text>
           </Box>
         </Box>

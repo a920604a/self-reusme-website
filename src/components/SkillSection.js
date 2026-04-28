@@ -3,6 +3,7 @@ import {
   Box, Heading, Text, VStack, Flex, Progress, SimpleGrid,
   HStack, Image as ChakraImage, useColorModeValue,
 } from "@chakra-ui/react";
+import { useLocaleContext } from "../context/LocaleContext";
 
 const Icons = {
   skills: {
@@ -76,6 +77,7 @@ const ToolIcon = ({ src, name, bgFill, labelSecond }) => (
 );
 
 const SkillSection = ({ skills, tools, frameworks, tryLearn }) => {
+  const { t } = useLocaleContext();
   const bgSection    = useColorModeValue("#F2F2F7", "#1C1C1E");
   const labelPrimary = useColorModeValue("#000000", "#FFFFFF");
   const labelSecond  = useColorModeValue("rgba(60,60,67,0.6)", "rgba(235,235,245,0.6)");
@@ -103,21 +105,21 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => {
           fontFamily="var(--font-label)" fontSize="xs" letterSpacing="widest"
           textTransform="uppercase" mb={3} style={{ color: accent }}
         >
-          Technical
+          {t('skills.eyebrow') || 'Technical'}
         </Text>
         <Heading
           fontFamily="var(--font-headline)" fontWeight="800"
           fontSize={{ base: "2xl", md: "3xl" }} letterSpacing="-0.02em"
           style={{ color: labelPrimary }}
         >
-          Skills & Tools
+          {t('skills.title') || 'Skills & Tools'}
         </Heading>
       </Box>
 
       <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6}>
 
         {/* Languages */}
-        <SectionCard title="Languages">
+        <SectionCard title={t('skills.languages') || 'Languages'}>
           <VStack spacing={4} align="stretch">
             {skills.map((skill) => (
               <Box key={skill.name}>
@@ -146,7 +148,7 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => {
         </SectionCard>
 
         {/* Tools */}
-        <SectionCard title="Tools & Infrastructure">
+        <SectionCard title={t('skills.tools') || 'Tools & Infrastructure'}>
           <Flex wrap="wrap" gap={3}>
             {tools.map((tool) => (
               <ToolIcon key={tool} src={Icons.tools[tool]} name={tool} bgFill={bgFill} labelSecond={labelSecond} />
@@ -156,7 +158,7 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => {
 
         {/* Frameworks + Learning */}
         <VStack spacing={6} align="stretch">
-          <SectionCard title="Frameworks">
+          <SectionCard title={t('skills.frameworks') || 'Frameworks'}>
             <Flex wrap="wrap" gap={3}>
               {frameworks.map((fw) => (
                 <ToolIcon key={fw} src={Icons.frameworks[fw]} name={fw} bgFill={bgFill} labelSecond={labelSecond} />
@@ -166,7 +168,7 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => {
 
           {tryLearn && tryLearn.length > 0 && (
             <Box
-              bg="#131b2e"
+              bg="bg.primary"
               borderRadius="16px"
               p={5}
               border="1px solid" borderColor={borderColor}
@@ -181,7 +183,7 @@ const SkillSection = ({ skills, tools, frameworks, tryLearn }) => {
                 mb={3}
                 style={{ color: labelSecond }}
               >
-                Exploring
+                {t('skills.exploring') || 'Exploring'}
               </Text>
               <Flex wrap="wrap" gap={2}>
                 {tryLearn.map((item) => (
