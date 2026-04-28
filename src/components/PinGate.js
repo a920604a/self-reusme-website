@@ -4,7 +4,7 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 
-const CORRECT_PIN = process.env.REACT_APP_WORKSPACE_PIN || '0000';
+const CORRECT_PIN = process.env.REACT_APP_WORKSPACE_PIN || null;
 const SESSION_KEY = 'ws_unlocked';
 
 function PinGate({ children }) {
