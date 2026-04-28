@@ -86,7 +86,7 @@ async function handleJDAnalysis(request, env, origin) {
   const aiStream = await env.AI.run(JD_ANALYZER_MODEL, {
     messages: [{ role: 'user', content: prompt }],
     stream: true,
-    max_tokens: 2048,
+    max_tokens: 4096,
   });
 
   return new Response(aiStream, {
