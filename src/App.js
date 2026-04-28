@@ -121,7 +121,7 @@ class App extends Component {
         <LocaleProvider>
         <AlertProvider>
           <main>
-            <Router>
+            <Router basename="/self-reusme-website">
               <FloatingChatWidget projectIds={(data?.projects || []).map(p => p.id)} />
               <Header email={data?.email} />
               <Routes>
