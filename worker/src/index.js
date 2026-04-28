@@ -86,6 +86,7 @@ async function handleJDAnalysis(request, env, origin) {
   const aiStream = await env.AI.run(JD_ANALYZER_MODEL, {
     messages: [{ role: 'user', content: prompt }],
     stream: true,
+    max_tokens: 2048,
   });
 
   return new Response(aiStream, {
@@ -336,10 +337,10 @@ async function handleHealthCheck(request, env, origin) {
   function extractJSON(text) {
     const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     // Direct parse
-    try { return JSON.parse(clean); } catch {}
+    try { return JSON.parse(clean); } catch { }
     // Extract first {...} block
     const match = clean.match(/\{[\s\S]*\}/);
-    if (match) { try { return JSON.parse(match[0]); } catch {} }
+    if (match) { try { return JSON.parse(match[0]); } catch { } }
     throw new Error(`Cannot parse JSON from model output: ${text.slice(0, 300)}`);
   }
 
