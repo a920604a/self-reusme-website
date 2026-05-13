@@ -157,7 +157,7 @@ function HealthCheckContent({ usage }) {
                 fontFamily="var(--font-headline)" fontWeight={700}>Stop</Button>
             </HStack>
           ) : (
-            <VStack spacing={1}>
+            <HStack spacing={3} justify="center" wrap="wrap">
               <Button onClick={() => check(mode, jdText)} isDisabled={!canStart || exhausted}
                 leftIcon={<FaHeartbeat />} className={exhausted ? '' : 'accent-gradient'}
                 style={exhausted ? {} : { color: '#FFFFFF' }} border="none" borderRadius="full"
@@ -167,11 +167,17 @@ function HealthCheckContent({ usage }) {
                 開始健檢
               </Button>
               {remaining !== null && (
-                <Text fontSize="xs" color={exhausted ? 'orange.400' : textSub} fontFamily="var(--font-label)">
-                  {exhausted ? '今日次數已用完，明天再試' : `今日剩餘 ${remaining} 次`}
-                </Text>
+                <Badge
+                  px={3} py={1.5} borderRadius="full" fontSize="sm" fontWeight={700}
+                  fontFamily="var(--font-label)"
+                  bg={exhausted ? 'rgba(255,149,0,0.12)' : accentSoft}
+                  color={exhausted ? 'orange.400' : accent}
+                  border="1px solid" borderColor={exhausted ? 'orange.300' : accent}
+                >
+                  {exhausted ? '今日已用完' : `剩 ${remaining} 次`}
+                </Badge>
               )}
-            </VStack>
+            </HStack>
           )}
         </Flex>
       )}
@@ -405,7 +411,7 @@ function WorkspaceContent() {
                 </Flex>
               </Box>
 
-              <Flex justify="center" direction="column" align="center" gap={1}>
+              <Flex justify="center" align="center" gap={3} wrap="wrap">
                 {isMatching ? (
                   <Button onClick={stopMatch} leftIcon={<FaStop />} variant="outline"
                     borderColor="red.400" color="red.400" borderRadius="full"
@@ -423,9 +429,15 @@ function WorkspaceContent() {
                   </Button>
                 )}
                 {matchLeft !== null && !isMatching && (
-                  <Text fontSize="xs" color={matchExhausted ? 'orange.400' : textSub} fontFamily="var(--font-label)">
-                    {matchExhausted ? '今日次數已用完，明天再試' : `今日剩餘 ${matchLeft} 次`}
-                  </Text>
+                  <Badge
+                    px={3} py={1.5} borderRadius="full" fontSize="sm" fontWeight={700}
+                    fontFamily="var(--font-label)"
+                    bg={matchExhausted ? 'rgba(255,149,0,0.12)' : accentSoft}
+                    color={matchExhausted ? 'orange.400' : accent}
+                    border="1px solid" borderColor={matchExhausted ? 'orange.300' : accent}
+                  >
+                    {matchExhausted ? '今日已用完' : `剩 ${matchLeft} 次`}
+                  </Badge>
                 )}
               </Flex>
 
@@ -485,7 +497,7 @@ function WorkspaceContent() {
                 </Text>
               )}
 
-              <Flex justify="center" direction="column" align="center" gap={1}>
+              <Flex justify="center" align="center" gap={3} wrap="wrap">
                 {isApplying ? (
                   <Button onClick={stopApply} leftIcon={<FaStop />} variant="outline"
                     borderColor="red.400" color="red.400" borderRadius="full"
@@ -503,9 +515,15 @@ function WorkspaceContent() {
                   </Button>
                 )}
                 {applyLeft !== null && !isApplying && (
-                  <Text fontSize="xs" color={applyExhausted ? 'orange.400' : textSub} fontFamily="var(--font-label)">
-                    {applyExhausted ? '今日次數已用完，明天再試' : `今日剩餘 ${applyLeft} 次`}
-                  </Text>
+                  <Badge
+                    px={3} py={1.5} borderRadius="full" fontSize="sm" fontWeight={700}
+                    fontFamily="var(--font-label)"
+                    bg={applyExhausted ? 'rgba(255,149,0,0.12)' : accentSoft}
+                    color={applyExhausted ? 'orange.400' : accent}
+                    border="1px solid" borderColor={applyExhausted ? 'orange.300' : accent}
+                  >
+                    {applyExhausted ? '今日已用完' : `剩 ${applyLeft} 次`}
+                  </Badge>
                 )}
               </Flex>
 

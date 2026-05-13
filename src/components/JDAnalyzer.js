@@ -181,7 +181,7 @@ function JDAnalyzer({ projectIds = [] }) {
               </Flex>
             </Box>
 
-            <Flex justify="center" direction="column" align="center" gap={2} pt={2}>
+            <Flex justify="center" align="center" gap={3} pt={2} wrap="wrap">
               {isStreaming ? (
                 <Button
                   onClick={stop}
@@ -222,10 +222,20 @@ function JDAnalyzer({ projectIds = [] }) {
                   {t('jdAnalyzer.analyze') || 'Start Analysis'}
                 </Button>
               )}
-              {remaining !== null && !isStreaming && (
-                <Text fontSize="xs" color={exhausted ? 'orange.400' : textSecondary} fontFamily="var(--font-label)">
-                  {exhausted ? '今日次數已用完，明天再試' : `今日剩餘 ${remaining} 次`}
-                </Text>
+              {remaining !== null && (
+                <Badge
+                  px={3} py={1.5}
+                  borderRadius="full"
+                  fontSize="sm"
+                  fontWeight={700}
+                  fontFamily="var(--font-label)"
+                  bg={exhausted ? 'rgba(255,149,0,0.12)' : accentSoft}
+                  color={exhausted ? 'orange.400' : accent}
+                  border="1px solid"
+                  borderColor={exhausted ? 'orange.300' : accent}
+                >
+                  {exhausted ? '今日已用完' : `剩 ${remaining} 次`}
+                </Badge>
               )}
             </Flex>
           </VStack>
