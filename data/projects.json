@@ -398,7 +398,7 @@
             "outcome": "完成從作品集展示、AI 聊天、JD 分析到自動產生履歷的完整求職輔助平台，部署於 GitHub Pages + Cloudflare Workers，透過 GitHub Actions 實現 CI/CD 自動化。"
         },
         "repo": "https://github.com/a920604a/self-reusme-website",
-        "reference": "",
+        "reference": "https://a920604a.github.io/self-reusme-website/",
         "images": []
     },
     {
@@ -423,7 +423,7 @@
             "outcome": "建立一套從學習輸入到知識輸出的自動化管線，工程師的對話與 YouTube 學習內容可快速發布為可搜尋的技術文章，支援靜態搜尋與 AI 語意查詢，並透過 GitHub Actions 全自動部署。"
         },
         "repo": "https://github.com/a920604a/engineernews",
-        "reference": "",
+        "reference": "https://engineer-news.pages.dev/",
         "images": []
     },
     {
@@ -448,7 +448,7 @@
             "outcome": "成功以單一 SPA 整合四個功能模組，實現模組獨立開發與統一部署，驗證了 Vite Workspace + Cloudflare 的 Monorepo 全端架構可行性，並為後續模組擴充奠定基礎。"
         },
         "repo": "https://github.com/a920604a/a920604a-labs",
-        "reference": "",
+        "reference": "https://a920604a-labs.pages.dev/",
         "images": []
     }
 ]
