@@ -374,5 +374,81 @@
             "remote-meeting-system/flow.png",
             "remote-meeting-system/arch.png"
         ]
+    },
+    {
+        "id": "self-reusme-website",
+        "title": "Personal Resume Website",
+        "date": "2023/12-NOW",
+        "category": "Side Project",
+        "tags": [
+            "React",
+            "Cloudflare Workers",
+            "Workers AI",
+            "Vectorize",
+            "RAG",
+            "LLM",
+            "Chakra UI",
+            "Framer Motion",
+            "GitHub Actions"
+        ],
+        "description": {
+            "background": "打造一個兼具作品集展示與 AI 求職輔助功能的全端個人網站，讓面試官可查詢候選人資料，同時讓求職者能自動化生成履歷與求職信。",
+            "challenge": "如何在靜態前端網站中整合即時 AI 對話、向量語意搜尋與串流回應，並設計一個 PIN 碼保護的私有工作區供求職流程使用。",
+            "solution": "前端使用 React 18 + Chakra UI + Framer Motion 建構響應式 UI，支援深色/淺色模式與中英雙語。後端以 Cloudflare Workers 部署 Streaming RAG Pipeline，將 JSON 資料向量化存入 Vectorize，搭配 Llama 系列 LLM 提供語意查詢與串流回應。私有工作區提供 Job Wizard（JD 比對 → 客製履歷/求職信生成）與 Resume Health Check（量化評分與改善建議）功能。",
+            "outcome": "完成從作品集展示、AI 聊天、JD 分析到自動產生履歷的完整求職輔助平台，部署於 GitHub Pages + Cloudflare Workers，透過 GitHub Actions 實現 CI/CD 自動化。"
+        },
+        "repo": "https://github.com/a920604a/self-reusme-website",
+        "reference": "",
+        "images": []
+    },
+    {
+        "id": "engineernews-website",
+        "title": "Engineer News Website",
+        "date": "2026/04-NOW",
+        "category": "Side Project",
+        "tags": [
+            "Astro",
+            "Cloudflare Workers",
+            "Workers AI",
+            "Vectorize",
+            "D1",
+            "R2",
+            "GitHub Actions",
+            "Pagefind"
+        ],
+        "description": {
+            "background": "將工程師日常學習筆記、對話紀錄與 YouTube 頻道內容自動轉化為結構化、可搜尋的技術部落格，解決知識散落在各處且難以重用的問題。",
+            "challenge": "如何自動化地從多元來源（對話、YouTube 字幕）擷取內容並產生雙語文章，同時提供靜態全文搜尋與 AI 語意搜尋兩種查詢方式。",
+            "solution": "前端以 Astro 建構靜態網站，透過 Pagefind 提供靜態全文搜尋；後端部署於 Cloudflare Pages Functions，使用 Vectorize 向量資料庫與 Workers AI Embedding 實現語意搜尋。自動化流程包含：`pnpm ingest` 將對話轉為文章、GitHub Actions 排程爬取 YouTube 字幕並產生中英雙語草稿。文字轉語音功能使用 Edge TTS 並快取至 R2，資料存於 D1（SQLite）。",
+            "outcome": "建立一套從學習輸入到知識輸出的自動化管線，工程師的對話與 YouTube 學習內容可快速發布為可搜尋的技術文章，支援靜態搜尋與 AI 語意查詢，並透過 GitHub Actions 全自動部署。"
+        },
+        "repo": "https://github.com/a920604a/engineernews",
+        "reference": "",
+        "images": []
+    },
+    {
+        "id": "a920604a-labs",
+        "title": "A920604a Labs",
+        "date": "2025/07-NOW",
+        "category": "Side Project",
+        "tags": [
+            "React",
+            "TypeScript",
+            "Vite",
+            "Firebase",
+            "Cloudflare Workers",
+            "Cloudflare Pages",
+            "Chakra UI",
+            "GitHub Actions"
+        ],
+        "description": {
+            "background": "將多個個人生產力工具（待辦清單、習慣追蹤、電子書閱讀器、離職戳章板）整合於單一 SPA，探索以 Monorepo 架構統一管理多模組應用的最佳實踐。",
+            "challenge": "如何在 Monorepo 中讓各模組保持獨立開發、共用 UI 元件與認證邏輯，同時透過單一建構入口輸出完整的 SPA，而非多個獨立應用。",
+            "solution": "採用 Vite 6 + SWC 的 Workspace 架構，`apps/root` 作為唯一建構入口，各功能模組（`apps/{module}`）以 Library 模式開發並透過 Symlink 整合。共用套件（`packages/`）提供認證（Firebase Auth）與 UI 元件，後端服務（`workers/`）部署於 Cloudflare Workers，電子書快取使用 IndexedDB + Cloudflare 基礎設施同步。GitHub Actions 監聽 main 分支變動自動部署至 Cloudflare Pages。",
+            "outcome": "成功以單一 SPA 整合四個功能模組，實現模組獨立開發與統一部署，驗證了 Vite Workspace + Cloudflare 的 Monorepo 全端架構可行性，並為後續模組擴充奠定基礎。"
+        },
+        "repo": "https://github.com/a920604a/a920604a-labs",
+        "reference": "",
+        "images": []
     }
 ]
