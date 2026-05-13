@@ -5,6 +5,7 @@ const WORKER_URL = process.env.REACT_APP_WORKER_URL || 'http://localhost:8787';
 function useStreamingChat() {
   const [messages, setMessages] = useState([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [remaining, setRemaining] = useState(null);
   const abortRef = useRef(null);
 
   const sendMessage = useCallback(async (text) => {
@@ -25,6 +26,9 @@ function useStreamingChat() {
         body: JSON.stringify({ query: text }),
         signal: controller.signal,
       });
+
+      const rem = response.headers.get('X-RateLimit-Remaining');
+      if (rem !== null) setRemaining(parseInt(rem));
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -102,7 +106,7 @@ function useStreamingChat() {
     }
   }, [stableMessages]);
 
-  return { messages, isStreaming, sendMessage, clearMessages, cancelStreaming };
+  return { messages, isStreaming, sendMessage, clearMessages, cancelStreaming, remaining };
 }
 
 export default useStreamingChat;

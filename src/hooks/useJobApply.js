@@ -10,6 +10,8 @@ async function streamToState(url, body, signal, setter) {
     signal,
   });
 
+  const remaining = parseInt(response.headers.get('X-RateLimit-Remaining') ?? '-1');
+
   if (!response.ok) {
     const err = await response.json().catch(() => ({ error: 'Unknown error' }));
     throw new Error(err.error || 'Something went wrong');
@@ -39,6 +41,8 @@ async function streamToState(url, body, signal, setter) {
       } catch { /* skip malformed SSE */ }
     }
   }
+
+  return remaining;
 }
 
 function useJobApply() {
@@ -46,6 +50,7 @@ function useJobApply() {
   const [coverText, setCoverText] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState('');
+  const [remaining, setRemaining] = useState(null);
   const abortRef = useRef(null);
 
   const apply = useCallback(async (jd, matchSummary) => {
@@ -61,10 +66,12 @@ function useJobApply() {
     const payload = { jd, matchSummary };
 
     try {
-      await Promise.all([
+      const [rem1, rem2] = await Promise.all([
         streamToState(`${WORKER_URL}/apply-resume`, payload, controller.signal, setResumeText),
         streamToState(`${WORKER_URL}/apply-cover`, payload, controller.signal, setCoverText),
       ]);
+      const valid = [rem1, rem2].filter((r) => r >= 0);
+      if (valid.length > 0) setRemaining(Math.min(...valid));
     } catch (err) {
       if (err.name !== 'AbortError') setError(err.message || 'Connection error. Please try again.');
     } finally {
@@ -80,7 +87,7 @@ function useJobApply() {
 
   const reset = useCallback(() => { setResumeText(''); setCoverText(''); setError(''); }, []);
 
-  return { resumeText, coverText, isStreaming, error, apply, stop, reset };
+  return { resumeText, coverText, isStreaming, error, apply, stop, reset, remaining };
 }
 
 export default useJobApply;

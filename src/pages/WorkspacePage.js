@@ -12,6 +12,7 @@ import PinGate from '../components/PinGate';
 import useJDMatch from '../hooks/useJDMatch';
 import useJobApply from '../hooks/useJobApply';
 import useHealthCheck from '../hooks/useHealthCheck';
+import useUsage from '../hooks/useUsage';
 import JSZip from 'jszip';
 
 const MAX_CHARS = 5000;
@@ -77,7 +78,7 @@ function calcOverall(scores) {
   return Math.round(avg * 10);
 }
 
-function HealthCheckContent() {
+function HealthCheckContent({ usage }) {
   const accent     = useColorModeValue('#007AFF', '#0A84FF');
   const accentSoft = useColorModeValue('rgba(0,122,255,0.08)', 'rgba(10,132,255,0.15)');
   const border     = useColorModeValue('rgba(60,60,67,0.12)', 'rgba(84,84,88,0.4)');
@@ -86,7 +87,9 @@ function HealthCheckContent() {
 
   const [mode, setMode] = useState(null);
   const [jdText, setJdText] = useState('');
-  const { scores, isLoadingScores, suggestions, isStreamingSuggestions, error, check, stop, reset } = useHealthCheck();
+  const { scores, isLoadingScores, suggestions, isStreamingSuggestions, error, check, stop, reset, remaining: hcRemaining } = useHealthCheck();
+  const remaining = hcRemaining ?? usage?.healthCheck?.remaining ?? null;
+  const exhausted = remaining !== null && remaining <= 0;
 
   const isOverLimit = jdText.length > 5000;
   const canStart = mode === 'base' || (mode === 'jd' && jdText.trim() && !isOverLimit);
@@ -154,14 +157,21 @@ function HealthCheckContent() {
                 fontFamily="var(--font-headline)" fontWeight={700}>Stop</Button>
             </HStack>
           ) : (
-            <Button onClick={() => check(mode, jdText)} isDisabled={!canStart}
-              leftIcon={<FaHeartbeat />} className="accent-gradient"
-              style={{ color: '#FFFFFF' }} border="none" borderRadius="full"
-              fontFamily="var(--font-headline)" fontWeight={700} px={10}
-              _hover={{ transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(0,122,255,0.35)' }}
-              transition="all 0.2s">
-              開始健檢
-            </Button>
+            <VStack spacing={1}>
+              <Button onClick={() => check(mode, jdText)} isDisabled={!canStart || exhausted}
+                leftIcon={<FaHeartbeat />} className={exhausted ? '' : 'accent-gradient'}
+                style={exhausted ? {} : { color: '#FFFFFF' }} border="none" borderRadius="full"
+                fontFamily="var(--font-headline)" fontWeight={700} px={10}
+                _hover={exhausted ? {} : { transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(0,122,255,0.35)' }}
+                transition="all 0.2s">
+                開始健檢
+              </Button>
+              {remaining !== null && (
+                <Text fontSize="xs" color={exhausted ? 'orange.400' : textSub} fontFamily="var(--font-label)">
+                  {exhausted ? '今日次數已用完，明天再試' : `今日剩餘 ${remaining} 次`}
+                </Text>
+              )}
+            </VStack>
           )}
         </Flex>
       )}
@@ -288,8 +298,13 @@ function WorkspaceContent() {
   const [activeStep, setActiveStep] = useState(0); // 0=JD Match, 1=Job Apply, 2=Release
   const [jdText, setJdText] = useState('');
 
-  const { result: matchResult, isStreaming: isMatching, error: matchError, match, stop: stopMatch, reset: resetMatch } = useJDMatch();
-  const { resumeText, coverText, isStreaming: isApplying, error: applyError, apply, stop: stopApply, reset: resetApply } = useJobApply();
+  const { result: matchResult, isStreaming: isMatching, error: matchError, match, stop: stopMatch, reset: resetMatch, remaining: matchRemaining } = useJDMatch();
+  const { resumeText, coverText, isStreaming: isApplying, error: applyError, apply, stop: stopApply, reset: resetApply, remaining: applyRemaining } = useJobApply();
+  const { usage } = useUsage();
+  const matchLeft = matchRemaining ?? usage?.matchJD?.remaining ?? null;
+  const applyLeft = applyRemaining ?? usage?.applyJob?.remaining ?? null;
+  const matchExhausted = matchLeft !== null && matchLeft <= 0;
+  const applyExhausted = applyLeft !== null && applyLeft <= 0;
 
   const charsLeft = MAX_CHARS - jdText.length;
   const isOverLimit = jdText.length > MAX_CHARS;
@@ -390,7 +405,7 @@ function WorkspaceContent() {
                 </Flex>
               </Box>
 
-              <Flex justify="center">
+              <Flex justify="center" direction="column" align="center" gap={1}>
                 {isMatching ? (
                   <Button onClick={stopMatch} leftIcon={<FaStop />} variant="outline"
                     borderColor="red.400" color="red.400" borderRadius="full"
@@ -398,14 +413,19 @@ function WorkspaceContent() {
                     Stop
                   </Button>
                 ) : (
-                  <Button onClick={() => match(jdText)} isDisabled={!jdText.trim() || isOverLimit}
-                    leftIcon={<FaSearch />} className="accent-gradient"
-                    style={{ color: '#FFFFFF' }} border="none" borderRadius="full"
+                  <Button onClick={() => match(jdText)} isDisabled={!jdText.trim() || isOverLimit || matchExhausted}
+                    leftIcon={<FaSearch />} className={matchExhausted ? '' : 'accent-gradient'}
+                    style={matchExhausted ? {} : { color: '#FFFFFF' }} border="none" borderRadius="full"
                     fontFamily="var(--font-headline)" fontWeight={700} px={10}
-                    _hover={{ transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(0,122,255,0.35)' }}
+                    _hover={matchExhausted ? {} : { transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(0,122,255,0.35)' }}
                     transition="all 0.2s">
                     Analyse Fit
                   </Button>
+                )}
+                {matchLeft !== null && !isMatching && (
+                  <Text fontSize="xs" color={matchExhausted ? 'orange.400' : textSub} fontFamily="var(--font-label)">
+                    {matchExhausted ? '今日次數已用完，明天再試' : `今日剩餘 ${matchLeft} 次`}
+                  </Text>
                 )}
               </Flex>
 
@@ -465,7 +485,7 @@ function WorkspaceContent() {
                 </Text>
               )}
 
-              <Flex justify="center">
+              <Flex justify="center" direction="column" align="center" gap={1}>
                 {isApplying ? (
                   <Button onClick={stopApply} leftIcon={<FaStop />} variant="outline"
                     borderColor="red.400" color="red.400" borderRadius="full"
@@ -473,14 +493,19 @@ function WorkspaceContent() {
                     Stop
                   </Button>
                 ) : (
-                  <Button onClick={() => apply(jdText, matchResult)} isDisabled={isApplying}
-                    leftIcon={<FaFileAlt />} className="accent-gradient"
-                    style={{ color: '#FFFFFF' }} border="none" borderRadius="full"
+                  <Button onClick={() => apply(jdText, matchResult)} isDisabled={isApplying || applyExhausted}
+                    leftIcon={<FaFileAlt />} className={applyExhausted ? '' : 'accent-gradient'}
+                    style={applyExhausted ? {} : { color: '#FFFFFF' }} border="none" borderRadius="full"
                     fontFamily="var(--font-headline)" fontWeight={700} px={10}
-                    _hover={{ transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(0,122,255,0.35)' }}
+                    _hover={applyExhausted ? {} : { transform: 'translateY(-1px)', boxShadow: '0 6px 20px rgba(0,122,255,0.35)' }}
                     transition="all 0.2s">
                     {resumeText || coverText ? 'Regenerate' : 'Generate Resume & Cover Letter'}
                   </Button>
+                )}
+                {applyLeft !== null && !isApplying && (
+                  <Text fontSize="xs" color={applyExhausted ? 'orange.400' : textSub} fontFamily="var(--font-label)">
+                    {applyExhausted ? '今日次數已用完，明天再試' : `今日剩餘 ${applyLeft} 次`}
+                  </Text>
                 )}
               </Flex>
 
@@ -642,7 +667,7 @@ function WorkspaceContent() {
 
             {/* Resume Health Check tab */}
             <TabPanel px={0} pt={6}>
-              <HealthCheckContent />
+              <HealthCheckContent usage={usage} />
             </TabPanel>
           </TabPanels>
         </Tabs>

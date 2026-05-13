@@ -6,6 +6,7 @@ import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import { useColorModeValue } from '@chakra-ui/react';
 import useStreamingChat from '../hooks/useStreamingChat';
+import useUsage from '../hooks/useUsage';
 import { useLocaleContext } from '../context/LocaleContext';
 
 const SUGGESTED_QUESTIONS = [
@@ -134,7 +135,10 @@ function FloatingChatWidget({ projectIds = [] }) {
   const { t } = useLocaleContext();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
-  const { messages, isStreaming, sendMessage, clearMessages, cancelStreaming } = useStreamingChat();
+  const { messages, isStreaming, sendMessage, clearMessages, cancelStreaming, remaining: chatRemaining } = useStreamingChat();
+  const { usage } = useUsage();
+  const remaining = chatRemaining ?? usage?.query?.remaining ?? null;
+  const exhausted = remaining !== null && remaining <= 0;
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -166,7 +170,7 @@ function FloatingChatWidget({ projectIds = [] }) {
 
   const handleSend = () => {
     const trimmed = input.trim();
-    if (!trimmed || isStreaming) return;
+    if (!trimmed || isStreaming || exhausted) return;
     setInput('');
     sendMessage(trimmed);
   };
@@ -273,6 +277,11 @@ function FloatingChatWidget({ projectIds = [] }) {
                 <div style={{ color: labelSecond, fontSize: '11px', fontFamily: 'var(--font-label)' }}>
                   {t('chat.subtitle') || "About Yu-An's portfolio"}
                 </div>
+                {remaining !== null && (
+                  <div style={{ fontSize: '10px', fontFamily: 'var(--font-label)', color: exhausted ? '#FF9500' : labelSecond, marginTop: '1px' }}>
+                    {exhausted ? '今日已用完，明天再試' : `今日剩餘 ${remaining} 次`}
+                  </div>
+                )}
               </div>
               <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
                 {isStreaming && (
@@ -346,20 +355,22 @@ function FloatingChatWidget({ projectIds = [] }) {
                     {SUGGESTED_QUESTIONS.map((q) => (
                       <button
                         key={q}
-                        onClick={() => sendMessage(q)}
+                        onClick={() => !exhausted && sendMessage(q)}
+                        disabled={exhausted}
                         style={{
                           background: suggestBg,
                           border: `1px solid ${suggestBorder}`,
                           borderRadius: '8px',
-                          color: accent,
+                          color: exhausted ? labelSecond : accent,
                           fontSize: '12px',
                           padding: '8px 12px',
-                          cursor: 'pointer',
+                          cursor: exhausted ? 'not-allowed' : 'pointer',
                           textAlign: 'left',
                           fontFamily: 'var(--font-body)',
                           transition: 'background 0.15s',
+                          opacity: exhausted ? 0.5 : 1,
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = suggestBorder)}
+                        onMouseEnter={(e) => { if (!exhausted) e.currentTarget.style.background = suggestBorder; }}
                         onMouseLeave={(e) => (e.currentTarget.style.background = suggestBg)}
                       >
                         {q}
@@ -400,7 +411,8 @@ function FloatingChatWidget({ projectIds = [] }) {
                 onKeyDown={handleKeyDown}
                 placeholder={t('chat.placeholder') || "Ask a question... (Enter to send)"}
                 rows={1}
-                disabled={isStreaming}
+                disabled={isStreaming || exhausted}
+                placeholder={exhausted ? '今日次數已用完，明天再試' : (t('chat.placeholder') || 'Ask a question... (Enter to send)')}
                 style={{
                   flex: 1,
                   resize: 'none',
@@ -415,7 +427,7 @@ function FloatingChatWidget({ projectIds = [] }) {
                   lineHeight: '1.5',
                   maxHeight: '100px',
                   overflowY: 'auto',
-                  opacity: isStreaming ? 0.6 : 1,
+                  opacity: isStreaming || exhausted ? 0.6 : 1,
                 }}
                 onInput={(e) => {
                   e.target.style.height = 'auto';
@@ -424,18 +436,18 @@ function FloatingChatWidget({ projectIds = [] }) {
               />
               <button
                 onClick={handleSend}
-                disabled={isStreaming || !input.trim()}
+                disabled={isStreaming || !input.trim() || exhausted}
                 style={{
                   width: '36px',
                   height: '36px',
                   borderRadius: '10px',
                   border: 'none',
                   background:
-                    isStreaming || !input.trim()
+                    isStreaming || !input.trim() || exhausted
                       ? bgInput
                       : `linear-gradient(135deg, ${accent}, ${accent})`,
-                  color: isStreaming || !input.trim() ? labelSecond : '#FFFFFF',
-                  cursor: isStreaming || !input.trim() ? 'not-allowed' : 'pointer',
+                  color: isStreaming || !input.trim() || exhausted ? labelSecond : '#FFFFFF',
+                  cursor: isStreaming || !input.trim() || exhausted ? 'not-allowed' : 'pointer',
                   fontSize: '16px',
                   display: 'flex',
                   alignItems: 'center',

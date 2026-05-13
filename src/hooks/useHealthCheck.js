@@ -8,6 +8,7 @@ function useHealthCheck() {
   const [suggestions, setSuggestions] = useState('');
   const [isStreamingSuggestions, setIsStreamingSuggestions] = useState(false);
   const [error, setError] = useState('');
+  const [remaining, setRemaining] = useState(null);
   const abortRef = useRef(null);
 
   const check = useCallback(async (mode, jd = '') => {
@@ -28,6 +29,9 @@ function useHealthCheck() {
         body: JSON.stringify({ mode, ...(mode === 'jd' ? { jd } : {}) }),
         signal: controller.signal,
       });
+
+      const rem = response.headers.get('X-RateLimit-Remaining');
+      if (rem !== null) setRemaining(parseInt(rem));
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -83,7 +87,7 @@ function useHealthCheck() {
     setError('');
   }, []);
 
-  return { scores, isLoadingScores, suggestions, isStreamingSuggestions, error, check, stop, reset };
+  return { scores, isLoadingScores, suggestions, isStreamingSuggestions, error, check, stop, reset, remaining };
 }
 
 export default useHealthCheck;

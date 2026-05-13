@@ -6,7 +6,7 @@ import { assembleJobCoverPrompt, MODEL as JOB_COVER_MODEL } from './prompts/job-
 import { assembleResumeEvalBasePrompt, MODEL as EVAL_BASE_MODEL } from './prompts/resume-eval-base.js';
 import { assembleResumeEvalJDPrompt, MODEL as EVAL_JD_MODEL } from './prompts/resume-eval-jd.js';
 import { assembleResumeEvalRewritePrompt, MODEL as EVAL_REWRITE_MODEL } from './prompts/resume-eval-rewrite.js';
-import { checkRateLimit, RATE_LIMITS } from './rateLimiter.js';
+import { checkRateLimit, getCount, RATE_LIMITS } from './rateLimiter.js';
 
 const ALLOWED_ORIGINS = [
   'https://a920604a.github.io',
@@ -94,6 +94,7 @@ async function handleJDAnalysis(request, env, origin) {
     headers: {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
+      'X-RateLimit-Remaining': String(rl.remaining),
       ...corsHeaders(origin),
     },
   });
@@ -137,6 +138,7 @@ async function handleQuery(request, env, origin) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'X-Cache': 'HIT',
+        'X-RateLimit-Remaining': String(rl.remaining),
         ...corsHeaders(origin),
       },
     });
@@ -185,6 +187,7 @@ async function handleQuery(request, env, origin) {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
       'X-Cache': 'MISS',
+      'X-RateLimit-Remaining': String(rl.remaining),
     },
   });
 }
@@ -230,7 +233,7 @@ async function handleJDMatch(request, env, origin) {
   });
 
   return new Response(aiStream, {
-    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', ...corsHeaders(origin) },
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'X-RateLimit-Remaining': String(rl.remaining), ...corsHeaders(origin) },
   });
 }
 
@@ -277,7 +280,7 @@ async function handleJobResume(request, env, origin) {
   });
 
   return new Response(aiStream, {
-    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', ...corsHeaders(origin) },
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'X-RateLimit-Remaining': String(rl.remaining), ...corsHeaders(origin) },
   });
 }
 
@@ -313,7 +316,7 @@ async function handleJobCover(request, env, origin) {
   });
 
   return new Response(aiStream, {
-    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', ...corsHeaders(origin) },
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'X-RateLimit-Remaining': String(rl.remaining), ...corsHeaders(origin) },
   });
 }
 
@@ -451,7 +454,21 @@ async function handleHealthCheck(request, env, origin) {
   })();
 
   return new Response(readable, {
-    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', ...corsHeaders(origin) },
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache', 'X-RateLimit-Remaining': String(rl.remaining), ...corsHeaders(origin) },
+  });
+}
+
+async function handleUsage(request, env, origin) {
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const [query, analyzeJD, matchJD, applyJob, healthCheck] = await Promise.all([
+    getCount(env.RATE_LIMIT_KV, ip, RATE_LIMITS.query),
+    getCount(env.RATE_LIMIT_KV, ip, RATE_LIMITS.analyzeJD),
+    getCount(env.RATE_LIMIT_KV, ip, RATE_LIMITS.matchJD),
+    getCount(env.RATE_LIMIT_KV, ip, RATE_LIMITS.applyJob),
+    getCount(env.RATE_LIMIT_KV, ip, RATE_LIMITS.healthCheck),
+  ]);
+  return new Response(JSON.stringify({ query, analyzeJD, matchJD, applyJob, healthCheck }), {
+    headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
   });
 }
 
@@ -460,9 +477,14 @@ export default {
     env.ctx = ctx;
     const origin = request.headers.get('Origin') || '';
     const headers = corsHeaders(origin);
+    const url = new URL(request.url);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers });
+    }
+
+    if (url.pathname === '/usage' && request.method === 'GET') {
+      return handleUsage(request, env, origin);
     }
 
     if (request.method !== 'POST') {
@@ -471,8 +493,6 @@ export default {
         headers: { ...headers, 'Content-Type': 'application/json' },
       });
     }
-
-    const url = new URL(request.url);
 
     try {
       let response;

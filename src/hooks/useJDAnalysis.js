@@ -6,6 +6,7 @@ function useJDAnalysis() {
   const [result, setResult] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState('');
+  const [remaining, setRemaining] = useState(null);
   const abortRef = useRef(null);
 
   const analyze = useCallback(async (jdText) => {
@@ -24,6 +25,9 @@ function useJDAnalysis() {
         body: JSON.stringify({ jd: jdText }),
         signal: controller.signal,
       });
+
+      const rem = response.headers.get('X-RateLimit-Remaining');
+      if (rem !== null) setRemaining(parseInt(rem));
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -77,7 +81,7 @@ function useJDAnalysis() {
     setError('');
   }, []);
 
-  return { result, isStreaming, error, analyze, stop, reset };
+  return { result, isStreaming, error, analyze, stop, reset, remaining };
 }
 
 export default useJDAnalysis;

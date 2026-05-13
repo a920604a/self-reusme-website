@@ -12,6 +12,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import useJDAnalysis from '../hooks/useJDAnalysis';
+import useUsage from '../hooks/useUsage';
 import { useLocaleContext } from '../context/LocaleContext';
 
 const MAX_CHARS = 5000;
@@ -19,7 +20,10 @@ const MAX_CHARS = 5000;
 function JDAnalyzer({ projectIds = [] }) {
   const { t } = useLocaleContext();
   const [jd, setJd] = React.useState('');
-  const { result, isStreaming, error, analyze, stop } = useJDAnalysis();
+  const { result, isStreaming, error, analyze, stop, remaining: analyzeRemaining } = useJDAnalysis();
+  const { usage } = useUsage();
+  const remaining = analyzeRemaining ?? usage?.analyzeJD?.remaining ?? null;
+  const exhausted = remaining !== null && remaining <= 0;
   const resultRef = useRef(null);
 
   const accent = useColorModeValue('#007AFF', '#0A84FF');
@@ -54,7 +58,7 @@ function JDAnalyzer({ projectIds = [] }) {
   }, [isStreaming, result, projectIds]);
 
   const handleAnalyze = () => {
-    if (!jd.trim() || isStreaming) return;
+    if (!jd.trim() || isStreaming || exhausted) return;
     analyze(jd);
   };
 
@@ -177,7 +181,7 @@ function JDAnalyzer({ projectIds = [] }) {
               </Flex>
             </Box>
 
-            <Flex justify="center" pt={2}>
+            <Flex justify="center" direction="column" align="center" gap={2} pt={2}>
               {isStreaming ? (
                 <Button
                   onClick={stop}
@@ -197,16 +201,16 @@ function JDAnalyzer({ projectIds = [] }) {
               ) : (
                 <Button
                   onClick={handleAnalyze}
-                  isDisabled={!jd.trim() || isOverLimit}
+                  isDisabled={!jd.trim() || isOverLimit || exhausted}
                   rightIcon={<FaArrowRight />}
                   leftIcon={<FaMagic />}
                   size="lg"
                   px={12}
                   borderRadius="full"
-                  className="accent-gradient"
-                  style={{ color: '#FFFFFF' }}
+                  className={exhausted ? '' : 'accent-gradient'}
+                  style={{ color: exhausted ? undefined : '#FFFFFF' }}
                   border="none"
-                  _hover={{
+                  _hover={exhausted ? {} : {
                     transform: 'translateY(-2px)',
                     boxShadow: '0 8px 24px rgba(0,122,255,0.4)',
                   }}
@@ -217,6 +221,11 @@ function JDAnalyzer({ projectIds = [] }) {
                 >
                   {t('jdAnalyzer.analyze') || 'Start Analysis'}
                 </Button>
+              )}
+              {remaining !== null && !isStreaming && (
+                <Text fontSize="xs" color={exhausted ? 'orange.400' : textSecondary} fontFamily="var(--font-label)">
+                  {exhausted ? '今日次數已用完，明天再試' : `今日剩餘 ${remaining} 次`}
+                </Text>
               )}
             </Flex>
           </VStack>
