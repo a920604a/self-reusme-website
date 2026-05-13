@@ -213,35 +213,10 @@ function FloatingChatWidget({ projectIds = [] }) {
           alignItems: 'center',
           justifyContent: 'center',
           fontSize: '22px',
-          overflow: 'visible',
         }}
         aria-label="Open AI assistant"
       >
         {isOpen ? '✕' : '💬'}
-        {!isOpen && remaining !== null && (
-          <div style={{
-            position: 'absolute',
-            top: '-6px',
-            right: '-6px',
-            minWidth: '20px',
-            height: '20px',
-            borderRadius: '10px',
-            background: exhausted ? '#FF3B30' : remaining <= 3 ? '#FF9500' : accent,
-            color: '#FFFFFF',
-            fontSize: '10px',
-            fontWeight: 700,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '0 5px',
-            fontFamily: 'var(--font-label)',
-            lineHeight: 1,
-            boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
-            pointerEvents: 'none',
-          }}>
-            {exhausted ? '!' : remaining}
-          </div>
-        )}
       </motion.button>
 
       {/* Chat panel */}
